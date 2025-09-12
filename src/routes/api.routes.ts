@@ -1,9 +1,10 @@
 import { Router } from "express";
+import userRoute from "./user.routes";
 
 const router = Router();
 
-import userRoute from "./user.routes";
-
+// Rotas
 router.use("/user", userRoute);
+
 
 export default router;

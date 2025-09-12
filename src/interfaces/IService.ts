@@ -1,4 +1,4 @@
-import Filter from "./filter";
+import Filter from "./Filter";
 
 export default interface IService<T> {
     getAll(filter?: Filter): Promise<T[]>;
