@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 export const connectDB = async () => {
 
     const { MONGO_URL } = process.env;
+    
     if (!MONGO_URL) {
         console.log("❌ MongoDB: sem conexão", MONGO_URL);
         process.exit(1);

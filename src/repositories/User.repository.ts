@@ -32,7 +32,8 @@ export default class UserRepository implements IRepository<IUser> {
     }
     async create(data: IUser): Promise<IUser> {
         try {
-            const user = await User.create(data);
+            const user = new User(data);
+            await user.save();
             return user;
         } catch (error: any) {
             if (error.name === "ValidationError") {
