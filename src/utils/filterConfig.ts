@@ -18,9 +18,6 @@ export default function filterConfig(filter: any, allowedFields: string[]): Filt
         throw new ThrowError(400, "A página deve ser maior que 0");
     }
 
-    if (orderBy !== "asc" && orderBy !== "desc") {
-        throw new ThrowError(400, "O order deve ser 'asc' ou 'desc'");
-    }
     const query = builderFilterQuery<IUser>(rawQuery, allowedFields || []);
 
     return {

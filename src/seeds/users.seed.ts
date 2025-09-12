@@ -1,6 +1,7 @@
 import { User } from "../models/User";
 
 export const seedUsers = async () => {
+    await User.deleteMany({});
     await User.create([
         {
             name: "Lucas Felipe",
@@ -41,5 +42,5 @@ export const seedUsers = async () => {
             }
         }
     ]);
-    console.log("✅ Users seed executado");
+    console.log("✅ Users seed executed");
 };

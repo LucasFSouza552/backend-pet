@@ -1,5 +1,4 @@
-import { FilterQuery } from "mongoose";
-import Filter from "./filter";
+import Filter from "./Filter";
 
 export default interface IRepository<T> {
     getAll(filter?: Filter): Promise<T[]>;
