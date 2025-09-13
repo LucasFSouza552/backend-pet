@@ -56,6 +56,6 @@ const userSchema = new Schema<IUser>({
         },
     },
 
-}, { timestamps: true });
+}, { timestamps: true, strict: true });
 
 export const User = model<IUser>("User", userSchema);
