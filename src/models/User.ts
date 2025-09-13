@@ -1,17 +1,13 @@
 import { Document, Schema, model } from "mongoose";
+import IAddress from "../interfaces/IAddress";
 
 export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
-    address: {
-        street: string;
-        number: string;
-        complement?: string;
-        city: string;
-        cep: string;
-        state: string;
-    };
+    role: "user" | "admin";
+    verified: boolean;
+    address: IAddress;
 }
 
 const userSchema = new Schema<IUser>({
@@ -23,11 +19,24 @@ const userSchema = new Schema<IUser>({
         type: String,
         required: true,
         unique: true,
+        lowercase: true,
+        trim: true,
+        match: [/^\S+@\S+\.\S+$/, "Email inválido"]
     },
     password: {
         type: String,
         required: true,
     },
+    role: {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user",
+    },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+
     address: {
         street: {
             type: String,

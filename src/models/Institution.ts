@@ -1,18 +1,12 @@
 import { Document, Schema, model } from "mongoose";
+import IAddress from "../interfaces/IAddress";
 
 export interface IInstitution extends Document {
     name: string;
     cnpj: string;
     email: string;
     phone: string;
-    address: {
-        street: string;
-        number: string;
-        complement?: string;
-        city: string;
-        cep: string;
-        state: string;
-    };
+    address: IAddress;
 }
 
 const institutionSchema = new Schema<IInstitution>({
@@ -29,6 +23,9 @@ const institutionSchema = new Schema<IInstitution>({
         type: String,
         required: true,
         unique: true,
+        lowercase: true,
+        trim: true,
+        match: [/^\S+@\S+\.\S+$/, "Email inválido"]
     },
     phone: {
         type: String,
