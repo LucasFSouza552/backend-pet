@@ -1,12 +1,9 @@
 import { Router } from "express";
-import userRoute from "./user.routes";
-import institutionRoute from "./institution.routes";
+import accountRoute from "./Account.routes";
 
 const router = Router();
 
 
-router.use("/user", userRoute);
-router.use("/institution", institutionRoute);
-
+router.use("/account", accountRoute);
 
 export default router;

@@ -1,7 +1,6 @@
-export interface UpdateInstitutionDTO {
+export interface updateAccountDTO {
     name?: string;
-    email?: string;
-    phone?: string;
+    password?: string;
     address?: {
         street?: string;
         number?: string;
@@ -12,11 +11,9 @@ export interface UpdateInstitutionDTO {
     };
 }
 
-export interface InstitutionDTO {
+export interface AccountDTO {
     name: string;
-    cnpj: string;
     email: string;
-    phone: string;
     address: {
         street: string;
         number: string;

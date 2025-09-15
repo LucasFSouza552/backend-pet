@@ -1,6 +1,5 @@
 import { connectDB } from "../config/db";
-import { seedUsers } from "./users.seed";
-import { seedInstitutions } from "./institutions.seed";
+import { seedAccounts } from "./users.seed";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,8 +9,7 @@ async function runSeeds() {
         await connectDB();
 
         // Seeds to test code
-        await seedUsers();
-        await seedInstitutions();
+        await seedAccounts();
 
         console.log("All seeds executed successfully ✅");
         process.exit(0);

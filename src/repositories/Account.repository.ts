@@ -1,16 +1,16 @@
 import { FilterQuery } from "mongoose";
 import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
-import { IUser, User } from "../models/User";
+import { IAccount, Account } from "../models/Account";
 import { ThrowError } from "../errors/ThrowError";
-import { updateUserDTO } from "../dtos/UserDTO";
+import { updateAccountDTO } from "../dtos/AccountDTO";
 
-export default class UserRepository implements IRepository<IUser> {
-    async getAll(filter: Filter): Promise<IUser[]> {
+export default class AccountRepository implements IRepository<IAccount> {
+    async getAll(filter: Filter): Promise<IAccount[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;
 
-            return await User.find(query as FilterQuery<IUser>)
+            return await Account.find(query as FilterQuery<IAccount>)
                 .sort({ [orderBy]: order })
                 .skip((page - 1) * limit)
                 .limit(limit);
@@ -19,22 +19,22 @@ export default class UserRepository implements IRepository<IUser> {
             throw ThrowError.internal("Erro ao buscar usuários.");
         }
     }
-    async getById(id: string): Promise<IUser> {
+    async getById(id: string): Promise<IAccount> {
         try {
-            const user = await User.findById(id);
-            if (!user) {
+            const account = await Account.findById(id);
+            if (!account) {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
-            return user;
+            return account;
         } catch (error) {
             throw ThrowError.internal("Erro ao buscar usuário.");
         }
     }
-    async create(data: IUser): Promise<IUser> {
+    async create(data: IAccount): Promise<IAccount> {
         try {
-            const user = new User(data);
-            await user.save();
-            return user;
+            const account = new Account(data);
+            await account.save();
+            return account;
         } catch (error: any) {
             if (error.name === "ValidationError") {
                 throw ThrowError.badRequest("Dados inválidos: " + error.message);
@@ -47,20 +47,20 @@ export default class UserRepository implements IRepository<IUser> {
             throw ThrowError.internal("Erro ao criar usuário.");
         }
     }
-    async update(id: string, data: updateUserDTO): Promise<IUser> {
+    async update(id: string, data: updateAccountDTO): Promise<IAccount> {
         try {
-            const user = await User.findById(id);
+            const user = await Account.findById(id);
             if (!user) {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
-            const updatedUser = await User.findByIdAndUpdate(id, data, {
+            const updatedAccount = await Account.findByIdAndUpdate(id, data, {
                 new: true,
                 runValidators: true
             });
-            if (!updatedUser) {
+            if (!updatedAccount) {
                 throw ThrowError.internal("Erro ao atualizar usuário.");
             }
-            return updatedUser;
+            return updatedAccount;
         } catch (error: any) {
 
             if (error.name === "CastError") {
@@ -79,8 +79,8 @@ export default class UserRepository implements IRepository<IUser> {
     }
     async delete(id: string): Promise<void> {
         try {
-            const user = await User.findByIdAndDelete(id);
-            if (!user) {
+            const account = await Account.findByIdAndDelete(id);
+            if (!account) {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
         } catch (error) {
@@ -88,9 +88,9 @@ export default class UserRepository implements IRepository<IUser> {
         }
     }
 
-    async getByEmail(email: string): Promise<IUser | null> {
+    async getByEmail(email: string): Promise<IAccount | null> {
         try {
-            return await User.findOne({ email });
+            return await Account.findOne({ email });
         } catch (error) {
             throw ThrowError.internal("Erro ao buscar usuário por e-mail.");
         }

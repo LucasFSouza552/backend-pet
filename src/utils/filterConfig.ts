@@ -1,6 +1,6 @@
 import { ThrowError } from "../errors/ThrowError";
 import Filter, { FilterDefault } from "../interfaces/Filter";
-import { IUser } from "../models/User";
+import { IAccount } from "../models/Account";
 import { builderFilterQuery } from "./builderFilterQuery";
 
 export default function filterConfig(filter: any, allowedFields: string[]): Filter {
@@ -18,7 +18,7 @@ export default function filterConfig(filter: any, allowedFields: string[]): Filt
         throw new ThrowError(400, "A página deve ser maior que 0");
     }
 
-    const query = builderFilterQuery<IUser>(rawQuery, allowedFields || []);
+    const query = builderFilterQuery<IAccount>(rawQuery, allowedFields || []);
 
     return {
         ...rest,
