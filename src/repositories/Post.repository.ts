@@ -39,7 +39,7 @@ export default class PostRepository implements IRepository<IPost> {
                 throw ThrowError.badRequest("Dados inválidos: " + error.message);
             }
             if (error.code === 11000) {
-                throw ThrowError.conflict("Post ja cadastrado.");
+                throw ThrowError.conflict("Post já cadastrado.");
             }
             throw ThrowError.internal("Erro ao criar o post.");
         }
@@ -66,7 +66,7 @@ export default class PostRepository implements IRepository<IPost> {
                 throw ThrowError.badRequest("Dados inválidos: " + error.message);
             }
             if (error.code === 11000) {
-                throw ThrowError.conflict("Post ja cadastrado.");
+                throw ThrowError.conflict("Post já cadastrado.");
             }
             throw ThrowError.internal("Erro ao atualizar o post.");
         }
@@ -75,7 +75,7 @@ export default class PostRepository implements IRepository<IPost> {
         try {
             const post = await Post.findByIdAndDelete(id);
             if (!post) {
-                throw ThrowError.notFound("Post nao encontrado.");
+                throw ThrowError.notFound("Post não encontrado.");
             }
         } catch (error: any) {
             throw ThrowError.internal("Erro ao deletar o post.");
