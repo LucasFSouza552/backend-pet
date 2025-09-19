@@ -1,13 +1,17 @@
 import { Account } from "../models/Account";
+import { cryptPassword } from "../utils/aes-crypto";
 
 export const seedAccounts = async () => {
     await Account.deleteMany();
+
+    const password = await cryptPassword("12345678");
+
     await Account.create([
         {
             name: "João Silva",
             email: "joao.silva@example.com",
             avatar: null,
-            password: "123456",
+            password,
             phone_number: "11999999999",
             role: "user",
             cpf: "12345678901",
@@ -25,7 +29,7 @@ export const seedAccounts = async () => {
             name: "Maria Oliveira",
             email: "maria.oliveira@example.com",
             avatar: null,
-            password: "senhaSegura",
+            password,
             phone_number: "21988887777",
             role: "user",
             cpf: "23456789012",
@@ -42,7 +46,7 @@ export const seedAccounts = async () => {
             name: "Carlos Souza",
             email: "carlos.souza@example.com",
             avatar: null,
-            password: "abc123",
+            password,
             phone_number: "31977776666",
             role: "admin",
             cpf: "34567890123",
@@ -59,7 +63,7 @@ export const seedAccounts = async () => {
             name: "Ana Pereira",
             email: "ana.pereira@example.com",
             avatar: null,
-            password: "senha123",
+            password,
             phone_number: "41966665555",
             role: "user",
             cpf: "45678901234",
@@ -76,7 +80,7 @@ export const seedAccounts = async () => {
             name: "Instituto Esperança",
             email: "contato@institutoesperanca.org",
             avatar: null,
-            password: "inst123",
+            password,
             phone_number: "11955554444",
             role: "institution",
             cnpj: "12345678000199",
@@ -93,7 +97,7 @@ export const seedAccounts = async () => {
             name: "Pedro Gomes",
             email: "pedro.gomes@example.com",
             avatar: null,
-            password: "pedro123",
+            password,
             phone_number: "61944443333",
             role: "user",
             cpf: "56789012345",
@@ -110,7 +114,7 @@ export const seedAccounts = async () => {
             name: "Associação Vida Nova",
             email: "contato@vidanova.org",
             avatar: null,
-            password: "vida123",
+            password,
             phone_number: "11933332222",
             role: "institution",
             cnpj: "23456789000188",
@@ -127,7 +131,7 @@ export const seedAccounts = async () => {
             name: "Lucas Fernandes",
             email: "lucas.fernandes@example.com",
             avatar: null,
-            password: "lucas321",
+            password,
             phone_number: "71922221111",
             role: "user",
             cpf: "67890123456",
@@ -144,7 +148,7 @@ export const seedAccounts = async () => {
             name: "Fernanda Lima",
             email: "fernanda.lima@example.com",
             avatar: null,
-            password: "fernanda123",
+            password,
             phone_number: "81911110000",
             role: "user",
             cpf: "78901234567",
@@ -161,7 +165,7 @@ export const seedAccounts = async () => {
             name: "Gabriel Costa",
             email: "gabriel.costa@example.com",
             avatar: null,
-            password: "gabriel123",
+            password,
             phone_number: "31900009999",
             role: "admin",
             cpf: "89012345678",

@@ -1,8 +1,7 @@
 import { Router } from "express";
-import accountRoute from "./Account.routes";
+import accountRoute from "./account.routes";
 
 const router = Router();
-
 
 router.use("/account", accountRoute);
 
