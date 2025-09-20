@@ -7,6 +7,8 @@ import filterConfig from "../utils/filterConfig";
 import { updateAccountDTO, AccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
 import { IAccount } from "../models/Account";
+import { validatePassword } from "../utils/aes-crypto";
+import JWT from "../utils/JwtEncoder";
 
 const accountService = new AccountService();
 
@@ -44,7 +46,6 @@ export default class AccountController implements IController {
                 .add("password", "password")
                 .add("name")
                 .add("avatar")
-
                 .add("address.street")
                 .add("address.number", "number")
                 .add("address.complement")
@@ -100,5 +101,27 @@ export default class AccountController implements IController {
             next(error);
         }
     }
+    async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data = req.body;
+            if (!data.email || !data.password) {
+                throw ThrowError.badRequest("É necessário prencher todos os campos.")
+            }
 
+            const account = await accountService.getByEmail(data.email);
+            if (!account) {
+                throw ThrowError.notFound("Email ou senha inválidos");
+            }
+            const passwordEncoded = validatePassword(data.password, account.password);
+            if (!data.password) {
+                throw ThrowError.unauthorized("Senha inválida");
+            }
+            const token = JWT.encodeToken({ id: account._id });
+
+            res.status(200).json(token)
+
+        } catch (error) {
+            next(error);
+        }
+    }
 }
