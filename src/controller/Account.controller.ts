@@ -16,7 +16,6 @@ export default class AccountController implements IController {
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-
             const allowedQueryFields: string[] = ["email", "name", "address.city", "address.state", "address.cep"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
@@ -113,12 +112,12 @@ export default class AccountController implements IController {
                 throw ThrowError.notFound("Email ou senha inválidos");
             }
             const passwordEncoded = validatePassword(data.password, account.password);
-            if (!data.password) {
-                throw ThrowError.unauthorized("Senha inválida");
+            if (!passwordEncoded) {
+                throw ThrowError.unauthorized("Email ou senha inválidos");
             }
             const token = JWT.encodeToken({ id: account._id });
 
-            res.status(200).json(token)
+            res.status(200).json({token, account: account});
 
         } catch (error) {
             next(error);

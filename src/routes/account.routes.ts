@@ -11,8 +11,4 @@ router.post("/", accountController.create);
 router.patch("/:id", accountController.update);
 router.delete("/:id", accountController.delete);
 
-// Endpoints for authentication (Login)
-
-router.post("/login", accountController.login)
-
 export default router;
