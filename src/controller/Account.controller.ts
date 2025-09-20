@@ -13,6 +13,19 @@ import JWT from "../utils/JwtEncoder";
 const accountService = new AccountService();
 
 export default class AccountController implements IController {
+    async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.accountId;
+            console.log(id);
+            if (!id) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+            const account = await accountService.getById(id);
+            res.status(200).json(account);
+        } catch (error) {
+            next(error);
+        }
+    }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -111,13 +124,13 @@ export default class AccountController implements IController {
             if (!account) {
                 throw ThrowError.notFound("Email ou senha inválidos");
             }
-            const passwordEncoded = validatePassword(data.password, account.password);
+            const passwordEncoded = await validatePassword(data.password, account.password);
             if (!passwordEncoded) {
                 throw ThrowError.unauthorized("Email ou senha inválidos");
             }
             const token = JWT.encodeToken({ id: account._id });
 
-            res.status(200).json({token, account: account});
+            res.status(200).json({ token, account: account });
 
         } catch (error) {
             next(error);
