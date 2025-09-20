@@ -12,7 +12,7 @@ export class PostService implements IService<IPost> {
             return postRepository.getAll(filter);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao buscar os posts.");
+            throw ThrowError.internal("Não foi possível buscar os posts.");
         }
     }
 
@@ -21,14 +21,14 @@ export class PostService implements IService<IPost> {
             return await postRepository.getById(id);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao buscar o post.");
+            throw ThrowError.internal("Não foi possível buscar o post.");
         }
     }
 
     async create(data: IPost): Promise<IPost> {
         try {
             const post = await postRepository.create(data);
-            if (post) throw ThrowError.conflict("Post já cadastrado.");
+            if (post) throw ThrowError.conflict("Post já existente.");
             return post;
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
