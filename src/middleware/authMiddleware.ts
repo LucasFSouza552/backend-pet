@@ -15,25 +15,19 @@ export default function AuthMiddleware(req: Request, res: Response, next: NextFu
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            throw ThrowError.badRequest("Token not found. Use format Bearer <token>");
+            throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
         } 
-
-        console.log(authHeader);
-        
 
         const decodedToken = JWT.validateAuth(authHeader);
         if (!decodedToken) {
-            throw ThrowError.unauthorized("Invalid token. Use format Bearer <token>");
+            throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");
         }
-        req.accountId = decodedToken.id;
-
-        console.log(decodedToken);
-
-        if (req.accountId) {
-            throw ThrowError.notFound("Invalid token. Use format Bearer <token>");
+        req.accountId = decodedToken?.data?.id;
+        if (!req.accountId) {
+            throw ThrowError.notFound("Token inválido. Use formato Bearer <token>");
         }
     } catch (error) {
-        next(error); // Testar depois se o Next vai para o proximo middleware de tratamento de erro
+        next(error); // Testar depois se o Next vai para o próximo middleware de tratamento de erro
     }
 
     next();

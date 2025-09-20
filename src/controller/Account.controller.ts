@@ -16,11 +16,11 @@ export default class AccountController implements IController {
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.accountId;
-            console.log(id);
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
+            console.log("USUÁRIO LOGADO!", account)
             res.status(200).json(account);
         } catch (error) {
             next(error);
