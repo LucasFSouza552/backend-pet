@@ -1,3 +1,4 @@
+import { createPostDTO, updatePostDTO } from "../dtos/PostDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
@@ -6,7 +7,7 @@ import PostRepository from "../repositories/Post.repository";
 
 const postRepository = new PostRepository();
 
-export class PostService implements IService<IPost> {
+export class PostService implements IService<createPostDTO, updatePostDTO, IPost> {
     async getAll(filter: Filter): Promise<IPost[]> {
         try {
             return postRepository.getAll(filter);
@@ -25,7 +26,7 @@ export class PostService implements IService<IPost> {
         }
     }
 
-    async create(data: IPost): Promise<IPost> {
+    async create(data: IPost): Promise<createPostDTO> {
         try {
             const post = await postRepository.create(data);
             if (post) throw ThrowError.conflict("Post já existente.");
@@ -36,7 +37,7 @@ export class PostService implements IService<IPost> {
         }
     }
 
-    async update(id: string, data: IPost): Promise<IPost> {
+    async update(id: string, data: IPost): Promise<updatePostDTO> {
         try {
             return await postRepository.update(id, data);
         } catch (error: any) {

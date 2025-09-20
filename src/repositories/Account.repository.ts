@@ -3,9 +3,9 @@ import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import { IAccount, Account } from "../models/Account";
 import { ThrowError } from "../errors/ThrowError";
-import { updateAccountDTO } from "../dtos/AccountDTO";
+import { createAccountDTO, updateAccountDTO } from "../dtos/AccountDTO";
 
-export default class AccountRepository implements IRepository<IAccount> {
+export default class AccountRepository implements IRepository<createAccountDTO, updateAccountDTO, IAccount> {
     async getAll(filter: Filter): Promise<IAccount[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;
@@ -30,7 +30,7 @@ export default class AccountRepository implements IRepository<IAccount> {
             throw ThrowError.internal("Erro ao buscar usuário.");
         }
     }
-    async create(data: IAccount): Promise<IAccount> {
+    async create(data: createAccountDTO): Promise<createAccountDTO> {
         try {
             const account = new Account(data);
             await account.save();
@@ -47,7 +47,7 @@ export default class AccountRepository implements IRepository<IAccount> {
             throw ThrowError.internal("Erro ao criar usuário.");
         }
     }
-    async update(id: string, data: updateAccountDTO): Promise<IAccount> {
+    async update(id: string, data: updateAccountDTO): Promise<updateAccountDTO> {
         try {
             const user = await Account.findById(id);
             if (!user) {

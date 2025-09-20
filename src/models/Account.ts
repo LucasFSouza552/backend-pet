@@ -12,6 +12,8 @@ export interface IAccount extends Document {
     cnpj: string;
     verified: boolean;
     address: IAddress;
+    created_at: Date;
+    updated_at: Date;
 }
 
 const accountSchema = new Schema<IAccount>(

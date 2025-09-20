@@ -1,4 +1,4 @@
-import { updateAccountDTO } from "../dtos/AccountDTO";
+import { createAccountDTO, updateAccountDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
@@ -8,7 +8,7 @@ import { cryptPassword } from "../utils/aes-crypto";
 
 const accountRepository = new AccountRepository();
 
-export class AccountService implements IService<IAccount> {
+export class AccountService implements IService<createAccountDTO, updateAccountDTO, IAccount> {
     async getAll(filter: Filter): Promise<IAccount[]> {
         try {
             return accountRepository.getAll(filter);
@@ -25,7 +25,7 @@ export class AccountService implements IService<IAccount> {
             throw ThrowError.internal("Não foi possível listar o usuário.");
         }
     }
-    async create(data: IAccount): Promise<IAccount> {
+    async create(data: IAccount): Promise<createAccountDTO> {
         try {
             const account = await accountRepository.getByEmail(data.email);
             if (account) throw ThrowError.conflict("E-mail ja cadastrado.");
@@ -38,7 +38,7 @@ export class AccountService implements IService<IAccount> {
             throw ThrowError.internal("Não foi possível criar o usuário.");
         }
     }
-    async update(id: string, data: updateAccountDTO): Promise<IAccount> {
+    async update(id: string, data: updateAccountDTO): Promise<updateAccountDTO> {
         try {
             return await accountRepository.update(id, data);
         } catch (error) {
