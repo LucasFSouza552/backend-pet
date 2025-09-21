@@ -1,17 +1,18 @@
-import { Schema } from "mongoose";
-
-export interface createPetDTO {
+export interface CreatePetDTO {
     name: string;
     type: string;
-    image?: Buffer;
+    image: Buffer[];
+    account_id: string; 
     description?: string;
     age?: number;
 }
 
-export interface updatePetDTO {
+export interface UpdatePetDTO {
     name?: string;
     type?: string;
     description?: string;
     age?: number;
     adopted?: boolean;
+    account_id?: string; 
+    image?: Buffer[]; 
 }
