@@ -30,7 +30,7 @@ export default class AchievementRepository implements IRepository<CreateAchievem
             throw ThrowError.internal("Erro ao buscar conquista.");
         }
     }
-    async create(data: CreateAchievementDTO): Promise<CreateAchievementDTO> {
+    async create(data: CreateAchievementDTO): Promise<AchievementDTO> {
         try {
             const achieviment = new Achievements(data);
             await achieviment.save();

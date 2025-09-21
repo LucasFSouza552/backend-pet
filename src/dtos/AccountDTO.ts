@@ -1,4 +1,3 @@
-import IAddress from "../interfaces/IAddress";
 import { IAccount } from "../models/Account";
 
 export type UpdateAccountDTO = Partial<

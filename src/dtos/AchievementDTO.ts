@@ -1,20 +1,7 @@
-export interface CreateAchievementDTO {
-    name: string;
-    description: string;
-    type: "donation" | "sponsorship" | "adoption";
-}
+import { IAchievement } from "../models/Achievements";
 
-export interface UpdateAchievementDTO {
-    name?: string;
-    description?: string;
-    type?: "donation" | "sponsorship" | "adoption";
-}
+export type CreateAchievementDTO = Omit<IAchievement, "createdAt" | "updatedAt">; 
 
-export interface AchievementDTO {
-    id: string;
-    name: string;
-    description: string;
-    type: "donation" | "sponsorship" | "adoption";
-}
+export type UpdateAchievementDTO = Partial<Omit<IAchievement, "createdAt" | "updatedAt">>;
 
-
+export type AchievementDTO = Omit<IAchievement, "createdAt" | "updatedAt">;

@@ -5,12 +5,12 @@ import { IAccount, Account } from "../models/Account";
 import { ThrowError } from "../errors/ThrowError";
 import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
-export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
-    async getAll(filter: Filter): Promise<IAccount[]> {
+export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+    async getAll(filter: Filter): Promise<AccountDTO[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;
 
-            const accounts = await Account.find(query as FilterQuery<IAccount>)
+            const accounts = await Account.find(query as FilterQuery<AccountDTO>)
                 .sort({ [orderBy]: order })
                 .skip((page - 1) * limit)
                 .limit(limit);
@@ -21,7 +21,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
             throw ThrowError.internal("Erro ao buscar usuários.");
         }
     }
-    async getById(id: string): Promise<IAccount> {
+    async getById(id: string): Promise<AccountDTO> {
         try {
             const account = await Account.findById(id);
             if (!account) {
@@ -32,7 +32,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
             throw ThrowError.internal("Erro ao buscar usuário.");
         }
     }
-    async create(data: CreateAccountDTO): Promise<IAccount> {
+    async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = new Account(data);
             await account.save();
@@ -49,7 +49,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
             throw ThrowError.internal("Erro ao criar usuário.");
         }
     }
-    async update(id: string, data: UpdateAccountDTO): Promise<IAccount> {
+    async update(id: string, data: UpdateAccountDTO): Promise<AccountDTO> {
         try {
             const user = await Account.findById(id);
             if (!user) {
