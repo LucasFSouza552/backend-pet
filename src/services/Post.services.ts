@@ -10,7 +10,7 @@ const postRepository = new PostRepository();
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
     async getAll(filter: Filter): Promise<IPost[]> {
         try {
-            return postRepository.getAll(filter);
+            return await postRepository.getAll(filter);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar os posts.");
