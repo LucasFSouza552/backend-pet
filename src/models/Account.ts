@@ -12,8 +12,8 @@ export interface IAccount extends Document {
     cnpj: string;
     verified: boolean;
     address: IAddress;
-    created_at: Date;
-    updated_at: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const accountSchema = new Schema<IAccount>(
@@ -51,7 +51,7 @@ const accountSchema = new Schema<IAccount>(
         cpf: {
             type: String,
             required: function () {
-                return this.role === "user";
+                return this.role === "user" || this.role === "admin";
             },
             unique: true,
             sparse: true,
