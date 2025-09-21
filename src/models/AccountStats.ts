@@ -28,4 +28,4 @@ const AccountStatsSchema = new Schema<AccountStats>({
     },
 }, { timestamps: true, strict: true });
 
-export const UserStats = model<AccountStats>("AccountStats", AccountStatsSchema);
+export const AccountStats = model<AccountStats>("AccountStats", AccountStatsSchema);
