@@ -2,45 +2,44 @@ import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "../d
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
-import { IAchievement } from "../models/Achievements";
 import AchievementRepository from "../repositories/Achievement.repository";
 
 const achievementRepository = new AchievementRepository();
 
-export class AchievementService implements IService<CreateAchievementDTO, UpdateAchievementDTO, IAchievement> {
-    async getAll(filter: Filter): Promise<IAchievement[]> {
+export class AchievementService implements IService<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
+    async getAll(filter: Filter): Promise<AchievementDTO[]> {
         try {
             return achievementRepository.getAll(filter);
         } catch (error) {
-            throw ThrowError.internal("");
+            throw ThrowError.internal("Não foi possível buscar as conquistas.");
         }
     }
-    async getById(id: string): Promise<IAchievement> {
+    async getById(id: string): Promise<AchievementDTO> {
         try {
             return await achievementRepository.getById(id);
         } catch (error) {
-            throw ThrowError.internal("");
+            throw ThrowError.internal("Não foi possível buscar a conquista.");
         }
     }
-    async create(data: CreateAchievementDTO): Promise<CreateAchievementDTO> {
+    async create(data: CreateAchievementDTO): Promise<AchievementDTO> {
         try {
             return await achievementRepository.create(data);
         } catch (error) {
-            throw ThrowError.internal("");
+            throw ThrowError.internal("Não foi possível criar a conquista.");
         }
     }
     async update(id: string, data: UpdateAchievementDTO): Promise<AchievementDTO> {
         try {
             return await achievementRepository.update(id, data);
         } catch (error) {
-            throw ThrowError.internal("");
+            throw ThrowError.internal("Não foi possível atualizar a conquista.");
         }
     }
     async delete(id: string): Promise<void> {
         try {
             await achievementRepository.delete(id);
         } catch (error) {
-            throw ThrowError.internal("");
+            throw ThrowError.internal("Não foi possível deletar a conquista.");
         }
     }
 

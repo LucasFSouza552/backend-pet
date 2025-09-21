@@ -5,10 +5,9 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { IAccount } from "../models/Account";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 
 const accountService = new AccountService();
 
@@ -59,7 +58,7 @@ export default class AccountController implements IController {
                 .add({ key: "password" })
                 .add({ key: "name" })
                 .add({ key: "role", required: false })
-                .add({ key: "cpf", required: data?.role === "user" || data?.role === "admin" ? true : false })
+                .add({ key: "cpf", required: data?.role === "user" || data?.role === "admin" })
                 .add({ key: "cnpj", required: data?.role === "institution" })
                 .add({ key: "avatar", required: false })
                 .add({ key: "phone_number" })

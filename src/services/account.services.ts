@@ -13,7 +13,6 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
     async getAll(filter: Filter): Promise<AccountDTO[]> {
         try {
             const accounts = await accountRepository.getAll(filter);
-
             return accounts.map(accountMapper);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
@@ -34,7 +33,17 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
     async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = await accountRepository.getByEmail(data.email);
-            if (account) throw ThrowError.conflict("E-mail ja cadastrado.");
+            if (account) throw ThrowError.conflict("E-mail já cadastrado.");
+
+            if (data.cpf) {
+                const accountByCpf = await accountRepository.getByCpf(data.cpf);
+                if (accountByCpf) throw ThrowError.conflict("CPF já cadastrado.");
+            }
+
+            if (data.cnpj) {
+                const accountByCnpj = await accountRepository.getByCnpj(data.cnpj);
+                if (accountByCnpj) throw ThrowError.conflict("CNPJ já cadastrado.");
+            }
 
             data.password = await cryptPassword(data.password);
 
