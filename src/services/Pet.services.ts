@@ -1,3 +1,5 @@
+import { CreatePetDTO } from "./../dtos/PetDTO";
+import { UpdatePetDTO } from "../dtos/PetDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
@@ -6,7 +8,7 @@ import PetRepository from "../repositories/Pet.repository";
 
 const petRepository = new PetRepository();
 
-export class PetService implements IService<IPet> {
+export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async getAll(filter: Filter): Promise<IPet[]> {
         try {
             return await petRepository.getAll(filter);
@@ -27,7 +29,7 @@ export class PetService implements IService<IPet> {
         }
     }
 
-    async create(data: IPet): Promise<IPet> {
+    async create(data: CreatePetDTO): Promise<IPet> {
         try {
             const pet = await petRepository.create(data);
             if (!pet) throw ThrowError.conflict("Não foi possível cadastrar o pet.");
@@ -38,7 +40,7 @@ export class PetService implements IService<IPet> {
         }
     }
 
-    async update(id: string, data: Partial<IPet>): Promise<IPet> {
+    async update(id: string, data: UpdatePetDTO): Promise<IPet> {
         try {
             const pet = await petRepository.update(id, data);
             if (!pet) throw ThrowError.notFound("Pet não encontrado para atualização.");

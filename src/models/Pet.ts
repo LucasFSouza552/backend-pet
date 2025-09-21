@@ -10,7 +10,7 @@ export default interface IPet extends Document {
   description?: string;
   adopted: boolean;
   account_id: Schema.Types.ObjectId;
-  adopted_at?: Date;
+  adoptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,7 +23,7 @@ const petSchema = new Schema<IPet>(
     },
     type: {
       type: String,
-      enum: ["Cachorro", "Gato"],
+      enum: ["Cachorro", "Gato", "Pássaro", "Outro"],
       default: "Cachorro",
       required: true,
     },
@@ -55,7 +55,7 @@ const petSchema = new Schema<IPet>(
       ref: "Account",
       required: true,
     },
-    adopted_at: {
+    adoptedAt: {
       type: Date,
     },
   },

@@ -1,18 +1,5 @@
-export interface CreatePetDTO {
-    name: string;
-    type: string;
-    image: Buffer[];
-    account_id: string; 
-    description?: string;
-    age?: number;
-}
+import IPet from "../models/Pet";
 
-export interface UpdatePetDTO {
-    name?: string;
-    type?: string;
-    description?: string;
-    age?: number;
-    adopted?: boolean;
-    account_id?: string; 
-    image?: Buffer[]; 
-}
+export type CreatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt" | "adopted">
+
+export type UpdatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt">
