@@ -1,16 +1,18 @@
 import { Document, Schema, model } from "mongoose";
 
 export default interface IPet extends Document {
-    name: string;
-    type: string;
-    age?: number;
-    image?: Buffer;
-    description: string;
-    adopted: boolean;
-    owner_id?: Schema.Types.ObjectId;  
-    adopted_at?: Date;
-    created_at: Date;
-    updated_at: Date;
+  name: string;
+  type: "Cachorro" | "Gato" | "Pássaro" | "Outro";
+  age?: number;
+  gender: "M" | "F";
+  weight: number;
+  images: Buffer[];
+  description?: string;
+  adopted: boolean;
+  account_id: Schema.Types.ObjectId;
+  adopted_at?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const petSchema = new Schema<IPet>(
@@ -21,6 +23,8 @@ const petSchema = new Schema<IPet>(
     },
     type: {
       type: String,
+      enum: ["Cachorro", "Gato"],
+      default: "Cachorro",
       required: true,
     },
     description: {
@@ -29,25 +33,36 @@ const petSchema = new Schema<IPet>(
     age: {
       type: Number,
     },
+    gender: {
+      type: String,
+      enum: ["M", "F"],
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    images: {
+      type: [String], 
+      required: true,
+    },
     adopted: {
       type: Boolean,
       default: false,
     },
-    owner_id: {
+    account_id: {
       type: Schema.Types.ObjectId,
-      ref: "User",
-      require: true
+      ref: "Account",
+      required: true,
     },
     adopted_at: {
       type: Date,
     },
   },
   {
-    timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
-    },
+    timestamps: true, 
+    strict: true,     
   }
 );
 
-export const Pet = model<IPet>('Pet', petSchema)
+export const Pet = model<IPet>("Pet", petSchema);
