@@ -3,9 +3,9 @@ import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import IPost, { Post } from "../models/Post";
 import { ThrowError } from "../errors/ThrowError";
-import { createPostDTO, updatePostDTO } from "../dtos/PostDTO";
+import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
-export default class PostRepository implements IRepository<createPostDTO, updatePostDTO, IPost> {
+export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
     async getAll(filter: Filter): Promise<IPost[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;
@@ -30,7 +30,7 @@ export default class PostRepository implements IRepository<createPostDTO, update
             throw ThrowError.internal("Erro ao buscar o post.");
         }
     }
-    async create(data: createPostDTO): Promise<createPostDTO> {
+    async create(data: CreatePostDTO): Promise<IPost> {
         try {
             const post = new Post(data);
             await post.save();
@@ -45,7 +45,7 @@ export default class PostRepository implements IRepository<createPostDTO, update
             throw ThrowError.internal("Erro ao criar o post.");
         }
     }
-    async update(id: string, data: IPost): Promise<IPost> {
+    async update(id: string, data: UpdatePostDTO): Promise<IPost> {
         try {
             const post = await Post.findById(id);
             if (!post) {

@@ -3,17 +3,19 @@ import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import { IAccount, Account } from "../models/Account";
 import { ThrowError } from "../errors/ThrowError";
-import { createAccountDTO, updateAccountDTO } from "../dtos/AccountDTO";
+import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
-export default class AccountRepository implements IRepository<createAccountDTO, updateAccountDTO, IAccount> {
+export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
     async getAll(filter: Filter): Promise<IAccount[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;
 
-            return await Account.find(query as FilterQuery<IAccount>)
+            const accounts = await Account.find(query as FilterQuery<IAccount>)
                 .sort({ [orderBy]: order })
                 .skip((page - 1) * limit)
                 .limit(limit);
+
+            return accounts;
 
         } catch (error: any) {
             throw ThrowError.internal("Erro ao buscar usuários.");
@@ -30,7 +32,7 @@ export default class AccountRepository implements IRepository<createAccountDTO, 
             throw ThrowError.internal("Erro ao buscar usuário.");
         }
     }
-    async create(data: createAccountDTO): Promise<createAccountDTO> {
+    async create(data: CreateAccountDTO): Promise<IAccount> {
         try {
             const account = new Account(data);
             await account.save();
@@ -47,7 +49,7 @@ export default class AccountRepository implements IRepository<createAccountDTO, 
             throw ThrowError.internal("Erro ao criar usuário.");
         }
     }
-    async update(id: string, data: updateAccountDTO): Promise<updateAccountDTO> {
+    async update(id: string, data: UpdateAccountDTO): Promise<IAccount> {
         try {
             const user = await Account.findById(id);
             if (!user) {

@@ -1,13 +1,15 @@
 import { Document, Schema, model } from "mongoose";
 
-export default interface IPost extends Document{
+export default interface IPost extends Document {
     title: string;
     content: string;
-    image?: Buffer;
+    image?: Buffer[];
     date: Date;
     likes: number;
     author: Schema.Types.ObjectId;
     authorModel: "User" | "Institution" | "Admin";
+    createdAt: Date;
+    updatedAt: Date
 }
 
 const postSchema = new Schema<IPost>({
@@ -20,7 +22,8 @@ const postSchema = new Schema<IPost>({
         required: true,
     },
     image: {
-        type: Buffer
+        type: [Buffer],
+        required: false
     },
     date: {
         type: Date,

@@ -1,15 +1,6 @@
 import { Schema } from "mongoose";
+import IPost from "../models/Post";
 
-export interface createPostDTO {
-    title: string;
-    image?: Buffer;
-    content: string;
-    author: Schema.Types.ObjectId;
-    date: Date;
-}
+export type CreatePostDTO = Omit<IPost, "data" | "likes">;
 
-export interface updatePostDTO {
-    title?: string;
-    image?: Buffer;
-    content?: string;
-}
+export type UpdatePostDTO = Partial<Omit<IPost, "createdAt" | "updatedAt" | "date" | "likes" | "author" | "authorModel">>;

@@ -4,12 +4,12 @@ import IAddress from "../interfaces/IAddress";
 export interface IAccount extends Document {
     name: string;
     email: string;
-    avatar: Buffer;
+    avatar?: Buffer;
     password: string;
     phone_number: string;
     role: "user" | "admin" | "institution";
-    cpf: string;
-    cnpj: string;
+    cpf?: string;
+    cnpj?: string;
     verified: boolean;
     address: IAddress;
     createdAt: Date;
@@ -50,7 +50,7 @@ const accountSchema = new Schema<IAccount>(
         },
         cpf: {
             type: String,
-            required: function () {
+            required: function (this: IAccount) {
                 return this.role === "user" || this.role === "admin";
             },
             unique: true,
@@ -59,7 +59,7 @@ const accountSchema = new Schema<IAccount>(
         },
         cnpj: {
             type: String,
-            required: function () {
+            required: function (this: IAccount) {
                 return this.role === "institution";
             },
             unique: true,

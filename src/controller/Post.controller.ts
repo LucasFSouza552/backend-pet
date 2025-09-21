@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import IPost from "../models/Post";
 import { PostService } from "../services/Post.services";
 import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";

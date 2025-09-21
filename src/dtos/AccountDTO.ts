@@ -1,39 +1,13 @@
-export interface updateAccountDTO {
-    name?: string;
+import IAddress from "../interfaces/IAddress";
+import { IAccount } from "../models/Account";
+
+export type UpdateAccountDTO = Partial<
+    Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified">
+> & {
     password?: string;
-    address?: {
-        street?: string;
-        number?: string;
-        complement?: string;
-        city?: string;
-        cep?: string;
-        state?: string;
-    };
-}
+    address?: Partial<IAccount["address"]>;
+};
 
-export interface createAccountDTO {
-    name: string;
-    email: string;
-    password: string;
-    address: {
-        street: string;
-        number: string;
-        complement?: string;
-        city: string;
-        cep: string;
-        state: string;
-    };
-}
+export type CreateAccountDTO = Omit<IAccount, "createdAt" | "updatedAt" | "verified">;
 
-export interface AccountDTO {
-    name: string;
-    email: string;
-    address: {
-        street: string;
-        number: string;
-        complement?: string;
-        city: string;
-        cep: string;
-        state: string;
-    };
-}
+export type AccountDTO = Omit<IAccount, "password">; 

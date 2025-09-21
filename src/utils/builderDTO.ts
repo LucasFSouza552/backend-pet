@@ -1,3 +1,4 @@
+import { ThrowError } from "../errors/ThrowError";
 import { cryptPassword } from "./aes-crypto";
 
 export default class BuilderDTO<T> {
@@ -9,18 +10,24 @@ export default class BuilderDTO<T> {
         this._data = {};
     }
 
-    add(key: string, type: "string" | "number" | "boolean" | "password" = "string"): BuilderDTO<T> {
-        if (this._rawData[key] === undefined) {
-            return this;
+    private getValueByPath(obj: any, path: string): any {
+        return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+    }
+
+    add({ key, type = "string", required = true }: { key: string, type?: "string" | "number" | "boolean", required?: boolean }): BuilderDTO<T> {
+        let value: any = this.getValueByPath(this._rawData, key);
+        if (value === undefined) {
+            if (required) {
+                console.error("Por favor, preencha todos os campos obrigatórios: ", key);
+                throw ThrowError.badRequest("Por favor, preencha todos os campos obrigatórios");
+            } else {
+                return this;
+            }
         }
-        let value: any = this._rawData[key];
 
         switch (type) {
             case "string":
                 value = String(value);
-                break;
-            case "password":
-                value = cryptPassword(value);
                 break;
             case "number":
                 value = Number(value);
@@ -37,7 +44,7 @@ export default class BuilderDTO<T> {
         return this;
     }
 
-    build(): Record<string, T> {
-        return this._data;
+    build(): T {
+        return this._data as unknown as T;
     }
 }

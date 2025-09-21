@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
-import { AccountService } from "../services/account.services";
 import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
-import { updateAccountDTO, AccountDTO } from "../dtos/AccountDTO";
+import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
 import { IAccount } from "../models/Account";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
+import { AccountService } from "../services/Account.services";
 
 const accountService = new AccountService();
 
@@ -20,7 +20,6 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-            console.log("USUÁRIO LOGADO!", account)
             res.status(200).json(account);
         } catch (error) {
             next(error);
@@ -53,24 +52,26 @@ export default class AccountController implements IController {
     }
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const newAccountDTO = new BuilderDTO<IAccount>(req.body)
-                .add("email", "string")
-                .add("password", "password")
-                .add("name")
-                .add("avatar")
-                .add("address.street")
-                .add("address.number", "number")
-                .add("address.complement")
-                .add("address.city")
-                .add("address.cep")
-                .add("address.state")
+
+            const data = req?.body;
+            const newAccountDTO: CreateAccountDTO = new BuilderDTO<CreateAccountDTO>(data)
+                .add({ key: "email" })
+                .add({ key: "password" })
+                .add({ key: "name" })
+                .add({ key: "role", required: false })
+                .add({ key: "cpf", required: data?.role === "user" || data?.role === "admin" ? true : false })
+                .add({ key: "cnpj", required: data?.role === "institution" })
+                .add({ key: "avatar", required: false })
+                .add({ key: "phone_number" })
+                .add({ key: "address.street" })
+                .add({ key: "address.number", type: "number" })
+                .add({ key: "address.complement", required: false })
+                .add({ key: "address.city" })
+                .add({ key: "address.cep" })
+                .add({ key: "address.state" })
                 .build();
 
-            if (!newAccountDTO.email || !newAccountDTO.password) {
-                throw ThrowError.badRequest("Email e senha obrigatórios.");
-            }
-
-            const newAccount: AccountDTO = await accountService.create(req.body);
+            const newAccount: AccountDTO = await accountService.create(newAccountDTO);
 
             res.status(201).json(newAccount);
         } catch (error: any) {
@@ -84,15 +85,16 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
 
-            const updateData: updateAccountDTO = new BuilderDTO(req.body)
-                .add("name")
-                .add("password", "password")
-                .add("address.street")
-                .add("address.number", "number")
-                .add("address.complement")
-                .add("address.city")
-                .add("address.cep")
-                .add("address.state")
+            const updateData = new BuilderDTO<UpdateAccountDTO>(req.body)
+                .add({ key: "name", required: false })
+                .add({ key: "password", required: false })
+                .add({ key: "address.street", required: false })
+                .add({ key: "phone_number", required: false })
+                .add({ key: "address.number", type: "number", required: false })
+                .add({ key: "address.complement", required: false })
+                .add({ key: "address.city", required: false })
+                .add({ key: "address.cep", required: false })
+                .add({ key: "address.state", required: false })
                 .build();
 
             const account = await accountService.update(id, updateData);

@@ -1,46 +1,56 @@
-import { createAccountDTO, updateAccountDTO } from "../dtos/AccountDTO";
+import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
+import accountMapper from "../Mappers/accountMapper";
 import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
 import { cryptPassword } from "../utils/aes-crypto";
 
 const accountRepository = new AccountRepository();
 
-export class AccountService implements IService<createAccountDTO, updateAccountDTO, IAccount> {
-    async getAll(filter: Filter): Promise<IAccount[]> {
+export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+    async getAll(filter: Filter): Promise<AccountDTO[]> {
         try {
-            return accountRepository.getAll(filter);
+            const accounts = await accountRepository.getAll(filter);
+
+            return accounts.map(accountMapper);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível listar os usuários.");
         }
     }
-    async getById(id: string): Promise<IAccount> {
+    async getById(id: string): Promise<AccountDTO> {
         try {
-            return await accountRepository.getById(id);
+            const account = await accountRepository.getById(id);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            return accountMapper(account);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível listar o usuário.");
         }
     }
-    async create(data: IAccount): Promise<createAccountDTO> {
+    async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = await accountRepository.getByEmail(data.email);
             if (account) throw ThrowError.conflict("E-mail ja cadastrado.");
 
             data.password = await cryptPassword(data.password);
 
-            return await accountRepository.create(data);
+            const newAccount = await accountRepository.create(data);
+
+            return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível criar o usuário.");
         }
     }
-    async update(id: string, data: updateAccountDTO): Promise<updateAccountDTO> {
+    async update(id: string, data: UpdateAccountDTO): Promise<AccountDTO> {
         try {
-            return await accountRepository.update(id, data);
+            const account = await accountRepository.update(id, data);
+
+            return accountMapper(account);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar o usuário.");
