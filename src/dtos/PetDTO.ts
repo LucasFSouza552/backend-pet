@@ -1,17 +1,7 @@
-import { Schema } from "mongoose";
+import IPet from "../models/Pet";
 
-export interface createPetDTO {
-    name: string;
-    type: string;
-    image?: Buffer;
-    description?: string;
-    age?: number;
-}
+export type CreatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt" | "adopted">;
 
-export interface updatePetDTO {
-    name?: string;
-    type?: string;
-    description?: string;
-    age?: number;
-    adopted?: boolean;
-}
+export type UpdatePetDTO = Partial<Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt">>;
+
+export type PetDTO = Omit<IPet, "updatedAt">;

@@ -27,4 +27,8 @@ export class ThrowError extends Error {
     static conflict(message: string) {
         return new ThrowError(409, message);
     }
+
+    static forbidden(message: string) {
+        return new ThrowError(403, message);
+    }
 }

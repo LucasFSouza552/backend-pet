@@ -7,7 +7,7 @@ import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountD
 import BuilderDTO from "../utils/builderDTO";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
-import { AccountService } from "../services/account.services";
+import { AccountService } from "../services/Account.services";
 
 const accountService = new AccountService();
 

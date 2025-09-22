@@ -1,4 +1,5 @@
 import { Account } from "../models/Account";
+import { AccountStats } from "../models/AccountStats";
 import { cryptPassword } from "../utils/aes-crypto";
 
 export const seedAccounts = async () => {
@@ -6,14 +7,14 @@ export const seedAccounts = async () => {
 
     const password = await cryptPassword("12345678");
 
-    await Account.create([
+    const accounts = [
         {
-            name: "João Silva",
-            email: "joao.silva@example.com",
+            name: "Lucas",
+            email: "lucas@example.com",
             avatar: null,
             password,
             phone_number: "11999999999",
-            role: "user",
+            role: "admin",
             cpf: "12345678901",
             verified: true,
             address: {
@@ -26,12 +27,12 @@ export const seedAccounts = async () => {
             },
         },
         {
-            name: "Maria Oliveira",
-            email: "maria.oliveira@example.com",
+            name: "Thiago",
+            email: "thiago@example.com",
             avatar: null,
             password,
             phone_number: "21988887777",
-            role: "user",
+            role: "admin",
             cpf: "23456789012",
             verified: false,
             address: {
@@ -43,8 +44,8 @@ export const seedAccounts = async () => {
             },
         },
         {
-            name: "Carlos Souza",
-            email: "carlos.souza@example.com",
+            name: "Caçador",
+            email: "cacador@example.com",
             avatar: null,
             password,
             phone_number: "31977776666",
@@ -178,6 +179,12 @@ export const seedAccounts = async () => {
                 state: "MG",
             },
         },
-    ]);
+    ];
+
+    for (const account of accounts) {
+        const acc = await Account.create(account);
+        await AccountStats.create({ account_id: acc._id });
+    }
+
     console.log("✅ Users seed executed");
 };

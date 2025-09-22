@@ -2,7 +2,7 @@ import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountD
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
-import accountMapper from "../Mappers/accountMapper";
+import accountMapper from "../mappers/accountMapper";
 import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
 import { cryptPassword } from "../utils/aes-crypto";
