@@ -1,4 +1,5 @@
 import { CreateCommentDTO, UpdateCommentDTO } from "../dtos/CommentDTO";
+import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import IComment from "../models/Comments";
@@ -12,7 +13,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             return commentService.create(data);
         } catch (error: any) {
             if (error instanceof Error) throw error;
-            throw new Error("Não foi possível criar o comentário.");
+            throw ThrowError.internal("Não foi possível criar o comentário.");
         }
     }
 
@@ -21,7 +22,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             return await commentService.update(id, data);
         } catch (error: any) {
             if (error instanceof Error) throw error;
-            throw new Error("Não foi possível atualizar o comentário.");
+            throw ThrowError.internal("Não foi possível atualizar o comentário.");
         }
     }
 
@@ -30,7 +31,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             return await commentService.delete(id);
         } catch (error: any) {
             if (error instanceof Error) throw error;
-            throw new Error("Não foi possível deletar o comentário.");
+            throw ThrowError.internal("Não foi possível deletar o comentário.");
         }
     }
 
@@ -39,7 +40,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             return await commentService.getAll(filter);
         } catch (error: any) {
             if (error instanceof Error) throw error;
-            throw new Error("Não foi possível buscar os comentários.");
+            throw ThrowError.internal("Não foi possível buscar os comentários.");
         }
     }
 
@@ -48,7 +49,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             return await commentService.getById(id);
         } catch (error: any) {
             if (error instanceof Error) throw error;
-            throw new Error("Não foi possível buscar o comentário.");
+            throw ThrowError.internal("Não foi possível buscar o comentário.");
         }
     }
 }
