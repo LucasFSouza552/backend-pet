@@ -6,8 +6,10 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
+import { AccountService } from "../services/Account.services";
 
 const postService = new PostService();
+const accountService = new AccountService();
 
 export default class PostController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -38,10 +40,28 @@ export default class PostController implements IController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const post = req?.body;
+
+            if (!req.accountId) {
+                throw ThrowError.forbidden("Acesso negado.");
+            }
+            const account = await accountService.getById(req.accountId);
+            if (!account) {
+                throw ThrowError.notFound("Usuário não encontrado.");
+            }
+
+            post.author = account.id;
+            post.authorModel = account.role;
+
+            console.log(post)
+
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
                 .add({ key: "content" })
+                .add({ key: "image", required: false })
+                .add({ key: "author" })
+                .add({ key: "authorModel" })
                 .build();
+                
             const newPost: CreatePostDTO = await postService.create(newPostDTO);
             res.status(201).json(newPost);
         } catch (error) {

@@ -1,5 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 import IAddress from "../interfaces/IAddress";
+import { ITypeAccounts } from "../interfaces/ITypeAccounts";
 
 export interface IAccount extends Document {
     name: string;
@@ -7,7 +8,7 @@ export interface IAccount extends Document {
     avatar?: Buffer;
     password: string;
     phone_number: string;
-    role: "user" | "admin" | "institution";
+    role: ITypeAccounts;
     cpf?: string;
     cnpj?: string;
     verified: boolean;

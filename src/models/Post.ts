@@ -1,4 +1,5 @@
 import { Document, Schema, model } from "mongoose";
+import { ITypeAccounts } from "../interfaces/ITypeAccounts";
 
 export default interface IPost extends Document {
     title: string;
@@ -8,7 +9,7 @@ export default interface IPost extends Document {
     date: Date;
     likes: number;
     author: Schema.Types.ObjectId;
-    authorModel: "User" | "Institution" | "Admin";
+    authorModel: ITypeAccounts;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -46,7 +47,7 @@ const postSchema = new Schema<IPost>({
     },
     authorModel: {
         type: String,
-        enum: ['User', 'Institution', 'Admin'],
+        enum: ['user', 'institution', 'admin'],
         required: true
     }
 }, { timestamps: true, strict: true });

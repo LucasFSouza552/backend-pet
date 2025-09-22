@@ -16,6 +16,7 @@ export default function AuthMiddleware(req: Request, res: Response, next: NextFu
 
     try {
         const authHeader = req.headers.authorization;
+        console.log("Passou pelo authmiddleware");
         if (!authHeader) {
             throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
         }

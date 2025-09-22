@@ -3,13 +3,14 @@ import { PetService } from "../services/Pet.services";
 import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import IController from "../interfaces/IController";
+import { ThrowError } from "../errors/ThrowError";
 
 const petService = new PetService();
 
 export default class PetController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["name","type","age","gender","adopted","account_id",];
+            const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
             const pets = await petService.getAll(filters);
@@ -23,7 +24,7 @@ export default class PetController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             const pet = await petService.getById(id);
             res.status(200).json(pet);
@@ -45,7 +46,7 @@ export default class PetController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             const pet = await petService.update(id, req.body);
             res.status(200).json(pet);
@@ -58,7 +59,7 @@ export default class PetController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             await petService.delete(id);
             res.status(204).json();
