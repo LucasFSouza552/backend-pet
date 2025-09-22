@@ -5,7 +5,7 @@ import IComment, { Comment } from "../models/Comments";
 import { ThrowError } from "../errors/ThrowError";
 import { CreateCommentDTO, UpdateCommentDTO } from "../dtos/CommentDTO";
 
-export default class CommentRepository implements IRepository<IComment, CreateCommentDTO, UpdateCommentDTO> {
+export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getAll(filter: Filter): Promise<IComment[]> {
         try {
             const { page, limit, orderBy, order, query } = filter;

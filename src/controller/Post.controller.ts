@@ -3,13 +3,16 @@ import { PostService } from "../services/Post.services";
 import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import IController from "../interfaces/IController";
+import { ThrowError } from "../errors/ThrowError";
+import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
+import BuilderDTO from "../utils/builderDTO";
 
 const postService = new PostService();
 
 export default class PostController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "content", "date", "likes", "image"];
+            const allowedQueryFields: string[] = ["title", "date", "likes", "image"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
             const posts = await postService.getAll(filters);
@@ -23,7 +26,7 @@ export default class PostController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             const post = await postService.getById(id);
             res.status(200).json(post);
@@ -34,8 +37,13 @@ export default class PostController implements IController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const post = await postService.create(req.body);
-            res.status(201).json(post);
+            const post = req?.body;
+            const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
+                .add({ key: "title" })
+                .add({ key: "content" })
+                .build();
+            const newPost: CreatePostDTO = await postService.create(newPostDTO);
+            res.status(201).json(newPost);
         } catch (error) {
             next(error);
         }
@@ -45,9 +53,13 @@ export default class PostController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
-            const post = await postService.update(id, req.body);
+            const updateData = new BuilderDTO<UpdatePostDTO>(req.body)
+                .add({ key: "title", required: false })
+                .add({ key: "content", required: false })
+                .build();
+            const post = await postService.update(id, updateData);
             res.status(200).json(post);
         } catch (error) {
             next(error);
@@ -58,7 +70,7 @@ export default class PostController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             await postService.delete(id);
             res.status(204).json();

@@ -3,6 +3,10 @@ import Filter from "../interfaces/Filter";
 import IController from "../interfaces/IController";
 import filterConfig from "../utils/filterConfig";
 import { CommentService } from "../services/Comment.services";
+import { CreateCommentDTO } from "../dtos/CommentDTO";
+import BuilderDTO from "../utils/builderDTO";
+import { ThrowError } from "../errors/ThrowError";
+import { UpdateCommentDTO } from "../dtos/CommentDTO";
 
 const commentService = new CommentService();
 
@@ -11,7 +15,7 @@ export class CommentController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             const comment = await commentService.getById(id);
             res.status(200).json(comment);
@@ -21,7 +25,7 @@ export class CommentController implements IController {
     }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["postId", "author", "content", "date", "likes"];
+            const allowedQueryFields: string[] = ["postId", "author", "date", "likes"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
             const comments = await commentService.getAll(filters);
@@ -32,8 +36,14 @@ export class CommentController implements IController {
     }
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const comment = await commentService.create(req.body);
-            res.status(201).json(comment);
+            const comment = req?.body;
+            const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
+                .add({ key: "postId" })
+                .add({ key: "author" })
+                .add({ key: "content" })
+                .build();
+            const newComment: CreateCommentDTO = await commentService.create(newCommentDTO);
+            res.status(201).json(newComment);
         } catch (error) {
             next(error);
         }
@@ -42,9 +52,13 @@ export class CommentController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
-            const comment = await commentService.update(id, req.body);
+            const updateData = new BuilderDTO<UpdateCommentDTO>(req.body)
+                .add({ key: "content", required: false })
+                .build();
+            const comment = await commentService.update(id, updateData);
+            
             res.status(200).json(comment);
         } catch (error) {
             next(error);
@@ -54,7 +68,7 @@ export class CommentController implements IController {
         try {
             const id = req.params.id;
             if (!id) {
-                throw new Error("ID não foi informado.");
+                throw ThrowError.badRequest("ID não foi informado.");
             }
             await commentService.delete(id);
             res.status(204).json();
