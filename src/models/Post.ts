@@ -2,6 +2,7 @@ import { Document, Schema, model } from "mongoose";
 
 export default interface IPost extends Document {
     title: string;
+    comments?: number;
     content: string;
     image?: Buffer[];
     date: Date;
@@ -9,13 +10,18 @@ export default interface IPost extends Document {
     author: Schema.Types.ObjectId;
     authorModel: "User" | "Institution" | "Admin";
     createdAt: Date;
-    updatedAt: Date
+    updatedAt: Date;
 }
 
 const postSchema = new Schema<IPost>({
     title: {
         type: String,
         required: true
+    },
+    comments: {
+        type: Number,
+        default: 0,
+        required: false
     },
     content: {
         type: String,
@@ -43,6 +49,6 @@ const postSchema = new Schema<IPost>({
         enum: ['User', 'Institution', 'Admin'],
         required: true
     }
-});
+}, { timestamps: true, strict: true });
 
 export const Post = model<IPost>('Post', postSchema);
