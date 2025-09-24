@@ -86,7 +86,6 @@ export default class AccountController implements IController {
 
             const updateData = new BuilderDTO<UpdateAccountDTO>(req.body)
                 .add({ key: "name", required: false })
-                .add({ key: "password", required: false })
                 .add({ key: "address.street", required: false })
                 .add({ key: "phone_number", required: false })
                 .add({ key: "address.number", type: "number", required: false })
@@ -133,6 +132,22 @@ export default class AccountController implements IController {
 
             res.status(200).json({ token, account: account });
 
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId as string;
+            const { currentPassword, newPassword } = req.body;
+
+            if (!currentPassword || !newPassword) {
+                throw ThrowError.badRequest("É necesario preencher todos os campos.");
+            }
+
+            await accountService.changePassword(accountId, { newPassword, currentPassword });
+            res.status(204).json();
         } catch (error) {
             next(error);
         }

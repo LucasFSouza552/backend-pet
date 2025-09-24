@@ -6,6 +6,13 @@ import { ThrowError } from "../errors/ThrowError";
 import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
+    changePassword(accountId: string, password: string) {
+        try {
+            return Account.findByIdAndUpdate(accountId, { password });
+        } catch (error) {
+            throw ThrowError.internal("Erro ao atualizar senha.");
+        }
+    }
 
     async getAll(filter: Filter): Promise<IAccount[]> {
         try {

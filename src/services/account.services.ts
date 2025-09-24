@@ -1,11 +1,11 @@
-import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
+import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import accountMapper from "../mappers/accountMapper";
 import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
-import { cryptPassword } from "../utils/aes-crypto";
+import { cryptPassword, validatePassword } from "../utils/aes-crypto";
 
 const accountRepository = new AccountRepository();
 
@@ -30,6 +30,7 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             throw ThrowError.internal("Não foi possível listar o usuário.");
         }
     }
+
     async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = await accountRepository.getByEmail(data.email);
@@ -81,6 +82,27 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar o usuário.");
         }
+    }
+
+    async changePassword(accountId: string, data: ChangePasswordDTO): Promise<void> {
+        try {
+            const account = await accountRepository.getById(accountId);
+            if (!account) {
+                throw ThrowError.notFound("Usuário nao encontrado.");
+            }
+            const passwordEncoded = await validatePassword(data.currentPassword, account.password);
+            if (!passwordEncoded) {
+                throw ThrowError.unauthorized("As senhas não concidem.");
+            }
+
+            account.password = await cryptPassword(data.newPassword);
+
+            await accountRepository.changePassword(accountId, account.password);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível atualizar a senha.");
+        }
+
     }
 
 }
