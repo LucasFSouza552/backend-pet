@@ -1,4 +1,3 @@
-
 import { PetDTO } from "../dtos/PetDTO";
 import IPet from "../models/Pet";
 import { mapToDTO } from "../utils/Mapper";
@@ -12,7 +11,7 @@ const petDTOFields: (keyof PetDTO)[] = [
     "images",
     "description",
     "adopted",
-    "account_id",
+    "accountId",
     "adoptedAt",
     "createdAt"
 ];
