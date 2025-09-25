@@ -6,6 +6,13 @@ import { ThrowError } from "../errors/ThrowError";
 import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
+    updateAvatar(userId: string, avatar: Buffer) {
+        try {
+            return Account.findByIdAndUpdate(userId, { avatar }, { new: true });
+        } catch (error) {
+            throw ThrowError.internal("Erro ao atualizar avatar.");
+        }
+    }
     changePassword(accountId: string, password: string) {
         try {
             return Account.findByIdAndUpdate(accountId, { password });

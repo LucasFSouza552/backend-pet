@@ -10,6 +10,15 @@ import { cryptPassword, validatePassword } from "../utils/aes-crypto";
 const accountRepository = new AccountRepository();
 
 export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+    async updateAvatar(userId: string, file: Express.Multer.File) {
+        if (!file || !file.buffer) {
+            throw new Error("Arquivo inválido ou vazio");
+        }
+
+        await accountRepository.updateAvatar(userId, file.buffer);
+
+        return { message: "Avatar atualizado com sucesso" };
+    }
     async getAll(filter: Filter): Promise<AccountDTO[]> {
         try {
             const accounts = await accountRepository.getAll(filter);

@@ -152,4 +152,20 @@ export default class AccountController implements IController {
             next(error);
         }
     }
+
+    async updateAvatar(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId as string;
+            const file = req.file;
+            if (!file) {
+                throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
+            }
+
+            await accountService.updateAvatar(accountId, file);
+            res.status(200).json({ message: "Avatar atualizado com sucesso." });
+
+        } catch (error) {
+            next(error);
+        }
+    }
 }
