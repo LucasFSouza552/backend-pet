@@ -10,7 +10,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
         try {
             Account.findByIdAndUpdate(userId, { avatar }, { new: true });
             const account = await Account.findById(userId);
-            if(!account) {
+            if (!account) {
                 throw ThrowError.notFound("Erro ao atualizar avatar.");
             }
             return account;
@@ -18,9 +18,9 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
             throw ThrowError.internal("Erro ao atualizar avatar.");
         }
     }
-    changePassword(accountId: string, password: string) {
+    async changePassword(accountId: string, password: string): Promise<void> {
         try {
-            return Account.findByIdAndUpdate(accountId, { password });
+            await Account.findByIdAndUpdate(accountId, { password });
         } catch (error) {
             throw ThrowError.internal("Erro ao atualizar senha.");
         }
@@ -132,5 +132,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
             throw ThrowError.internal("Erro ao buscar usuário.");
         }
     }
+
+
 
 };

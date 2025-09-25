@@ -5,13 +5,35 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { validatePassword } from "../utils/aes-crypto";
-import JWT from "../utils/JwtEncoder";
 import { AccountService } from "../services/account.services";
 
 const accountService = new AccountService();
 
 export default class AccountController implements IController {
+    async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId as string;
+            if (!accountId) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+
+            const updateData = new BuilderDTO<UpdateAccountDTO>(req.body)
+                .add({ key: "name", required: false })
+                .add({ key: "address.street", required: false })
+                .add({ key: "phone_number", required: false })
+                .add({ key: "address.number", type: "number", required: false })
+                .add({ key: "address.complement", required: false })
+                .add({ key: "address.city", required: false })
+                .add({ key: "address.cep", required: false })
+                .add({ key: "address.state", required: false })
+                .build();
+
+            const account = await accountService.update(accountId, updateData);
+            res.status(200).json(account);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.accountId;
@@ -108,45 +130,6 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             await accountService.delete(id);
-            res.status(204).json();
-        } catch (error) {
-            next(error);
-        }
-    }
-    async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const data = req.body;
-            if (!data.email || !data.password) {
-                throw ThrowError.badRequest("É necessário prencher todos os campos.")
-            }
-
-            const account = await accountService.getByEmail(data.email);
-            if (!account) {
-                throw ThrowError.notFound("Email ou senha inválidos");
-            }
-            const passwordEncoded = await validatePassword(data.password, account.password);
-            if (!passwordEncoded) {
-                throw ThrowError.unauthorized("Email ou senha inválidos");
-            }
-            const token = JWT.encodeToken({ id: account._id });
-
-            res.status(200).json({ token });
-
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const accountId = req.accountId as string;
-            const { currentPassword, newPassword } = req.body;
-
-            if (!currentPassword || !newPassword) {
-                throw ThrowError.badRequest("É necesario preencher todos os campos.");
-            }
-
-            await accountService.changePassword(accountId, { newPassword, currentPassword });
             res.status(204).json();
         } catch (error) {
             next(error);

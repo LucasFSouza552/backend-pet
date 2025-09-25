@@ -1,9 +1,8 @@
 import { IAccount } from "../models/Account";
 
 export type UpdateAccountDTO = Partial<
-    Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified">
+    Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified" | "avatar">
 > & {
-    password?: string;
     address?: Partial<IAccount["address"]>;
 };
 

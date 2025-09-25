@@ -2,11 +2,17 @@ import { Router } from "express";
 
 const router = Router();
 
-import AccountController from "../controller/Account.controller";
 import AuthMiddleware from "../middleware/authMiddleware";
-const accountController = new AccountController();
 
-router.post("/login", accountController.login);
-router.get("/profile", AuthMiddleware, accountController.getProfile);
+import AuthController from "../controller/AuthController.controller";
+
+const authController = new AuthController();
+
+router.post("/login", authController.login);
+router.post("/register", authController.register);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password", authController.resetPassword);
+
+router.put("/change-password", AuthMiddleware, authController.changePassword);
 
 export default router;

@@ -102,8 +102,9 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
         try {
             const account = await accountRepository.getById(accountId);
             if (!account) {
-                throw ThrowError.notFound("Usuário nao encontrado.");
+                throw ThrowError.notFound("Usuário não encontrado.");
             }
+
             const passwordEncoded = await validatePassword(data.currentPassword, account.password);
             if (!passwordEncoded) {
                 throw ThrowError.unauthorized("As senhas não concidem.");
@@ -112,6 +113,7 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             account.password = await cryptPassword(data.newPassword);
 
             await accountRepository.changePassword(accountId, account.password);
+
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar a senha.");
