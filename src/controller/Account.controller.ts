@@ -7,7 +7,7 @@ import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountD
 import BuilderDTO from "../utils/builderDTO";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 
 const accountService = new AccountService();
 
@@ -130,7 +130,7 @@ export default class AccountController implements IController {
             }
             const token = JWT.encodeToken({ id: account._id });
 
-            res.status(200).json({ token, account: account });
+            res.status(200).json({ token });
 
         } catch (error) {
             next(error);
@@ -161,9 +161,8 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
             }
 
-            await accountService.updateAvatar(accountId, file);
-            res.status(200).json({ message: "Avatar atualizado com sucesso." });
-
+            const avatar = await accountService.updateAvatar(accountId, file);
+            res.status(200).json({ avatar });
         } catch (error) {
             next(error);
         }

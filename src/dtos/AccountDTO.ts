@@ -16,7 +16,6 @@ export type ChangePasswordDTO = {
     newPassword: string;
 };
 
-
 export type UpdateAvatarDTO = {
     avatar: Buffer
 }

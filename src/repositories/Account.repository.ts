@@ -3,12 +3,17 @@ import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import { IAccount, Account } from "../models/Account";
 import { ThrowError } from "../errors/ThrowError";
-import { AccountDTO, CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
+import { CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
-    updateAvatar(userId: string, avatar: Buffer) {
+    async updateAvatar(userId: string, avatar: Buffer): Promise<IAccount | null> {
         try {
-            return Account.findByIdAndUpdate(userId, { avatar }, { new: true });
+            Account.findByIdAndUpdate(userId, { avatar }, { new: true });
+            const account = await Account.findById(userId);
+            if(!account) {
+                throw ThrowError.notFound("Erro ao atualizar avatar.");
+            }
+            return account;
         } catch (error) {
             throw ThrowError.internal("Erro ao atualizar avatar.");
         }
