@@ -7,7 +7,7 @@ import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountD
 import BuilderDTO from "../utils/builderDTO";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 
 const accountService = new AccountService();
 
@@ -86,7 +86,6 @@ export default class AccountController implements IController {
 
             const updateData = new BuilderDTO<UpdateAccountDTO>(req.body)
                 .add({ key: "name", required: false })
-                .add({ key: "password", required: false })
                 .add({ key: "address.street", required: false })
                 .add({ key: "phone_number", required: false })
                 .add({ key: "address.number", type: "number", required: false })
@@ -131,8 +130,39 @@ export default class AccountController implements IController {
             }
             const token = JWT.encodeToken({ id: account._id });
 
-            res.status(200).json({ token, account: account });
+            res.status(200).json({ token });
 
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId as string;
+            const { currentPassword, newPassword } = req.body;
+
+            if (!currentPassword || !newPassword) {
+                throw ThrowError.badRequest("É necesario preencher todos os campos.");
+            }
+
+            await accountService.changePassword(accountId, { newPassword, currentPassword });
+            res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateAvatar(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId as string;
+            const file = req.file;
+            if (!file) {
+                throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
+            }
+
+            const avatar = await accountService.updateAvatar(accountId, file);
+            res.status(200).json({ avatar });
         } catch (error) {
             next(error);
         }
