@@ -36,10 +36,12 @@ export class CommentController implements IController {
     }
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const accountId = req.accountId;
             const comment = req?.body;
+            comment.accountId = accountId;
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "postId" })
-                .add({ key: "author" })
+                .add({ key: "accountId" })
                 .add({ key: "content" })
                 .build();
             const newComment: CreateCommentDTO = await commentService.create(newCommentDTO);

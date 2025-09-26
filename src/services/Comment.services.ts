@@ -4,12 +4,18 @@ import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import IComment from "../models/Comments";
 import CommentRepository from "../repositories/Comment.repository";
+import { AccountService } from "./account.services";
 
 const commentService = new CommentRepository();
+const accountService = new AccountService();
 
 export class CommentService implements IService<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async create(data: CreateCommentDTO): Promise<IComment> {
         try {
+            const account = await accountService.getById(data.accountId.toString());
+            if (!account) {
+                throw ThrowError.badRequest("Conta associada ao comentário não existe.");
+            }
             return commentService.create(data);
         } catch (error: any) {
             if (error instanceof Error) throw error;

@@ -4,7 +4,7 @@ export default interface IComment extends Document {
     postId: Schema.Types.ObjectId;
     parentId?: Schema.Types.ObjectId;
     content: string;
-    author: Schema.Types.ObjectId;
+    accountId: Schema.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -25,9 +25,9 @@ const commentSchema = new Schema<IComment>({
         type: String,
         required: true
     },
-    author: {
+    accountId: {
         type: Schema.Types.ObjectId,
-        ref: ['User', 'Institution', 'Admin'],
+        ref: 'Account',
         required: true
     },
 }, { timestamps: true, strict: true });
