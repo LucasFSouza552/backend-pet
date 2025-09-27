@@ -59,6 +59,13 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
             throw ThrowError.internal("Erro ao atualizar o comentário.");
         }
     }
+    async getAccountComments(accountId: string, postId: string): Promise<IComment[]> {
+        try {
+            return await Comment.find({ accountId, postId });
+        } catch (error: any) {
+            throw ThrowError.internal("Erro ao buscar os comentários da conta.");
+        }
+    }
     async delete(id: string): Promise<void> {
         try {
             const comment = await Comment.findById(id);

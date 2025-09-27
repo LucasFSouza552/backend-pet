@@ -52,8 +52,6 @@ export default class PostController implements IController {
             post.author = account.id;
             post.authorModel = account.role;
 
-            console.log(post)
-
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
                 .add({ key: "content" })
@@ -61,7 +59,7 @@ export default class PostController implements IController {
                 .add({ key: "author" })
                 .add({ key: "authorModel" })
                 .build();
-                
+
             const newPost: CreatePostDTO = await postService.create(newPostDTO);
             res.status(201).json(newPost);
         } catch (error) {
@@ -85,6 +83,26 @@ export default class PostController implements IController {
             next(error);
         }
     }
+
+    async updateComment(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId;
+            if (!accountId) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+            const updateData = new BuilderDTO<UpdatePostDTO>(req.body)
+                .add({ key: "title", required: false })
+                .add({ key: "content", required: false })
+                .add({ key: "image", required: false })
+                .build();
+            const post = await postService.updateComment(accountId, updateData);
+            res.status(200).json(post);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
 
     async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
