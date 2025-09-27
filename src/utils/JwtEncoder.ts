@@ -1,7 +1,6 @@
 import jwt, { JwtPayload, SignOptions, verify } from "jsonwebtoken";
 import { ThrowError } from "../errors/ThrowError";
 
-
 export default class JWT {
 
     static encodeToken(data: object, expiresIn: SignOptions["expiresIn"] = "1d"): string {
@@ -31,8 +30,8 @@ export default class JWT {
             }
             throw ThrowError.internal('Erro interno ocorreu');
         }
-
     }
+
     private static isJwtTokenValid(token: string) {
         try {
             const JWT_SECRET: string = process.env.JWT_SECRET as string;
