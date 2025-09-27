@@ -6,8 +6,16 @@ import IPost from "../models/Post";
 import PostRepository from "../repositories/Post.repository";
 
 const postRepository = new PostRepository();
-
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+    updateComment(accountId: string, updateData: UpdatePostDTO): Promise<IPost> {
+        try {
+            
+            return postRepository.update(accountId, updateData);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível atualizar o comentário.");
+        }
+    }
     async getAll(filter: Filter): Promise<IPost[]> {
         try {
             return await postRepository.getAll(filter);

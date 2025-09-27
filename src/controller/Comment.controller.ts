@@ -39,11 +39,13 @@ export class CommentController implements IController {
             const accountId = req.accountId;
             const comment = req?.body;
             comment.accountId = accountId;
+
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "postId" })
                 .add({ key: "accountId" })
                 .add({ key: "content" })
                 .build();
+
             const newComment: CreateCommentDTO = await commentService.create(newCommentDTO);
             res.status(201).json(newComment);
         } catch (error) {
@@ -60,7 +62,7 @@ export class CommentController implements IController {
                 .add({ key: "content", required: false })
                 .build();
             const comment = await commentService.update(id, updateData);
-            
+
             res.status(200).json(comment);
         } catch (error) {
             next(error);
@@ -74,6 +76,26 @@ export class CommentController implements IController {
             }
             await commentService.delete(id);
             res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async reply(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.accountId;
+            const comment = req?.body;
+            comment.accountId = accountId;
+
+            const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
+                .add({ key: "postId" })
+                .add({ key: "accountId" })
+                .add({ key: "parentId" })
+                .add({ key: "content" })
+                .build();
+
+            const newComment: CreateCommentDTO = await commentService.create(newCommentDTO);
+            res.status(201).json(newComment);
         } catch (error) {
             next(error);
         }

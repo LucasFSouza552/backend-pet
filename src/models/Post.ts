@@ -8,7 +8,7 @@ export default interface IPost extends Document {
     image?: Buffer[];
     date: Date;
     likes: number;
-    author: Schema.Types.ObjectId;
+    accountId: Schema.Types.ObjectId;
     authorModel: ITypeAccounts;
     createdAt: Date;
     updatedAt: Date;
@@ -40,7 +40,7 @@ const postSchema = new Schema<IPost>({
         type: Number,
         default: 0,
     },
-    author: {
+    accountId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
