@@ -14,7 +14,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
             throw ThrowError.internal("Não foi possível buscar as conquistas.");
         }
     }
-    async getById(id: string): Promise<AchievementDTO> {
+    async getById(id: string): Promise<AchievementDTO | null> {
         try {
             return await achievementRepository.getById(id);
         } catch (error) {
@@ -28,7 +28,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
             throw ThrowError.internal("Não foi possível criar a conquista.");
         }
     }
-    async update(id: string, data: UpdateAchievementDTO): Promise<AchievementDTO> {
+    async update(id: string, data: UpdateAchievementDTO): Promise<AchievementDTO | null> {
         try {
             return await achievementRepository.update(id, data);
         } catch (error) {

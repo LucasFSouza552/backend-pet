@@ -11,7 +11,7 @@ router.post("/", historyController.create);
 router.patch("/:id", historyController.update);
 router.delete("/:id", historyController.delete);
 
-router.get("/account/:id", historyController.listByAccount);
+router.get("/account", historyController.listByAccount);
 router.patch("/status/:id", historyController.updateStatus);
 
 export default router;

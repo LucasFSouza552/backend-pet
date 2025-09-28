@@ -6,7 +6,7 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 
 const postService = new PostService();
 const accountService = new AccountService();
@@ -102,8 +102,6 @@ export default class PostController implements IController {
         }
     }
 
-
-
     async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
@@ -112,6 +110,20 @@ export default class PostController implements IController {
             }
             await postService.delete(id);
             res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async toggleLike(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const accountId = req.accountId as string;
+            if (!id) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+            const post = await postService.toggleLike(id, accountId);
+            res.status(200).json(post);
         } catch (error) {
             next(error);
         }

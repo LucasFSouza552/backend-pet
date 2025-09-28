@@ -36,7 +36,7 @@ export default class AccountController implements IController {
     }
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const id = req.accountId;
+            const id = req.accountId as string;
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }

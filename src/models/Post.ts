@@ -1,4 +1,4 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
 import { ITypeAccounts } from "../types/ITypeAccounts";
 
 export default interface IPost extends Document {
@@ -7,7 +7,7 @@ export default interface IPost extends Document {
     content: string;
     image?: Buffer[];
     date: Date;
-    likes: number;
+    likes: Types.ObjectId[];
     accountId: Schema.Types.ObjectId;
     authorModel: ITypeAccounts;
     createdAt: Date;
@@ -36,10 +36,12 @@ const postSchema = new Schema<IPost>({
         type: Date,
         default: Date.now,
     },
-    likes: {
-        type: Number,
-        default: 0,
-    },
+    likes: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Account",
+        },
+    ],
     accountId: {
         type: Schema.Types.ObjectId,
         ref: 'Account',

@@ -26,6 +26,7 @@ export default function AuthMiddleware(req: Request, res: Response, next: NextFu
             throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");
         }
         req.accountId = decodedToken?.data?.id;
+        console.log("ID:",req.accountId)
         if (!req.accountId) {
             throw ThrowError.notFound("Token inválido. Use formato Bearer <token>");
         }

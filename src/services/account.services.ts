@@ -38,9 +38,9 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
     }
     async getById(id: string): Promise<AccountDTO> {
         try {
+            console.log(id);
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
             return accountMapper(account);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -73,15 +73,13 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             throw ThrowError.internal("Não foi possível criar o usuário.");
         }
     }
-    async update(id: string, data: UpdateAccountDTO): Promise<AccountDTO> {
+    async update(id: string, data: UpdateAccountDTO): Promise<AccountDTO | null> {
         try {
-            const user = await accountRepository.getById(id);
-            if (!user) {
-                throw ThrowError.notFound("Usuário não encontrado.");
+            const updatedAccount = await accountRepository.update(id, data);
+            if (!updatedAccount) {
+                throw ThrowError.notFound("Usuário não encontrado.");
             }
-            const account = await accountRepository.update(id, data);
-
-            return accountMapper(account);
+            return accountMapper(updatedAccount);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar o usuário.");

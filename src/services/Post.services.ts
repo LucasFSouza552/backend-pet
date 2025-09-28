@@ -7,9 +7,24 @@ import PostRepository from "../repositories/Post.repository";
 
 const postRepository = new PostRepository();
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
-    updateComment(accountId: string, updateData: UpdatePostDTO): Promise<IPost> {
+    async toggleLike(postId: string, accountId: string): Promise<IPost | null> {
         try {
-            
+            const post = await postRepository.getById(postId);
+            if (!post) return null;
+
+            const alreadyLiked = post.likes.some((id) => id.equals(accountId));
+
+            return alreadyLiked
+                ? await postRepository.removeLike(postId, accountId)
+                : await postRepository.addLike(postId, accountId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível curtir o post.");
+        }
+    }
+    updateComment(accountId: string, updateData: UpdatePostDTO): Promise<IPost | null> {
+        try {
+
             return postRepository.update(accountId, updateData);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -25,7 +40,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
         }
     }
 
-    async getById(id: string): Promise<IPost> {
+    async getById(id: string): Promise<IPost | null> {
         try {
             return await postRepository.getById(id);
         } catch (error: any) {
@@ -45,7 +60,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
         }
     }
 
-    async update(id: string, data: UpdatePostDTO): Promise<IPost> {
+    async update(id: string, data: UpdatePostDTO): Promise<IPost | null> {
         try {
             return await postRepository.update(id, data);
         } catch (error: any) {

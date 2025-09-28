@@ -1,10 +1,24 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import IPost, { Post } from "../models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
+    async addLike(postId: string, accountId: string): Promise<IPost | null> {
+        return await Post.findByIdAndUpdate(
+            postId,
+            { $addToSet: { likes: new Types.ObjectId(accountId) } },
+            { new: true }
+        );
+    }
+    async removeLike(postId: string, accountId: string): Promise<IPost | null> {
+        return await Post.findByIdAndUpdate(
+            postId,
+            { $pull: { likes: new Types.ObjectId(accountId) } },
+            { new: true }
+        );
+    }
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
 
