@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ThrowError } from "../errors/ThrowError";
-import { AccountService } from "../services/account.services";
+import { AccountService } from "../services/Account.services";
 import { validatePassword } from "../utils/aes-crypto";
 import JWT from "../utils/JwtEncoder";
 import { AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";

@@ -5,6 +5,20 @@ import IPost, { Post } from "../models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
+    async getPostsWithAuthor(filter: Filter) {
+        const { page, limit, orderBy, order, query } = filter;
+
+        if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
+            delete query.accountId;
+        }
+        const posts = Post.find(query as FilterQuery<IPost>)
+            .sort({ [orderBy]: order })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate("accountId", "name role avatar");
+
+        return posts;
+    }
     async addLike(postId: string, accountId: string): Promise<IPost | null> {
         return await Post.findByIdAndUpdate(
             postId,
@@ -21,6 +35,10 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
+
+        if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
+            delete query.accountId;
+        }
 
         return await Post.find(query as FilterQuery<IPost>)
             .sort({ [orderBy]: order })

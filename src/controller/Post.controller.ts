@@ -6,7 +6,8 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/account.services";
+import { AccountService } from "../services/Account.services";
+import IPost from "../models/Post";
 
 const postService = new PostService();
 const accountService = new AccountService();
@@ -14,8 +15,8 @@ const accountService = new AccountService();
 export default class PostController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "date", "likes", "image"];
-            const filters: Filter = filterConfig(req.query, allowedQueryFields);
+            const allowedQueryFields: string[] = ["title", "accountId", "date", "likes", "image"];
+            const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
 
             const posts = await postService.getAll(filters);
             res.status(200).json(posts);
@@ -41,6 +42,7 @@ export default class PostController implements IController {
         try {
             const post = req?.body;
 
+
             if (!req.accountId) {
                 throw ThrowError.forbidden("Acesso negado.");
             }
@@ -49,15 +51,14 @@ export default class PostController implements IController {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
 
-            post.author = account.id;
+            post.accountId = account.id;
             post.authorModel = account.role;
 
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
                 .add({ key: "content" })
                 .add({ key: "image", required: false })
-                .add({ key: "author" })
-                .add({ key: "authorModel" })
+                .add({ key: "accountId" })
                 .build();
 
             const newPost: CreatePostDTO = await postService.create(newPostDTO);
@@ -124,6 +125,17 @@ export default class PostController implements IController {
             }
             const post = await postService.toggleLike(id, accountId);
             res.status(200).json(post);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPostsWithAuthor(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const allowedQueryFields: string[] = ["title", "accountId", "date", "likes", "image"];
+            const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
+            const posts = await postService.getPostsWithAuthor(filters);
+            res.status(200).json(posts);
         } catch (error) {
             next(error);
         }

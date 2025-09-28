@@ -5,7 +5,7 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/account.services";
+import { AccountService } from "../services/Account.services";
 
 const accountService = new AccountService();
 
@@ -29,6 +29,7 @@ export default class AccountController implements IController {
                 .build();
 
             const account = await accountService.update(accountId, updateData);
+
             res.status(200).json(account);
         } catch (error) {
             next(error);
@@ -41,7 +42,22 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-            res.status(200).json(account);
+
+            const img64 = account?.avatar
+                ?
+                Buffer.isBuffer(account.avatar)
+                    ? account.avatar.toString("base64")
+                    :
+                    (account.avatar as any).buffer
+                        ? (account.avatar as any).buffer.toString("base64")
+                        : null
+                : null;
+
+
+            res.status(200).json({
+                ...account
+                , avatar: `data:image/png;base64,${img64}`
+            });
         } catch (error) {
             next(error);
         }
@@ -54,7 +70,6 @@ export default class AccountController implements IController {
 
             const accounts = await accountService.getAll(filters);
             res.status(200).json(accounts);
-            return;
         } catch (error: any) {
             next(error);
         }

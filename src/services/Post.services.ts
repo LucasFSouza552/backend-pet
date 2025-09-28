@@ -7,6 +7,14 @@ import PostRepository from "../repositories/Post.repository";
 
 const postRepository = new PostRepository();
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+    async getPostsWithAuthor(filter: Filter) {
+        try {
+            return await postRepository.getPostsWithAuthor(filter);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar os posts.");
+        }
+    }
     async toggleLike(postId: string, accountId: string): Promise<IPost | null> {
         try {
             const post = await postRepository.getById(postId);
@@ -33,8 +41,10 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
     }
     async getAll(filter: Filter): Promise<IPost[]> {
         try {
-            return await postRepository.getAll(filter);
+            const posts = await postRepository.getAll(filter);
+            return posts;
         } catch (error: any) {
+            console.log(error);
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar os posts.");
         }
@@ -51,9 +61,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
 
     async create(data: CreatePostDTO): Promise<IPost> {
         try {
-            const post = await postRepository.create(data);
-            if (post) throw ThrowError.conflict("Post já existente.");
-            return post;
+            return await postRepository.create(data);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível criar o post.");

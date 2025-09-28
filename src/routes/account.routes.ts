@@ -16,7 +16,7 @@ const accountController = new AccountController();
 router.patch("/", AuthMiddleware, accountController.updateProfile);
 router.get("/:id", AuthMiddleware, accountController.getById);
 router.get("/profile/me", AuthMiddleware, accountController.getProfile);
-router.put("/avatar", AuthMiddleware, upload.single("avatar"), accountController.updateAvatar);
+router.put("/avatar", upload.single("avatar"), AuthMiddleware, accountController.updateAvatar);
 
 router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.getAll);
 router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.create);

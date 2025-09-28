@@ -6,7 +6,7 @@ import { CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
     async updateAvatar(userId: string, avatar: Buffer): Promise<void> {
-        Account.findByIdAndUpdate(userId, { avatar }, { new: true });
+        await Account.findByIdAndUpdate(userId, { avatar }, { new: true });
     }
     async changePassword(accountId: string, password: string): Promise<void> {
         await Account.findByIdAndUpdate(accountId, { password });

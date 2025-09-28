@@ -10,15 +10,15 @@ import { cryptPassword, validatePassword } from "../utils/aes-crypto";
 const accountRepository = new AccountRepository();
 
 export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
-    async updateAvatar(userId: string, file: Express.Multer.File): Promise<UpdateAvatarDTO> {
+    async updateAvatar(accoundId: string, file: Express.Multer.File): Promise<UpdateAvatarDTO> {
         try {
             if (!file || !file.buffer) {
                 throw ThrowError.badRequest("Arquivo inválido ou vazio");
             }
 
-            await accountRepository.updateAvatar(userId, file.buffer);
+            await accountRepository.updateAvatar(accoundId, file.buffer);
 
-            const account = await accountRepository.getById(userId);
+            const account = await accountRepository.getById(accoundId);
             if (!account) throw ThrowError.notFound("Erro ao atualizar avatar.");
 
             return { avatar: account.avatar } as UpdateAvatarDTO;
@@ -38,9 +38,9 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
     }
     async getById(id: string): Promise<AccountDTO> {
         try {
-            console.log(id);
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
             return accountMapper(account);
         } catch (error) {
             if (error instanceof ThrowError) throw error;

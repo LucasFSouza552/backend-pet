@@ -9,7 +9,6 @@ export default interface IPost extends Document {
     date: Date;
     likes: Types.ObjectId[];
     accountId: Schema.Types.ObjectId;
-    authorModel: ITypeAccounts;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -45,11 +44,6 @@ const postSchema = new Schema<IPost>({
     accountId: {
         type: Schema.Types.ObjectId,
         ref: 'Account',
-        required: true
-    },
-    authorModel: {
-        type: String,
-        enum: ['user', 'institution', 'admin'],
         required: true
     }
 }, { timestamps: true, strict: true });

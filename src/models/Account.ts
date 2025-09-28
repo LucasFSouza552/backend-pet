@@ -5,7 +5,7 @@ import { ITypeAccounts } from "../types/ITypeAccounts";
 export interface IAccount extends Document {
     name: string;
     email: string;
-    avatar?: Buffer;
+    avatar?: Buffer | string;
     password: string;
     phone_number: string;
     role: ITypeAccounts;

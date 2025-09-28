@@ -12,4 +12,6 @@ router.post("/", AuthMiddleware, postController.create);
 router.patch("/:id", AuthMiddleware, postController.update);
 router.delete("/:id", AuthMiddleware, postController.delete);
 
+router.get("/posts/full", AuthMiddleware, postController.getPostsWithAuthor);
+
 export default router;
