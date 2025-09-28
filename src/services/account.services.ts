@@ -2,7 +2,7 @@ import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO, Upda
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
-import accountMapper from "../mappers/accountMapper";
+import accountMapper from "../Mappers/accountMapper";
 import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
 import { cryptPassword, validatePassword } from "../utils/aes-crypto";
@@ -16,8 +16,9 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
                 throw ThrowError.badRequest("Arquivo inválido ou vazio");
             }
 
-            const account = await accountRepository.updateAvatar(userId, file.buffer);
+            await accountRepository.updateAvatar(userId, file.buffer);
 
+            const account = await accountRepository.getById(userId);
             if (!account) throw ThrowError.notFound("Erro ao atualizar avatar.");
 
             return { avatar: account.avatar } as UpdateAvatarDTO;
@@ -74,6 +75,10 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
     }
     async update(id: string, data: UpdateAccountDTO): Promise<AccountDTO> {
         try {
+            const user = await accountRepository.getById(id);
+            if (!user) {
+                throw ThrowError.notFound("Usuário não encontrado.");
+            }
             const account = await accountRepository.update(id, data);
 
             return accountMapper(account);

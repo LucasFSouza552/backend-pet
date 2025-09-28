@@ -2,137 +2,54 @@ import { FilterQuery } from "mongoose";
 import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import { IAccount, Account } from "../models/Account";
-import { ThrowError } from "../errors/ThrowError";
 import { CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
-    async updateAvatar(userId: string, avatar: Buffer): Promise<IAccount | null> {
-        try {
-            Account.findByIdAndUpdate(userId, { avatar }, { new: true });
-            const account = await Account.findById(userId);
-            if (!account) {
-                throw ThrowError.notFound("Erro ao atualizar avatar.");
-            }
-            return account;
-        } catch (error) {
-            throw ThrowError.internal("Erro ao atualizar avatar.");
-        }
+    async updateAvatar(userId: string, avatar: Buffer): Promise<void> {
+        Account.findByIdAndUpdate(userId, { avatar }, { new: true });
     }
     async changePassword(accountId: string, password: string): Promise<void> {
-        try {
-            await Account.findByIdAndUpdate(accountId, { password });
-        } catch (error) {
-            throw ThrowError.internal("Erro ao atualizar senha.");
-        }
+        await Account.findByIdAndUpdate(accountId, { password });
     }
 
     async getAll(filter: Filter): Promise<IAccount[]> {
-        try {
-            const { page, limit, orderBy, order, query } = filter;
+        const { page, limit, orderBy, order, query } = filter;
 
-            const accounts = await Account.find(query as FilterQuery<IAccount>)
-                .sort({ [orderBy]: order })
-                .skip((page - 1) * limit)
-                .limit(limit);
+        const accounts = await Account.find(query as FilterQuery<IAccount>)
+            .sort({ [orderBy]: order })
+            .skip((page - 1) * limit)
+            .limit(limit);
 
-            return accounts;
-
-        } catch (error: any) {
-            throw ThrowError.internal("Erro ao buscar usuários.");
-        }
+        return accounts;
     }
-    async getById(id: string): Promise<IAccount> {
-        try {
-            const account = await Account.findById(id);
-            if (!account) {
-                throw ThrowError.notFound("Usuário não encontrado.");
-            }
-            return account;
-        } catch (error) {
-            throw ThrowError.internal("Erro ao buscar usuário.");
-        }
+    async getById(id: string): Promise<IAccount | null> {
+        const account = await Account.findById(id);
+        return account;
     }
     async create(data: CreateAccountDTO): Promise<IAccount> {
-        try {
-            const account = new Account(data);
-            await account.save();
-            return account;
-        } catch (error: any) {
-            if (error.name === "ValidationError") {
-                throw ThrowError.badRequest("Dados inválidos: " + error.message);
-            }
-            console.error(error);
-            if (error.code === 11000) {
-                throw ThrowError.conflict("E-mail já está em uso.");
-            }
-
-            throw ThrowError.internal("Erro ao criar usuário.");
-        }
+        const account = new Account(data);
+        await account.save();
+        return account;
     }
-    async update(id: string, data: UpdateAccountDTO): Promise<IAccount> {
-        try {
-            const user = await Account.findById(id);
-            if (!user) {
-                throw ThrowError.notFound("Usuário não encontrado.");
-            }
-            const updatedAccount = await Account.findByIdAndUpdate(id, data, {
-                new: true,
-                runValidators: true
-            });
-            if (!updatedAccount) {
-                throw ThrowError.internal("Erro ao atualizar usuário.");
-            }
-            return updatedAccount;
-        } catch (error: any) {
-
-            if (error.name === "CastError") {
-                throw ThrowError.badRequest("ID inválido.");
-            }
-
-            if (error.name === "ValidationError") {
-                throw ThrowError.badRequest("Dados inválidos: " + error.message);
-            }
-
-            if (error.code === 11000) {
-                throw ThrowError.conflict("E-mail já está em uso.");
-            }
-            throw ThrowError.internal("Erro ao atualizar usuário.");
-        }
+    async update(id: string, data: UpdateAccountDTO): Promise<IAccount | null> {
+        const updatedAccount = await Account.findByIdAndUpdate(id, data, {
+            new: true,
+            runValidators: true
+        });
+        return updatedAccount;
     }
     async delete(id: string): Promise<void> {
-        try {
-            const account = await Account.findByIdAndDelete(id);
-            if (!account) {
-                throw ThrowError.notFound("Usuário não encontrado.");
-            }
-        } catch (error) {
-            throw ThrowError.internal("Erro ao deletar usuário.");
-        }
+        await Account.findByIdAndDelete(id);
     }
 
     async getByEmail(email: string): Promise<IAccount | null> {
-        try {
-            return await Account.findOne({ email });
-        } catch (error) {
-            throw ThrowError.internal("Erro ao buscar usuário por e-mail.");
-        }
+        return await Account.findOne({ email });
     }
 
     async getByCpf(cpf: string) {
-        try {
-            return await Account.findOne({ cpf });
-        } catch (error: any) {
-            throw ThrowError.internal("Erro ao buscar usuário.");
-        }
+        return await Account.findOne({ cpf });
     }
     async getByCnpj(cnpj: string) {
-        try {
-            return await Account.findOne({ cnpj });
-        } catch (error: any) {
-            throw ThrowError.internal("Erro ao buscar usuário.");
-        }
+        return await Account.findOne({ cnpj });
     }
-
-
-
 };

@@ -126,9 +126,7 @@ export default class AccountController implements IController {
     async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            if (!id) {
-                throw ThrowError.badRequest("ID não foi informado.");
-            }
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
             await accountService.delete(id);
             res.status(204).json();
         } catch (error) {

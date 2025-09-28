@@ -23,9 +23,7 @@ export default class PetController implements IController {
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            if (!id) {
-                throw ThrowError.badRequest("ID não foi informado.");
-            }
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
             const pet = await petService.getById(id);
             res.status(200).json(pet);
         } catch (error) {

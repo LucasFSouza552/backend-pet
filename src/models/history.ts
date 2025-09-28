@@ -1,44 +1,41 @@
 import { Document, Schema, model } from "mongoose";
+import { IHistoryStatus } from "../types/IHistoryStatus";
 
 export default interface IHistory extends Document {
-    action: string;
-    description: string;
-    entity_type: string;
-    entity_id: string;
-    user_id: string;
-    changes: Record<string, any>;
-    date: Date;
+    id: string;
+    type: "adoption" | "sponsorship" | "donation";
+    status: IHistoryStatus;
+    petId: Schema.Types.ObjectId;
+    accountId: Schema.Types.ObjectId;
+    amount?: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const historySchema = new Schema<IHistory>({
-    action: {
+    type: {
         type: String,
-        required: true,
+        enum: ["adoption", "sponsorship", "donation"],
+        required: true
     },
-    description: {
+    status: {
         type: String,
+        enum: ["pending", "completed", "cancelled", "refunded"],
         required: true,
+        default: "pending"
     },
-    entity_type: {
-        type: String,
-        required: true,
+    petId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Pet'
     },
-    entity_id: {
-        type: String,
-        required: true,
+    accountId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Account',
+        required: true
     },
-    user_id: {
-        type: String,
-        required: true,
-    },
-    changes: {
-        type: Schema.Types.Mixed,
-        required: false,
-    },
-    date: {
-        type: Date,
-        default: Date.now,
-    },
-});
+    amount: {
+        type: Number
+    }
+}, { timestamps: true, strict: true });
 
 export const History = model<IHistory>('History', historySchema);

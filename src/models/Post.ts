@@ -1,5 +1,5 @@
 import { Document, Schema, model } from "mongoose";
-import { ITypeAccounts } from "../interfaces/ITypeAccounts";
+import { ITypeAccounts } from "../types/ITypeAccounts";
 
 export default interface IPost extends Document {
     title: string;
@@ -42,7 +42,7 @@ const postSchema = new Schema<IPost>({
     },
     accountId: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Account',
         required: true
     },
     authorModel: {
