@@ -6,14 +6,14 @@ import { CreateCommentDTO, UpdateCommentDTO } from "../dtos/CommentDTO";
 
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getReplies(commentId: string) {
-        const replies = await Comment.find({ parentId: commentId }).sort({ createdAt: 1 }).lean();
+        const replies = await Comment.find({ parent: commentId }).sort({ createdAt: 1 }).lean();
 
         return replies
     }
 
     async getByPostId(postId: string) {
         return await Comment
-            .find({ postId, isDeleted: false, parentId: null })
+            .find({ post: postId, isDeleted: false, parent: null })
             .sort({ createdAt: 1 });
     }
     async softDelete(accountId: string, id: string): Promise<IComment | null> {
@@ -47,7 +47,7 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
         return updatedComment;
     }
     async getAccountComments(accountId: string, postId: string): Promise<IComment[]> {
-        return await Comment.find({ account: accountId, postId });
+        return await Comment.find({ account: accountId, post: postId });
     }
     async delete(id: string): Promise<void> {
         await Comment.findByIdAndDelete(id);

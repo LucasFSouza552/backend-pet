@@ -1,8 +1,8 @@
 import { Document, model, Schema } from "mongoose";
 
 export default interface IComment extends Document {
-    postId: Schema.Types.ObjectId;
-    parentId?: Schema.Types.ObjectId | string;
+    post: Schema.Types.ObjectId;
+    parent?: Schema.Types.ObjectId | string;
     content: string;
     account: Schema.Types.ObjectId | string;
     createdAt: Date;
@@ -11,12 +11,12 @@ export default interface IComment extends Document {
 }
 
 const commentSchema = new Schema<IComment>({
-    postId: {
+    post: {
         type: Schema.Types.ObjectId,
         ref: 'Post',
         required: true
     },
-    parentId: {
+    parent: {
         type: Schema.Types.ObjectId,
         ref: 'Comment',
         required: false,

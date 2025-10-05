@@ -23,7 +23,7 @@ const accountLikePostSchema = new Schema<IAccountLikePost>(
     { timestamps: true, strict: true }
 );
 
-accountLikePostSchema.index({ accountId: 1, postId: 1 }, { unique: true });
+accountLikePostSchema.index({ accountId: 1, post: 1 }, { unique: true });
 
 export const AccountLikePost = model<IAccountLikePost>(
     "AccountLikePost",

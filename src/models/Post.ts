@@ -46,14 +46,14 @@ const postSchema = new Schema<IPost>({
 postSchema.virtual("comments", {
     ref: "Comment",
     localField: "_id",
-    foreignField: "postId",
+    foreignField: "post",
     justOne: false
 });
 
 postSchema.virtual("commentsCount", {
     ref: "Comment",
     localField: "_id",
-    foreignField: "postId",
+    foreignField: "post",
     count: true
 });
 

@@ -63,20 +63,20 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
                 throw ThrowError.badRequest("Conta associada ao comentário não existe.");
             }
 
-            if (!data?.parentId) {
+            if (!data?.parent) {
                 throw ThrowError.badRequest("Comentário pai deve ser informado.");
             }
 
-            const commentParent = await commentRepository.getById(data.parentId.toString());
+            const commentParent = await commentRepository.getById(data.parent.toString());
             if (!commentParent) {
                 throw ThrowError.badRequest("Comentário pai associado ao comentário não existe.");
             }
 
-            const post = await postRepository.getById(commentParent.postId.toString());
+            const post = await postRepository.getById(commentParent.post.toString());
             if (!post) {
                 throw ThrowError.badRequest("Post associado ao comentário não existe.");
             };
-            data.postId = post.id;
+            data.post = post.id;
 
             return await commentRepository.create(data);
         } catch (error: any) {
@@ -93,7 +93,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
                 throw ThrowError.badRequest("Conta não encontrada.");
             }
 
-            const post = await postRepository.getById(data.postId.toString());
+            const post = await postRepository.getById(data.post.toString());
             if (!post) {
                 throw ThrowError.badRequest("Post associado não existe.");
             };

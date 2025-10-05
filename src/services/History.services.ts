@@ -12,6 +12,16 @@ const petService = new PetService();
 const accountService = new AccountService();
 
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
+    getByAccount(filter: Filter, accountId: string) {
+        try {
+            const histories = historyRepository.getByAccount(filter, accountId);
+            if (!histories) throw ThrowError.notFound("Históricos não encontrados.");
+            return histories;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar históricos.");
+        }
+    }
     async updateStatus(id: string, accountId: string, data: UpdateHistoryDTO): Promise<HistoryDTO | null> {
         try {
             const account = await accountService.getById(accountId);
@@ -27,7 +37,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             const history = await historyRepository.getById(id);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");
-            if(history.type !== "adoption") throw ThrowError.forbidden("Acesso negado."); 
+            if (history.type !== "adoption") throw ThrowError.forbidden("Acesso negado.");
             if (history?.institution !== account.id) throw ThrowError.forbidden("Acesso negado.");
 
             const updatedHistory = await historyRepository.updateStatus(id, data);

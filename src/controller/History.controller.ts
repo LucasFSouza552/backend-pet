@@ -1,4 +1,3 @@
-import { Achievements } from "./../models/Achievements";
 import { Request, Response, NextFunction } from "express";
 import IController from "../interfaces/IController";
 import HistoryService from "../services/History.services";
@@ -33,7 +32,7 @@ export default class HistoryController implements IController {
     }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["status", "type", "entityId", "accountId"];
+            const allowedQueryFields: string[] = ["status", "type", "pet", "account", "institution"];
             const filters = filterConfig(req.query, allowedQueryFields);
             const histories = await historyService.getAll(filters);
             res.status(200).json(histories);
@@ -101,8 +100,11 @@ export default class HistoryController implements IController {
 
     async listByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const allowedQueryFields: string[] = ["status", "type", "institution"];
+            const filters = filterConfig(req.query, allowedQueryFields);
+
             const accountId = req.account?.id as string;
-            const histories = await historyService.getById(accountId);
+            const histories = await historyService.getByAccount(filters, accountId);
             res.status(200).json(histories);
         } catch (error) {
             next(error);

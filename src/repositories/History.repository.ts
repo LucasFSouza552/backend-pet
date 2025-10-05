@@ -5,7 +5,7 @@ import IRepository from "../interfaces/IRepository";
 import IHistory, { History } from "../models/history";
 
 export default class HistoryRepository implements IRepository<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
-    
+
     async updateStatus(id: string, status: UpdateHistoryDTO): Promise<HistoryDTO | null> {
         return await History.findByIdAndUpdate(id, { status }, {
             new: true,
@@ -14,7 +14,7 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
     }
     async getAll(filter: Filter): Promise<HistoryDTO[]> {
         const { page, limit, orderBy, order, query } = filter;
-        
+
         return await History.find(query as FilterQuery<IHistory>)
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
@@ -36,6 +36,15 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
     }
     async delete(id: string): Promise<void> {
         await History.findByIdAndDelete(id);
+    }
+
+    async getByAccount(filter: Filter, accountId: string): Promise<HistoryDTO[]> {
+
+        const { page, limit, orderBy, order, query } = filter;
+        return await History.find({ account: accountId, ...query })
+            .sort({ [orderBy]: order })
+            .skip((page - 1) * limit)
+            .limit(limit);
     }
 
 }

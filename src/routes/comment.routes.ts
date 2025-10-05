@@ -11,7 +11,7 @@ router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), commentContr
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), commentController.delete);
 
 // Rota para retornar todos os comentários de um post
-router.get("/post/:postId", AuthMiddleware, commentController.getAllByPost);
+router.get("/post/:id", AuthMiddleware, commentController.getAllByPost);
 
 // Rota para retornar um comentário pelo id
 router.get("/:id", AuthMiddleware, commentController.getById);

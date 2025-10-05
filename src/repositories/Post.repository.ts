@@ -22,14 +22,14 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async addLike(postId: string, accountId: string): Promise<IPost | null> {
         return await Post.findByIdAndUpdate(
-            postId,
+            { post: postId },
             { $addToSet: { likes: new Types.ObjectId(accountId) } },
             { new: true }
         );
     }
     async removeLike(postId: string, accountId: string): Promise<IPost | null> {
         return await Post.findByIdAndUpdate(
-            postId,
+            { post: postId },
             { $pull: { likes: new Types.ObjectId(accountId) } },
             { new: true }
         );

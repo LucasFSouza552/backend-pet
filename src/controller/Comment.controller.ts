@@ -26,7 +26,7 @@ export class CommentController implements IController {
     }
     async getAllByPost(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { postId } = req.params;
+            const postId = req.params.id;
             if (!postId) {
                 throw ThrowError.badRequest("ID do post não foi informado.");
             }
@@ -51,7 +51,7 @@ export class CommentController implements IController {
     }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["postId", "author", "date", "likes"];
+            const allowedQueryFields: string[] = ["post"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
             const comments = await commentService.getAll(filters);
@@ -66,7 +66,7 @@ export class CommentController implements IController {
 
             comment.account = req.account?.id;
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
-                .add({ key: "postId" })
+                .add({ key: "post" })
                 .add({ key: "account" })
                 .add({ key: "content" })
                 .build();
@@ -80,12 +80,12 @@ export class CommentController implements IController {
     async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id as string;
-            if(!accountId) throw ThrowError.badRequest("Conta não encontrada.");
+            if (!accountId) throw ThrowError.badRequest("Conta não encontrada.");
             const id = req.params.id;
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
-            const data  = {...req.body, account: accountId};
+            const data = { ...req.body, account: accountId };
             const updateData = new BuilderDTO<UpdateCommentDTO>(data)
                 .add({ key: "content" })
                 .add({ key: "account" })
