@@ -3,14 +3,40 @@ import Filter from "../interfaces/Filter";
 import IController from "../interfaces/IController";
 import filterConfig from "../utils/filterConfig";
 import { CommentService } from "../services/Comment.services";
-import { CreateCommentDTO } from "../dtos/CommentDTO";
-import BuilderDTO from "../utils/builderDTO";
 import { ThrowError } from "../errors/ThrowError";
+import BuilderDTO from "../utils/builderDTO";
+import { CreateCommentDTO } from "../dtos/CommentDTO";
 import { UpdateCommentDTO } from "../dtos/CommentDTO";
 
 const commentService = new CommentService();
 
 export class CommentController implements IController {
+    async getReplies(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const commentId = req.params.id;
+            if (!commentId) {
+                throw ThrowError.badRequest("ID do comentário não foi informado.");
+            }
+
+            const replies = await commentService.getReplies(commentId);
+            res.status(200).json(replies);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getAllByPost(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { postId } = req.params;
+            if (!postId) {
+                throw ThrowError.badRequest("ID do post não foi informado.");
+            }
+
+            const comments = commentService.getAllByPost(postId);
+            res.status(200).json(comments);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
@@ -36,13 +62,12 @@ export class CommentController implements IController {
     }
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId;
             const comment = req?.body;
-            comment.accountId = accountId;
 
+            comment.account = req.account?.id;
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "postId" })
-                .add({ key: "accountId" })
+                .add({ key: "account" })
                 .add({ key: "content" })
                 .build();
 
@@ -54,13 +79,18 @@ export class CommentController implements IController {
     }
     async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const accountId = req.account?.id as string;
+            if(!accountId) throw ThrowError.badRequest("Conta não encontrada.");
             const id = req.params.id;
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
-            const updateData = new BuilderDTO<UpdateCommentDTO>(req.body)
-                .add({ key: "content", required: false })
+            const data  = {...req.body, account: accountId};
+            const updateData = new BuilderDTO<UpdateCommentDTO>(data)
+                .add({ key: "content" })
+                .add({ key: "account" })
                 .build();
+
             const comment = await commentService.update(id, updateData);
 
             res.status(200).json(comment);
@@ -83,19 +113,32 @@ export class CommentController implements IController {
 
     async reply(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId;
             const comment = req?.body;
-            comment.accountId = accountId;
+            comment.account = req.account?.id;
+            comment.parentId = req.params?.id;
 
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
-                .add({ key: "postId" })
-                .add({ key: "accountId" })
+                .add({ key: "account" })
                 .add({ key: "parentId" })
                 .add({ key: "content" })
                 .build();
 
-            const newComment: CreateCommentDTO = await commentService.create(newCommentDTO);
+            const newComment: CreateCommentDTO = await commentService.reply(newCommentDTO);
             res.status(201).json(newComment);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteOwnComment(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.account?.id;
+            const id = req.params.id;
+            if (!id || !accountId) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+            const deletedComment = await commentService.deleteOwnComment(accountId, id);
+            res.status(200).json({ comment: deletedComment });
         } catch (error) {
             next(error);
         }

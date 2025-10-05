@@ -42,12 +42,12 @@ export default class PostController implements IController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const post = req?.body;
+            const accoundId = req?.account?.id;
 
-
-            if (!req.accountId) {
+            if (!accoundId) {
                 throw ThrowError.forbidden("Acesso negado.");
             }
-            const account = await accountService.getById(req.accountId);
+            const account = await accountService.getById(accoundId);
             if (!account) {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
@@ -59,7 +59,7 @@ export default class PostController implements IController {
                 .add({ key: "title" })
                 .add({ key: "content" })
                 .add({ key: "image", required: false })
-                .add({ key: "accountId" })
+                .add({ key: "account" })
                 .build();
 
             const newPost: CreatePostDTO = await postService.create(newPostDTO);
@@ -88,7 +88,7 @@ export default class PostController implements IController {
 
     async updateComment(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId;
+            const accountId = req.account?.id;
             if (!accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
@@ -120,7 +120,7 @@ export default class PostController implements IController {
     async toggleLike(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            const accountId = req.accountId as string;
+            const accountId = req.account?.id as string;
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
@@ -133,7 +133,7 @@ export default class PostController implements IController {
 
     async getPostsWithAuthor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "accountId", "date", "likes", "image"];
+            const allowedQueryFields: string[] = ["title", "account", "date", "likes", "image"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             const posts = await postService.getPostsWithAuthor(filters);
             res.status(200).json(posts);

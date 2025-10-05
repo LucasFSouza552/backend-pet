@@ -35,7 +35,7 @@ export default class AuthController {
 
     async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId as string;
+            const accountId = req.account?.id as string;
             const { currentPassword, newPassword } = req.body;
 
             if (!currentPassword || !newPassword) {

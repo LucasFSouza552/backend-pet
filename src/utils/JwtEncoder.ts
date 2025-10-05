@@ -13,6 +13,8 @@ export default class JWT {
             throw ThrowError.badRequest('Token Ausente');
         }
 
+        console.log(authToken);
+
         const [scheme, token] = authToken.split(" ");
         if (!token || scheme != 'Bearer') {
             throw ThrowError.unauthorized('Token Inválido')

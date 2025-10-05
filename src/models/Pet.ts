@@ -9,7 +9,7 @@ export default interface IPet extends Document {
   images: Buffer[];
   description?: string;
   adopted: boolean;
-  accountId: Schema.Types.ObjectId;
+  account: Schema.Types.ObjectId | string;
   adoptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -50,7 +50,7 @@ const petSchema = new Schema<IPet>(
       type: Boolean,
       default: false,
     },
-    accountId: {
+    account: {
       type: Schema.Types.ObjectId,
       ref: "Account",
       required: true,

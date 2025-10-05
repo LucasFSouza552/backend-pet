@@ -18,7 +18,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             throw ThrowError.internal("Não foi possível listar os históricos.");
         }
     }
-    async getById(id: string): Promise<HistoryDTO> {
+    async getById(id: string): Promise<HistoryDTO | null> {
         try {
             const history = await historyRepository.getById(id);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");
@@ -30,7 +30,10 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
     }
     async create(data: CreateHistoryDTO): Promise<HistoryDTO> {
         try {
-            const pet = await petService.getById(data.petId.toString());
+            if (!data?.pet) {
+                throw ThrowError.badRequest("Pet deve ser informado.");
+            }
+            const pet = await petService.getById(data?.pet as string);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
             if (pet.adopted) throw ThrowError.conflict("Não é possível realizar está ação, pois o pet foi adotado.");
 
@@ -41,13 +44,15 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             throw ThrowError.internal("Erro ao criar histórico.");
         }
     }
-    async update(id: string, data: UpdateHistoryDTO): Promise<HistoryDTO> {
+    async update(id: string, data: UpdateHistoryDTO): Promise<HistoryDTO | null> {
         try {
-            if (data?.petId) {
-                const pet = await petService.getById(data?.petId?.toString());
-                if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-                if (pet.adopted) throw ThrowError.conflict("Não é possível realizar esta ação, pois o pet foi adotado.");
+            if (!data?.pet) {
+                throw ThrowError.badRequest("Pet deve ser informado.");
             }
+            const pet = await petService.getById(data.pet as string);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (pet.adopted) throw ThrowError.conflict("Não é possível realizar esta ação, pois o pet foi adotado.");
+
 
             const history = await historyRepository.update(id, data);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");

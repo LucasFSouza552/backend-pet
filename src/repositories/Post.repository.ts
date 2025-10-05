@@ -15,7 +15,8 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit)
-            .populate("accountId", "name role avatar");
+            .populate({ path: "account", select: "name role avatar" })
+            .exec();
 
         return posts;
     }
@@ -36,8 +37,8 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
 
-        if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
-            delete query.accountId;
+        if (query?.account && !Types.ObjectId.isValid(query.account)) {
+            delete query.account;
         }
 
         return await Post.find(query as FilterQuery<IPost>)
@@ -46,7 +47,16 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             .limit(limit);
     }
     async getById(id: string): Promise<IPost | null> {
-        const post = await Post.findById(id);
+        const post = await Post.findById(id)
+            .populate({
+                path: "comments",
+                match: { isDeleted: false },
+                populate: [
+                    { path: "account", select: "name avatar" },
+                    { path: "parentId", select: "content accountId" }
+                ]
+            })
+            .populate("account", "name role avatar");
         return post;
     }
     async create(data: CreatePostDTO): Promise<IPost> {

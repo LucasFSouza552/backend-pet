@@ -64,10 +64,10 @@ export default class HistoryController implements IController {
         try {
             const data = req?.body;
             const newHistory = new BuilderDTO<CreateHistoryDTO>(data)
-                .add({ key: "accountId" })
+                .add({ key: "account" })
                 .add({ key: "status" })
                 .add({ key: "type" })
-                .add({ key: "petId", required: data.type !== "donation" })
+                .add({ key: "pet", required: data.type !== "donation" })
                 .add({ key: "amount", required: data.type !== "adoption" })
                 .build();
 
@@ -80,7 +80,7 @@ export default class HistoryController implements IController {
 
     async listByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId as string;
+            const accountId = req.account?.id as string;
             const histories = await historyService.getById(accountId);
             res.status(200).json(histories);
         } catch (error) {

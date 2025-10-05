@@ -12,7 +12,7 @@ const accountService = new AccountService();
 export default class AccountController implements IController {
     async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId as string;
+            const accountId = req.account?.id as string;
             if (!accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
@@ -37,7 +37,7 @@ export default class AccountController implements IController {
     }
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const id = req.accountId as string;
+            const id = req.account?.id as string;
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
@@ -145,7 +145,7 @@ export default class AccountController implements IController {
 
     async updateAvatar(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.accountId as string;
+            const accountId = req.account?.id as string;
             const file = req.file;
             if (!file) {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");

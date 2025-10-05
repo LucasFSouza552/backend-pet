@@ -2,11 +2,12 @@ import { Document, model, Schema } from "mongoose";
 
 export default interface IComment extends Document {
     postId: Schema.Types.ObjectId;
-    parentId?: Schema.Types.ObjectId;
+    parentId?: Schema.Types.ObjectId | string;
     content: string;
-    accountId: Schema.Types.ObjectId;
+    account: Schema.Types.ObjectId | string;
     createdAt: Date;
     updatedAt: Date;
+    isDeleted: boolean;
 }
 
 const commentSchema = new Schema<IComment>({
@@ -25,11 +26,17 @@ const commentSchema = new Schema<IComment>({
         type: String,
         required: true
     },
-    accountId: {
+    account: {
         type: Schema.Types.ObjectId,
         ref: 'Account',
         required: true
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true, strict: true });
+
+
 
 export const Comment = model<IComment>('Comment', commentSchema);

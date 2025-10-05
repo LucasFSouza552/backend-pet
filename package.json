@@ -20,6 +20,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.3.1",
+    "@types/qrcode": "^1.5.5",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   },
@@ -31,6 +32,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
     "mongoose": "^8.18.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "qrcode": "^1.5.4"
   }
 }

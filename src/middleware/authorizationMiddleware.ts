@@ -10,7 +10,7 @@ export default function authorizationMiddleware(allowedRoles: string[]) {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
 
-            const accountId = req.accountId;
+            const accountId = req.account?.id;
 
             if (!accountId) {
                 throw ThrowError.unauthorized("Usuário não autenticado");

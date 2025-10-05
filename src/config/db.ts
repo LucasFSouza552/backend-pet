@@ -6,17 +6,19 @@ const user = process.env.MONGO_USER;
 const pass = process.env.MONGO_PASS;
 const dbName = process.env.MONGO_DB;
 const cluster = process.env.MONGO_CLUSTER;
+const prod = process.env.NODE_ENV === "production";
 
 
 export const connectDB = async () => {
+    const MONGO_URL = process.env.MONGO_URL;
+    const uri = prod ? `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority` : MONGO_URL;
+    console.log(uri);
 
-    const uri = `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
-    
     if (!uri) {
         console.log("❌ MongoDB: sem conexão", uri);
         process.exit(1);
     }
-    
+
     try {
         await mongoose.connect(uri);
 
@@ -28,7 +30,7 @@ export const connectDB = async () => {
                 console.log("❌ MongoDB: desconectado");
                 break;
             case 1:
-                console.log("✅ MongoDB: conectado");
+                console.log(`✅ MongoDB: conectado ${prod ? "online" : "local"}`);
                 break;
             case 2:
                 console.log("⏳ MongoDB: conectando...");

@@ -36,7 +36,7 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             throw ThrowError.internal("Não foi possível listar os usuários.");
         }
     }
-    async getById(id: string): Promise<AccountDTO> {
+    async getById(id: string): Promise<AccountDTO | null> {
         try {
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");

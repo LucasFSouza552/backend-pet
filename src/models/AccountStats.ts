@@ -1,14 +1,14 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface AccountStats extends Document {
-    account_id: Schema.Types.ObjectId;
+    account: Schema.Types.ObjectId;
     adoptions: number;
     donations: number;
     sponsorships: number;
 }
 
 const AccountStatsSchema = new Schema<AccountStats>({
-    account_id: {
+    account: {
         type: Schema.Types.ObjectId,
         ref: "Account",
         required: true,

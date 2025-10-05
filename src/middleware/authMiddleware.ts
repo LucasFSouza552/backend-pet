@@ -1,33 +1,42 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "../utils/JwtEncoder";
 import { ThrowError } from "../errors/ThrowError";
-import { IAccount } from "../models/Account";
+import { AccountService } from "../services/Account.services";
+import { AccountDTO } from "../dtos/AccountDTO";
 
 declare global {
     namespace Express {
         interface Request {
-            accountId?: string;
-            account?: IAccount;
+            account?: AccountDTO;
         }
     }
 }
 
-export default function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
+const accountService = new AccountService();
+
+export default async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
 
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
         }
-
+        console.log(authHeader);
         const decodedToken = JWT.validateAuth(authHeader);
         if (!decodedToken) {
             throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");
         }
-        req.accountId = decodedToken?.data?.id;
-        if (!req.accountId) {
+        const accountId = decodedToken?.data?.id;
+        if (!accountId) {
             throw ThrowError.notFound("Token inválido. Use formato Bearer <token>");
         }
+
+        const account = await accountService.getById(accountId);
+        if (!account) {
+            throw ThrowError.notFound("Usuário não encontrado.");
+        }
+        req.account = account;
+
         next();
     } catch (error) {
         next(error); // Testar depois se o Next vai para o próximo middleware de tratamento de erro

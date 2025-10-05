@@ -1,6 +1,7 @@
 import { connectDB } from "../config/db";
-import run from "../config/dbWeb";
 import { seedAchievements } from "./achievements.seed";
+import { seedComments } from "./comments.seed";
+import { seedPets } from "./pets.seed";
 import { seedPosts } from "./posts.seed";
 import { seedAccounts } from "./users.seed";
 import dotenv from "dotenv";
@@ -14,8 +15,9 @@ async function runSeeds() {
         // Seeds to test code
         await seedAccounts();
         await seedAchievements();
+        await seedComments();
         await seedPosts();
-
+        await seedPets();
         console.log("All seeds executed successfully ✅");
         process.exit(0);
     } catch (error) {

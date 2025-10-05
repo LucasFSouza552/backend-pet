@@ -1,19 +1,20 @@
 import { Schema, model, Document, Types } from "mongoose";
 
 export interface IAccountLikePost extends Document {
-    accountId: Types.ObjectId;
-    postId: Types.ObjectId;
+    account: Types.ObjectId;
+    post: Types.ObjectId;
     createdAt: Date;
+    updatedAt: Date;
 }
 
 const accountLikePostSchema = new Schema<IAccountLikePost>(
     {
-        accountId: {
+        account: {
             type: Schema.Types.ObjectId,
             ref: "Account",
             required: true,
         },
-        postId: {
+        post: {
             type: Schema.Types.ObjectId,
             ref: "Post",
             required: true

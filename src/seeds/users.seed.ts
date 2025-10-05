@@ -183,7 +183,7 @@ export const seedAccounts = async () => {
 
     for (const account of accounts) {
         const acc = await Account.create(account);
-        await AccountStats.create({ account_id: acc._id });
+        await AccountStats.create({ account: acc._id });
     }
 
     console.log("✅ Users seed executed");
