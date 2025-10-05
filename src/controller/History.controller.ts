@@ -6,9 +6,10 @@ import filterConfig from "../utils/filterConfig";
 import { ThrowError } from "../errors/ThrowError";
 import BuilderDTO from "../utils/builderDTO";
 import { CreateHistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
+import { AccountService } from "../services/Account.services";
 
 const historyService = new HistoryService();
-const achievements = new Achievements();
+const accountService = new AccountService();
 
 export default class HistoryController implements IController {
     async updateHistoryStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -22,8 +23,8 @@ export default class HistoryController implements IController {
             if (!status) throw ThrowError.badRequest("Status deve ser informado.");
 
             const history = await historyService.updateStatus(id, accountId, { status });
-            if(status === "approved") {
-                await achievements.addAdoption(accountId);
+            if (history?.status === "completed") {
+                await accountService.addAdoptionAchievement(history?.account as string);
             }
             res.status(200).json(history);
         } catch (error) {
@@ -80,7 +81,6 @@ export default class HistoryController implements IController {
         }
     }
 
-
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data = req?.body;
@@ -109,22 +109,4 @@ export default class HistoryController implements IController {
         }
     }
 
-    async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const id = req.params.id as string;
-
-            const updateData = new BuilderDTO<UpdateHistoryDTO>(req.body)
-                .add({ key: "accountId" })
-                .add({ key: "status", type: "string" })
-                .add({ key: "type", type: "string" })
-                .add({ key: "petId", required: req.body.type !== "donation" })
-                .add({ key: "amount", required: req.body.type !== "adoption" })
-                .build();
-
-            const history = await historyService.update(id, updateData);
-            res.status(200).json(history);
-        } catch (error) {
-            next(error);
-        }
-    }
 }

@@ -1,8 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface IAccountAchievement extends Document {
-    account: Schema.Types.ObjectId;
-    achievement: Schema.Types.ObjectId;
+    account: Schema.Types.ObjectId | string;
+    achievement: Schema.Types.ObjectId | string;
     createdAt: Date;
     updatedAt: Date;
 }

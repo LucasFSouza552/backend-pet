@@ -1,3 +1,4 @@
+import { Achievements } from "./../models/Achievements";
 import { AccountAchievement } from "./../models/AccountAchievement";
 import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
@@ -7,8 +8,13 @@ import accountMapper from "../Mappers/accountMapper";
 import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
 import { cryptPassword, validatePassword } from "../utils/aes-crypto";
+import AccountAchievementRepository from "../repositories/AccountAchievement.repository";
+import AchievementRepository from "../repositories/Achievement.repository";
+import { addAchieviment } from "../dtos/AccountAchievementDTO";
 
 const accountRepository = new AccountRepository();
+const accountAchievementRepository = new AccountAchievementRepository();
+const achievementsRepository = new AchievementRepository();
 
 export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async updateAvatar(accoundId: string, file: Express.Multer.File): Promise<UpdateAvatarDTO> {
@@ -126,7 +132,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addAdoptionAchievement(id: string): Promise<void> {
         try {
-
+            const achievements = await achievementsRepository.getByType("adoption");
+            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
@@ -135,7 +142,9 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addSponsorshipsAchievement(id: string): Promise<void> {
         try {
-
+            const achievements = await achievementsRepository.getByType("sponsorship");
+            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
+            
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
@@ -144,6 +153,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addDonationsAchievement(id: string): Promise<void> {
         try {
+            const achievements = await achievementsRepository.getByType("donation");
+            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;

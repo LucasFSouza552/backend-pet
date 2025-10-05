@@ -27,7 +27,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             const history = await historyRepository.getById(id);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");
-
+            if(history.type !== "adoption") throw ThrowError.forbidden("Acesso negado."); 
             if (history?.institution !== account.id) throw ThrowError.forbidden("Acesso negado.");
 
             const updatedHistory = await historyRepository.updateStatus(id, data);

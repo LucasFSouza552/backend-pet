@@ -7,16 +7,15 @@ const router = Router();
 
 const historyController = new HistoryController();
 
-router.get("/", historyController.getAll);
-router.get("/:id", historyController.getById);
-router.post("/", historyController.create);
-router.patch("/:id", historyController.update);
+// Rota para retornar todos os históricos
+router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), historyController.getAll);
+router.get("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), historyController.getById);
+router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), historyController.create);
+router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), historyController.update);
 router.delete("/:id", historyController.delete);
 
 router.get("/account", historyController.listByAccount);
 
-
-router.patch("/status/:id", historyController.updateStatus);
-router.patch("/status/:id/approve", AuthMiddleware, authorizationMiddleware(["institution"]), historyController.updateHistoryStatus);
+router.patch("/status/:id", AuthMiddleware, authorizationMiddleware(["institution"]), historyController.updateHistoryStatus);
 
 export default router;
