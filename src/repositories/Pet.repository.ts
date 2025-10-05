@@ -17,8 +17,7 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     }
 
     async getById(id: string): Promise<IPet | null> {
-        const pet = await Pet.findById(id);
-        return pet;
+        return await Pet.findById(id);
     }
 
     async create(data: CreatePetDTO): Promise<IPet> {

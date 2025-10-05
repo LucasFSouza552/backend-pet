@@ -20,4 +20,6 @@ const userAchievementSchema = new Schema<IAccountAchievement>({
     },
 }, { timestamps: true, strict: true });
 
+userAchievementSchema.index({ account: 1, achievement: 1 }, { unique: true });
+
 export const AccountAchievement = model<IAccountAchievement>("AccountAchievement", userAchievementSchema);

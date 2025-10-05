@@ -1,3 +1,4 @@
+import { Achievements } from "./../models/Achievements";
 import { Request, Response, NextFunction } from "express";
 import IController from "../interfaces/IController";
 import HistoryService from "../services/History.services";
@@ -7,8 +8,28 @@ import BuilderDTO from "../utils/builderDTO";
 import { CreateHistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
 
 const historyService = new HistoryService();
+const achievements = new Achievements();
 
 export default class HistoryController implements IController {
+    async updateHistoryStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const accountId = req.account?.id;
+            const status = req.body.status;
+
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
+            if (!accountId) throw ThrowError.unauthorized("Usuário não autenticado.");
+            if (!status) throw ThrowError.badRequest("Status deve ser informado.");
+
+            const history = await historyService.updateStatus(id, accountId, { status });
+            if(status === "approved") {
+                await achievements.addAdoption(accountId);
+            }
+            res.status(200).json(history);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["status", "type", "entityId", "accountId"];
@@ -99,7 +120,7 @@ export default class HistoryController implements IController {
                 .add({ key: "petId", required: req.body.type !== "donation" })
                 .add({ key: "amount", required: req.body.type !== "adoption" })
                 .build();
-                
+
             const history = await historyService.update(id, updateData);
             res.status(200).json(history);
         } catch (error) {

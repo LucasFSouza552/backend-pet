@@ -6,6 +6,7 @@ export default interface IHistory extends Document {
     type: "adoption" | "sponsorship" | "donation";
     status: IHistoryStatus;
     pet: Schema.Types.ObjectId | string | null;
+    institution?: string;
     account: Schema.Types.ObjectId | string;
     amount?: number;
     createdAt: Date;
@@ -27,6 +28,10 @@ const historySchema = new Schema<IHistory>({
     pet: {
         type: Schema.Types.ObjectId,
         ref: 'Pet'
+    },
+    institution: {
+        type: String,
+        required: false
     },
     account: {
         type: Schema.Types.ObjectId,

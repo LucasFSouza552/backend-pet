@@ -1,14 +1,43 @@
+import { IHistoryStatus } from "./../types/IHistoryStatus";
 import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import HistoryRepository from "../repositories/History.repository";
+import { AccountService } from "./Account.services";
 import { PetService } from "./Pet.services";
 
 const historyRepository = new HistoryRepository();
 const petService = new PetService();
+const accountService = new AccountService();
 
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
+    async updateStatus(id: string, accountId: string, data: UpdateHistoryDTO): Promise<HistoryDTO | null> {
+        try {
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            if (!data?.status) {
+                throw ThrowError.badRequest("Status deve ser informado.");
+            }
+
+            if (!IHistoryStatus.includes(data?.status)) {
+                throw ThrowError.badRequest("Status inválido.");
+            }
+
+            const history = await historyRepository.getById(id);
+            if (!history) throw ThrowError.notFound("Histórico não encontrado.");
+
+            if (history?.institution !== account.id) throw ThrowError.forbidden("Acesso negado.");
+
+            const updatedHistory = await historyRepository.updateStatus(id, data);
+            if (!updatedHistory) throw ThrowError.notFound("Histórico não encontrado.");
+            return history;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao atualizar histórico.");
+        }
+    }
     async getAll(filter: Filter): Promise<HistoryDTO[]> {
         try {
             const histories = await historyRepository.getAll(filter);

@@ -5,6 +5,13 @@ import IRepository from "../interfaces/IRepository";
 import IHistory, { History } from "../models/history";
 
 export default class HistoryRepository implements IRepository<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
+    
+    async updateStatus(id: string, status: UpdateHistoryDTO): Promise<HistoryDTO | null> {
+        return await History.findByIdAndUpdate(id, { status }, {
+            new: true,
+            runValidators: true
+        });
+    }
     async getAll(filter: Filter): Promise<HistoryDTO[]> {
         const { page, limit, orderBy, order, query } = filter;
         

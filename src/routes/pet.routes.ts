@@ -17,6 +17,4 @@ router.get("/:id", AuthMiddleware, petController.getById);
 router.post("/:id/adopt", AuthMiddleware, petController.requestAdoption);
 router.post("/:id/sponsor", AuthMiddleware, petController.sponsor);
 
-
-
 export default router;

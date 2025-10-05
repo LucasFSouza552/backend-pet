@@ -4,7 +4,6 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
-import { Pet } from "../models/Pet";
 
 const petService = new PetService();
 

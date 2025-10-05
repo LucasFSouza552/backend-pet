@@ -1,3 +1,4 @@
+import { AccountAchievement } from "./../models/AccountAchievement";
 import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
@@ -120,6 +121,33 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar a senha.");
+        }
+    }
+
+    async addAdoptionAchievement(id: string): Promise<void> {
+        try {
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao adicionar conquista.");
+        }
+    }
+
+    async addSponsorshipsAchievement(id: string): Promise<void> {
+        try {
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao adicionar conquista.");
+        }
+    }
+
+    async addDonationsAchievement(id: string): Promise<void> {
+        try {
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao adicionar conquista.");
         }
     }
 

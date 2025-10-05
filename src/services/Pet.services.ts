@@ -27,30 +27,30 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
         try {
 
             const account = await accountService.getById(accountId);
-            if(!account) throw ThrowError.notFound("Usuário não encontrado.");
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
             const pet = await petRepository.getById(petId);
-            if(!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
 
-            if(pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
-
+            if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
+            
             const newHistory = {
                 type: "adoption",
                 pet: pet.id,
                 account: account.id,
-                status: "pending"
-            }
+                status: "pending",
+                institution: pet.account
+            };
 
             const history = await historyRepository.create(newHistory as CreateHistoryDTO);
-            if(!history) throw ThrowError.internal("Erro ao solicitar adotação.");
-
+            if (!history) throw ThrowError.internal("Erro ao solicitar adotação.");
 
             await petRepository.update(pet.id, { adopted: true });
 
             return history;
 
         } catch (error) {
-            if(error instanceof ThrowError) throw error;
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao solicitar adotação.");
         }
     }
