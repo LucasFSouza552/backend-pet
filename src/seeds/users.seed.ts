@@ -3,7 +3,7 @@ import { AccountStats } from "../models/AccountStats";
 import { cryptPassword } from "../utils/aes-crypto";
 
 export const seedAccounts = async () => {
-    await Account.deleteMany();
+    await Account.deleteMany({});
 
     const password = await cryptPassword("12345678");
 

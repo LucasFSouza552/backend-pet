@@ -1,4 +1,4 @@
-import HistoryController from "../controller/history.controller";
+import HistoryController from "../controller/History.controller";
 import { Router } from "express";
 
 const router = Router();

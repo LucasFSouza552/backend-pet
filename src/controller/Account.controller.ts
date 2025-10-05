@@ -42,21 +42,15 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-
-            const img64 = account?.avatar
+            const img64 = account?.avatar   
                 ?
-                Buffer.isBuffer(account.avatar)
-                    ? account.avatar.toString("base64")
-                    :
-                    (account.avatar as any).buffer
-                        ? (account.avatar as any).buffer.toString("base64")
-                        : null
-                : null;
+                `data:image/png;base64,${account.avatar.toString("base64")}`
+                : undefined;
 
 
             res.status(200).json({
                 ...account
-                , avatar: `data:image/png;base64,${img64}`
+                , avatar: img64
             });
         } catch (error) {
             next(error);

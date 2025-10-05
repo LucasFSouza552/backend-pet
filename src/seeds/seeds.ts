@@ -1,4 +1,5 @@
 import { connectDB } from "../config/db";
+import run from "../config/dbWeb";
 import { seedAchievements } from "./achievements.seed";
 import { seedPosts } from "./posts.seed";
 import { seedAccounts } from "./users.seed";

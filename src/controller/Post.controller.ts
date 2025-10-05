@@ -13,6 +13,7 @@ const postService = new PostService();
 const accountService = new AccountService();
 
 export default class PostController implements IController {
+
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["title", "accountId", "date", "likes", "image"];

@@ -18,7 +18,7 @@ router.get("/:id", AuthMiddleware, accountController.getById);
 router.get("/profile/me", AuthMiddleware, accountController.getProfile);
 router.put("/avatar", upload.single("avatar"), AuthMiddleware, accountController.updateAvatar);
 
-router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.getAll);
+router.get("/", accountController.getAll);
 router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.create);
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.update);
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
