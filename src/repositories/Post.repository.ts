@@ -5,6 +5,9 @@ import IPost, { Post } from "../models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
+    getPostsByAccount(accountId: string) {
+        return Post.find({ accountId });
+    }
     async getPostsWithAuthor(filter: Filter) {
         const { page, limit, orderBy, order, query } = filter;
 
@@ -73,5 +76,9 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async delete(id: string): Promise<void> {
         await Post.findByIdAndDelete(id);
+    }
+
+    async getCountPosts(accountId: string): Promise<number> {
+        return await Post.find({ account: accountId }).countDocuments();
     }
 }

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "../utils/JwtEncoder";
 import { ThrowError } from "../errors/ThrowError";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 import { AccountDTO } from "../dtos/AccountDTO";
 
 declare global {
@@ -21,7 +21,7 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
         if (!authHeader) {
             throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
         }
-        console.log(authHeader);
+        
         const decodedToken = JWT.validateAuth(authHeader);
         if (!decodedToken) {
             throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");

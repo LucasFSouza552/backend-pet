@@ -44,7 +44,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             if (!comment) {
                 throw ThrowError.notFound("Comentário não encontrado.");
             }
-            console.log(comment);
+            
             if (comment?.account?.toString() !== accountId) {
                 throw ThrowError.forbidden("Acesso negado.");
             }
@@ -87,7 +87,6 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
 
     async create(data: CreateCommentDTO): Promise<IComment> {
         try {
-            console.log(data);
             const account = await accountService.getById(data.account.toString());
             if (!account) {
                 throw ThrowError.badRequest("Conta não encontrada.");

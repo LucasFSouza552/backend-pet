@@ -7,6 +7,14 @@ import PostRepository from "../repositories/Post.repository";
 
 const postRepository = new PostRepository();
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+    getPostsByAccount(accountId: string) {
+        try {
+            return postRepository.getPostsByAccount(accountId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar os posts.");
+        }
+    }
     async getPostsWithAuthor(filter: Filter) {
         try {
             return await postRepository.getPostsWithAuthor(filter);
@@ -84,6 +92,14 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível deletar o post.");
+        }
+    }
+    async getCountPosts(postId: string): Promise<number> {
+        try {
+            return await postRepository.getCountPosts(postId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar o post.");
         }
     }
 }

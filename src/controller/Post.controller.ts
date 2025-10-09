@@ -6,7 +6,7 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 import IPost from "../models/Post";
 
 const postService = new PostService();
@@ -52,7 +52,7 @@ export default class PostController implements IController {
                 throw ThrowError.notFound("Usuário não encontrado.");
             }
 
-            post.accountId = account.id;
+            post.account = account.id;
             post.authorModel = account.role;
 
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
@@ -136,6 +136,26 @@ export default class PostController implements IController {
             const allowedQueryFields: string[] = ["title", "account", "date", "likes", "image"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             const posts = await postService.getPostsWithAuthor(filters);
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getCountPosts(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.account?.id as string;
+            const count = await postService.getCountPosts(accountId);
+            res.status(200).json(count);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPostsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.account?.id as string;
+            const posts = await postService.getPostsByAccount(accountId);
             res.status(200).json(posts);
         } catch (error) {
             next(error);

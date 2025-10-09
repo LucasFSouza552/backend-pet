@@ -11,7 +11,9 @@ const upload = multer({
 import AccountController from "../controller/Account.controller";
 import AuthMiddleware from "../middleware/authMiddleware";
 import authorizationMiddleware from "../middleware/authorizationMiddleware";
+import PostController from "../controller/Post.controller";
 const accountController = new AccountController();
+const postController = new PostController();
 
 router.patch("/", AuthMiddleware, accountController.updateProfile);
 router.get("/:id", AuthMiddleware, accountController.getById);
@@ -22,5 +24,9 @@ router.get("/", accountController.getAll);
 router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.create);
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.update);
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
+
+router.get("/posts", AuthMiddleware, postController.getPostsByAccount);
+router.get("/posts/count", AuthMiddleware, postController.getCountPosts);
+
 
 export default router;

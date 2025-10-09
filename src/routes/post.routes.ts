@@ -12,9 +12,11 @@ router.post("/", AuthMiddleware, postController.create);
 router.patch("/:id", AuthMiddleware, postController.update);
 router.delete("/:id", AuthMiddleware, postController.delete);
 
-router.get("/posts/full", AuthMiddleware, postController.getPostsWithAuthor);
+router.get("/posts/with-author", AuthMiddleware, postController.getPostsWithAuthor);
 
 router.post("/:id/like", AuthMiddleware, postController.toggleLike);
+
+
 // router.post("/:id/comment", AuthMiddleware, postController.comment);
 
 export default router;
