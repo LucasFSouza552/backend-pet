@@ -151,16 +151,6 @@ export default class PostController implements IController {
         }
     }
 
-    // async getStatusByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
-    //     try {
-    //         const accountId = req.account?.id as string;
-    //         const count = await postService.getStatusByAccount(accountId);
-    //         res.status(200).json(count);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
-
     async getPostsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id as string;
