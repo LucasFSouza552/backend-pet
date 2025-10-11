@@ -8,11 +8,36 @@ import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
 import { AccountService } from "../services/account.services";
 import IPost from "../models/Post";
+import { gfs } from "../config/gridfs";
 
 const postService = new PostService();
 const accountService = new AccountService();
 
 export default class PostController implements IController {
+    // async getImages(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //     try {
+    //         const id = req.params.id;
+    //         if (!id) {
+    //             throw ThrowError.badRequest("ID não foi informado.");
+    //         }
+
+    //         const post = await postService.getPostImages(id);
+    //         if (!post) {
+    //             res.status(404).json({ error: "Imagem nao encontrada" });
+    //             return;
+    //         }
+
+    //         post.on("error", (err) => {
+    //             console.error(err);
+    //             res.status(404).json({ error: "Imagem não encontrada" });
+    //         });
+    //         res.setHeader("Content-Type", "image/jpeg"); 
+
+    //         post.pipe(res);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -33,6 +58,7 @@ export default class PostController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const post = await postService.getById(id);
+            console.log(post);
             res.status(200).json(post);
         } catch (error) {
             next(error);
@@ -40,31 +66,36 @@ export default class PostController implements IController {
     }
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const post = req?.body;
         try {
-            const post = req?.body;
-            const accoundId = req?.account?.id;
+            post.account = req?.account?.id;
 
-            if (!accoundId) {
-                throw ThrowError.forbidden("Acesso negado.");
-            }
-            const account = await accountService.getById(accoundId);
-            if (!account) {
-                throw ThrowError.notFound("Usuário não encontrado.");
-            }
+            const images = req.files as Express.Multer.File[];
+            post.image = [];
 
-            post.account = account.id;
-            post.authorModel = account.role;
+            if (!gfs) {
+                res.status(500).json({ error: "GridFS não inicializado" });
+                return;
+            }
 
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
                 .add({ key: "content" })
-                .add({ key: "image", required: false })
                 .add({ key: "account" })
                 .build();
 
-            const newPost: CreatePostDTO = await postService.create(newPostDTO);
+            const newPost: CreatePostDTO = await postService.create(newPostDTO, images);
             res.status(201).json(newPost);
         } catch (error) {
+            if (post.image && post.image.length > 0 && gfs) {
+                for (const fileId of post.image) {
+                    try {
+                        await gfs.delete(fileId);
+                    } catch (err) {
+                        console.error("Erro ao remover imagem do GridFS:", err);
+                    }
+                }
+            }
             next(error);
         }
     }
@@ -120,11 +151,13 @@ export default class PostController implements IController {
     async toggleLike(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            const accountId = req.account?.id as string;
-            if (!id) {
+            const accountId = req.account?.id.toString();
+            if (!id || !accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
+
             const post = await postService.toggleLike(id, accountId);
+            console.log(post);
             res.status(200).json(post);
         } catch (error) {
             next(error);

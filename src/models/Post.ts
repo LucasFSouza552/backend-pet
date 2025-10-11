@@ -5,7 +5,7 @@ export default interface IPost extends Document {
     comments?: Types.ObjectId[];
     commentsCount?: number;
     content: string;
-    image?: Buffer[];
+    image?: Types.ObjectId[];
     date: Date;
     likes: Types.ObjectId[];
     account: Types.ObjectId | string;
@@ -23,7 +23,7 @@ const postSchema = new Schema<IPost>({
         required: true,
     },
     image: {
-        type: [Buffer],
+        type: [Schema.Types.ObjectId],
         required: false
     },
     date: {
@@ -56,6 +56,18 @@ postSchema.virtual("commentsCount", {
     foreignField: "post",
     count: true
 });
+
+postSchema.virtual("id").get(function (this: Document & { _id: Types.ObjectId }) {
+    return this._id.toString();
+});
+
+postSchema.set("toJSON", {
+    virtuals: true,
+    transform: (_, ret) => {
+        delete ret._id;
+    }
+});
+
 
 postSchema.set("toObject", { virtuals: true });
 postSchema.set("toJSON", { virtuals: true });

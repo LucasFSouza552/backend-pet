@@ -3,9 +3,10 @@ import Filter from "../interfaces/Filter";
 import IRepository from "../interfaces/IRepository";
 import { IAccount, Account } from "../models/Account";
 import { CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
+import { ObjectId } from "mongodb";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
-    async updateAvatar(userId: string, avatar: Buffer): Promise<void> {
+    async updateAvatar(userId: string, avatar: ObjectId): Promise<void> {
         await Account.findByIdAndUpdate(userId, { avatar }, { new: true });
     }
     async changePassword(accountId: string, password: string): Promise<void> {
@@ -23,7 +24,8 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
         return accounts;
     }
     async getById(id: string): Promise<IAccount | null> {
-        return await Account.findById(id);
+        const account = await Account.findById({ _id: id }).lean({ virtuals: true }).exec();
+        return { ...account, id: account?._id } as IAccount;
     }
     async create(data: CreateAccountDTO): Promise<IAccount> {
         const account = new Account(data);

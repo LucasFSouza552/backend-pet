@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IAccount } from "../models/Account";
 
 export type UpdateAccountDTO = Partial<
@@ -15,6 +16,4 @@ export type ChangePasswordDTO = {
     newPassword: string;
 };
 
-export type UpdateAvatarDTO = {
-    avatar: Buffer
-}
+export type UpdateAvatarDTO =  Pick<IAccount, "avatar">;

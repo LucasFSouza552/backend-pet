@@ -1,11 +1,12 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
 import IAddress from "../interfaces/IAddress";
 import { ITypeAccounts } from "../types/ITypeAccounts";
 
 export interface IAccount extends Document {
+    id: string;
     name: string;
     email: string;
-    avatar?: Buffer | string;
+    avatar?: Types.ObjectId;
     password: string;
     phone_number: string;
     role: ITypeAccounts;
@@ -32,7 +33,7 @@ const accountSchema = new Schema<IAccount>(
             match: [/^\S+@\S+\.\S+$/, "Email inválido"],
         },
         avatar: {
-            type: Buffer,
+            type: Schema.Types.ObjectId,
             required: false,
             default: null,
         },
@@ -101,5 +102,6 @@ const accountSchema = new Schema<IAccount>(
     },
     { timestamps: true, strict: true }
 );
+
 
 export const Account = model<IAccount>("Account", accountSchema);

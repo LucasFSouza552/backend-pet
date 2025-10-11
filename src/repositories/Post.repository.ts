@@ -5,8 +5,9 @@ import IPost, { Post } from "../models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
-    getPostsByAccount(accountId: string) {
-        return Post.find({ accountId });
+
+    async getPostsByAccount(accountId: string) {
+        return await Post.find({ accountId });
     }
     async getPostsWithAuthor(filter: Filter) {
         const { page, limit, orderBy, order, query } = filter;
@@ -14,28 +15,29 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
             delete query.accountId;
         }
-        const posts = Post.find(query as FilterQuery<IPost>)
+        const posts = await Post.find(query as FilterQuery<IPost>)
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit)
             .populate({ path: "account", select: "name role avatar" })
+            .lean()
             .exec();
 
         return posts;
     }
     async addLike(postId: string, accountId: string): Promise<IPost | null> {
         return await Post.findByIdAndUpdate(
-            { post: postId },
+            postId,
             { $addToSet: { likes: new Types.ObjectId(accountId) } },
             { new: true }
-        );
+        ).populate({ path: "account", select: "name role avatar" });
     }
     async removeLike(postId: string, accountId: string): Promise<IPost | null> {
         return await Post.findByIdAndUpdate(
-            { post: postId },
+            postId,
             { $pull: { likes: new Types.ObjectId(accountId) } },
             { new: true }
-        );
+        ).populate({ path: "account", select: "name role avatar" });
     }
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
@@ -59,10 +61,13 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
                     { path: "parentId", select: "content accountId" }
                 ]
             })
-            .populate("account", "name role avatar");
+            .populate("account", "name role avatar")
+            .lean({ virtuals: true })
+            .exec();
         return post;
     }
     async create(data: CreatePostDTO): Promise<IPost> {
+
         const post = new Post(data);
         await post.save();
         return post;

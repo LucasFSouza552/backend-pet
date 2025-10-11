@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { initGridFS } from "./gridfs";
 dotenv.config();
 
 const user = process.env.MONGO_USER;
@@ -7,7 +8,6 @@ const pass = process.env.MONGO_PASS;
 const dbName = process.env.MONGO_DB;
 const cluster = process.env.MONGO_CLUSTER;
 const prod = process.env.NODE_ENV === "production";
-
 
 export const connectDB = async () => {
     const MONGO_URL = process.env.MONGO_URL;
@@ -39,6 +39,7 @@ export const connectDB = async () => {
                 break;
         }
 
+        await initGridFS();
         console.log("MongoDB connected");
     } catch (error) {
         console.log(error);

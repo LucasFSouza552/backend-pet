@@ -14,7 +14,7 @@ export default class BuilderDTO<T> {
         return path.split('.').reduce((acc, key) => acc && acc[key], obj);
     }
 
-    add({ key, type = "string", required = true }: { key: string, type?: "string" | "number" | "boolean", required?: boolean }): BuilderDTO<T> {
+    add({ key, type = "string", required = true }: { key: string, type?: "string" | "number" | "boolean" | "array", required?: boolean }): BuilderDTO<T> {
         let value: any = this.getValueByPath(this._rawData, key);
         if (value === undefined) {
             if (required) {
@@ -35,6 +35,9 @@ export default class BuilderDTO<T> {
                 break;
             case "boolean":
                 value = Boolean(value);
+                break;
+            case "array":
+                value = Array.isArray(value) ? value : [value];
                 break;
         }
 

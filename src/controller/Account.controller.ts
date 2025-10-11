@@ -5,7 +5,7 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/Account.services";
+import { AccountService } from "../services/account.services";
 
 const accountService = new AccountService();
 
@@ -42,16 +42,8 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-            const img64 = account?.avatar   
-                ?
-                `data:image/png;base64,${account.avatar.toString("base64")}`
-                : undefined;
-
-
-            res.status(200).json({
-                ...account
-                , avatar: img64
-            });
+            
+            res.status(200).json(account);
         } catch (error) {
             next(error);
         }
@@ -147,6 +139,7 @@ export default class AccountController implements IController {
         try {
             const accountId = req.account?.id as string;
             const file = req.file;
+            console.log(file);
             if (!file) {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
             }

@@ -11,6 +11,7 @@ import { cryptPassword, validatePassword } from "../utils/aes-crypto";
 import AccountAchievementRepository from "../repositories/AccountAchievement.repository";
 import AchievementRepository from "../repositories/Achievement.repository";
 import { addAchieviment } from "../dtos/AccountAchievementDTO";
+import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
 
 const accountRepository = new AccountRepository();
 const accountAchievementRepository = new AccountAchievementRepository();
@@ -22,13 +23,21 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             if (!file || !file.buffer) {
                 throw ThrowError.badRequest("Arquivo inválido ou vazio");
             }
-
-            await accountRepository.updateAvatar(accoundId, file.buffer);
-
+            
             const account = await accountRepository.getById(accoundId);
             if (!account) throw ThrowError.notFound("Erro ao atualizar avatar.");
 
-            return { avatar: account.avatar } as UpdateAvatarDTO;
+            if (account.avatar) {
+                await PictureStorageRepository.deleteImage(account.avatar);
+            }
+
+            const avatarId = await PictureStorageRepository.uploadImage(file);
+            if (!avatarId) throw ThrowError.badRequest("Erro ao atualizar avatar.");
+            
+            await accountRepository.updateAvatar(accoundId, avatarId);
+
+
+            return { avatar: avatarId} as UpdateAvatarDTO;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar o avatar.");
@@ -47,7 +56,6 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
         try {
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
             return accountMapper(account);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -144,7 +152,7 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
         try {
             const achievements = await achievementsRepository.getByType("sponsorship");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
-            
+
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
