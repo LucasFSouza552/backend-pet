@@ -5,13 +5,23 @@ import multer from "multer";
 
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 2 * 1024 * 1024 }
+    limits: { fileSize: 2 * 1024 * 1024, files: 5 },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(ThrowError.badRequest('Tipo de arquivo não permitido'));
+        }
+    }
+
 });
 
 import AccountController from "../controller/Account.controller";
 import AuthMiddleware from "../middleware/authMiddleware";
 import authorizationMiddleware from "../middleware/authorizationMiddleware";
 import PostController from "../controller/Post.controller";
+import { ThrowError } from "../errors/ThrowError";
 const accountController = new AccountController();
 const postController = new PostController();
 
@@ -26,7 +36,7 @@ router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), account
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
 
 router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
-router.get("/profile/status", AuthMiddleware, accountController.getStatusByAccount);
+router.get("/:id/status", AuthMiddleware, accountController.getStatusByAccount);
 
 
 export default router;

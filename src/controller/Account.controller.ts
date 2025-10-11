@@ -12,7 +12,7 @@ const accountService = new AccountService();
 export default class AccountController implements IController {
     async getStatusByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const accountId = req.account?.id as string;
+            const accountId = req.params?.id;
             if (!accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }

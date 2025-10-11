@@ -1,12 +1,12 @@
 import { Router } from "express";
+import PostController from "../controller/Post.controller";
+import AuthMiddleware from "../middleware/authMiddleware";
+import multer from "multer";
 
 const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-import PostController from "../controller/Post.controller";
-import AuthMiddleware from "../middleware/authMiddleware";
-import multer from "multer";
 const postController = new PostController();
 
 router.get("/", AuthMiddleware, postController.getAll);

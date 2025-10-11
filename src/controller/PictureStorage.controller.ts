@@ -15,6 +15,8 @@ export class PictureStorangeController {
             picture.on("error", (error) => next(error));
 
             res.setHeader("Content-Type", "image/jpeg");
+            res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+            res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
             picture.pipe(res);
         } catch (error) {
             next(error);

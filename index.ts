@@ -5,17 +5,42 @@ import cors from "cors";
 import routes from "./src/routes/api.routes";
 import { connectDB } from "./src/config/db";
 import { errorHandler } from "./src/middleware/errorHandler";
+import rateLimit from 'express-rate-limit'; import helmet from 'helmet';
+
 
 const app = express();
 
-app.use(cors());
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Muitas tentativas, tente novamente em 15 minutos'
+});
+
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                imgSrc: ["'self'", "data:", "blob:", "http:"]
+            },
+        },
+    })
+);
+
 app.use(express.json());
 
 connectDB();
 
 const port = process.env.PORT;
 
-app.use('/api', routes);
+app.use('/api', limiter, routes);
 
 app.use(errorHandler);
 
