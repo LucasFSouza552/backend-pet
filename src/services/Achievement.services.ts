@@ -2,15 +2,18 @@ import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "../d
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
+import AccountAchievementRepository from "../repositories/AccountAchievement.repository";
 import AchievementRepository from "../repositories/Achievement.repository";
 
 const achievementRepository = new AchievementRepository();
 
 export class AchievementService implements IService<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
+   
     async getAll(filter: Filter): Promise<AchievementDTO[]> {
         try {
             return achievementRepository.getAll(filter);
         } catch (error) {
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar as conquistas.");
         }
     }
@@ -18,6 +21,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
         try {
             return await achievementRepository.getById(id);
         } catch (error) {
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar a conquista.");
         }
     }
@@ -25,6 +29,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
         try {
             return await achievementRepository.create(data);
         } catch (error) {
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível criar a conquista.");
         }
     }
@@ -32,6 +37,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
         try {
             return await achievementRepository.update(id, data);
         } catch (error) {
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar a conquista.");
         }
     }
@@ -39,6 +45,7 @@ export class AchievementService implements IService<CreateAchievementDTO, Update
         try {
             await achievementRepository.delete(id);
         } catch (error) {
+            if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível deletar a conquista.");
         }
     }

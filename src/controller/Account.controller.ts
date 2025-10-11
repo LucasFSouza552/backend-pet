@@ -10,6 +10,19 @@ import { AccountService } from "../services/account.services";
 const accountService = new AccountService();
 
 export default class AccountController implements IController {
+    async getStatusByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.account?.id as string;
+            if (!accountId) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+
+            const accountStatus = await accountService.getStatusByAccount(accountId);
+            res.status(200).json(accountStatus);
+        } catch (error) {
+            next(error);
+        }
+    }
     async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id as string;
@@ -42,7 +55,7 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-            
+
             res.status(200).json(account);
         } catch (error) {
             next(error);

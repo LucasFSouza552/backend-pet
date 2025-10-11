@@ -11,7 +11,7 @@ const petDTOFields: (keyof PetDTO)[] = [
     "images",
     "description",
     "adopted",
-    "accountId",
+    "account",
     "adoptedAt",
     "createdAt"
 ];

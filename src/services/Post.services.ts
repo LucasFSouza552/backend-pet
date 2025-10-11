@@ -9,6 +9,7 @@ import PostRepository from "../repositories/Post.repository";
 import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
 
 const postRepository = new PostRepository();
+
 export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
 
     async getPostsByAccount(accountId: string) {
@@ -109,12 +110,16 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
             throw ThrowError.internal("Não foi possível deletar o post.");
         }
     }
-    async getCountPosts(postId: string): Promise<number> {
-        try {
-            return await postRepository.getCountPosts(postId);
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Não foi possível buscar o post.");
-        }
-    }
+    // async getStatusByAccount(postId: string): Promise<number> {
+    //     try {
+    //         const postCount = await postRepository.getCountPosts(postId);
+
+            
+    //         return postCount;
+
+    //     } catch (error) {
+    //         if (error instanceof ThrowError) throw error;
+    //         throw ThrowError.internal("Não foi possível buscar o post.");
+    //     }
+    // }
 }

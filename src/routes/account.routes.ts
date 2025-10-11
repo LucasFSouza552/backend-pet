@@ -25,8 +25,8 @@ router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountCont
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.update);
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
 
-router.get("/posts", AuthMiddleware, postController.getPostsByAccount);
-router.get("/posts/count", AuthMiddleware, postController.getCountPosts);
+router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
+router.get("/profile/status", AuthMiddleware, accountController.getStatusByAccount);
 
 
 export default router;

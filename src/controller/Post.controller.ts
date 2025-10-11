@@ -14,30 +14,6 @@ const postService = new PostService();
 const accountService = new AccountService();
 
 export default class PostController implements IController {
-    // async getImages(req: Request, res: Response, next: NextFunction): Promise<void> {
-    //     try {
-    //         const id = req.params.id;
-    //         if (!id) {
-    //             throw ThrowError.badRequest("ID não foi informado.");
-    //         }
-
-    //         const post = await postService.getPostImages(id);
-    //         if (!post) {
-    //             res.status(404).json({ error: "Imagem nao encontrada" });
-    //             return;
-    //         }
-
-    //         post.on("error", (err) => {
-    //             console.error(err);
-    //             res.status(404).json({ error: "Imagem não encontrada" });
-    //         });
-    //         res.setHeader("Content-Type", "image/jpeg"); 
-
-    //         post.pipe(res);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -175,15 +151,15 @@ export default class PostController implements IController {
         }
     }
 
-    async getCountPosts(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const accountId = req.account?.id as string;
-            const count = await postService.getCountPosts(accountId);
-            res.status(200).json(count);
-        } catch (error) {
-            next(error);
-        }
-    }
+    // async getStatusByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //     try {
+    //         const accountId = req.account?.id as string;
+    //         const count = await postService.getStatusByAccount(accountId);
+    //         res.status(200).json(count);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 
     async getPostsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

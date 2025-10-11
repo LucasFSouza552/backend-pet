@@ -6,8 +6,8 @@ import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
 
-    async getPostsByAccount(accountId: string) {
-        return await Post.find({ accountId });
+    async getPostsByAccount(account: string) {
+        return await Post.find({ account });
     }
     async getPostsWithAuthor(filter: Filter) {
         const { page, limit, orderBy, order, query } = filter;
@@ -58,7 +58,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
                 match: { isDeleted: false },
                 populate: [
                     { path: "account", select: "name avatar" },
-                    { path: "parentId", select: "content accountId" }
+                    { path: "parentId", select: "content account" }
                 ]
             })
             .populate("account", "name role avatar")
@@ -83,7 +83,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         await Post.findByIdAndDelete(id);
     }
 
-    async getCountPosts(accountId: string): Promise<number> {
-        return await Post.find({ account: accountId }).countDocuments();
+    async getCountPosts(account: string): Promise<number> {
+        return await Post.find({ account }).countDocuments();
     }
 }

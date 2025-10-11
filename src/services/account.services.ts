@@ -1,4 +1,4 @@
-import { Achievements } from "./../models/Achievements";
+import { Achievements, IAchievement } from "./../models/Achievements";
 import { AccountAchievement } from "./../models/AccountAchievement";
 import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
@@ -12,18 +12,33 @@ import AccountAchievementRepository from "../repositories/AccountAchievement.rep
 import AchievementRepository from "../repositories/Achievement.repository";
 import { addAchieviment } from "../dtos/AccountAchievementDTO";
 import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
+import PostRepository from "../repositories/Post.repository";
+import achievementMapper from "../Mappers/achievementMapper";
 
 const accountRepository = new AccountRepository();
 const accountAchievementRepository = new AccountAchievementRepository();
 const achievementsRepository = new AchievementRepository();
+const postRepository = new PostRepository();
 
 export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+    async getStatusByAccount(accountId: string) {
+        try {
+            const postCount = await postRepository.getCountPosts(accountId);
+            const achievements = await accountAchievementRepository.getByAccountId(accountId);
+            
+            const achievementMapped = achievements.map((item) => achievementMapper(item.achievement as unknown as IAchievement));
+            return { postCount, achievements: achievementMapped };
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar status.");
+        }
+    }
     async updateAvatar(accoundId: string, file: Express.Multer.File): Promise<UpdateAvatarDTO> {
         try {
             if (!file || !file.buffer) {
                 throw ThrowError.badRequest("Arquivo inválido ou vazio");
             }
-            
+
             const account = await accountRepository.getById(accoundId);
             if (!account) throw ThrowError.notFound("Erro ao atualizar avatar.");
 
@@ -33,11 +48,11 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
             const avatarId = await PictureStorageRepository.uploadImage(file);
             if (!avatarId) throw ThrowError.badRequest("Erro ao atualizar avatar.");
-            
+
             await accountRepository.updateAvatar(accoundId, avatarId);
 
 
-            return { avatar: avatarId} as UpdateAvatarDTO;
+            return { avatar: avatarId } as UpdateAvatarDTO;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível atualizar o avatar.");
@@ -140,6 +155,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addAdoptionAchievement(id: string): Promise<void> {
         try {
+            const account = await accountRepository.getById(id);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementsRepository.getByType("adoption");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
         } catch (error) {
@@ -150,6 +167,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addSponsorshipsAchievement(id: string): Promise<void> {
         try {
+            const account = await accountRepository.getById(id);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementsRepository.getByType("sponsorship");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
 
@@ -161,6 +180,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async addDonationsAchievement(id: string): Promise<void> {
         try {
+            const account = await accountRepository.getById(id);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementsRepository.getByType("donation");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
 

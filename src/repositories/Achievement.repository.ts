@@ -5,8 +5,8 @@ import IRepository from "../interfaces/IRepository";
 import { IAchievement, Achievements } from "../models/Achievements";
 
 export default class AchievementRepository implements IRepository<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
-    getByType(type: string) {
-        return Achievements.findOne({ type });
+    async getByType(type: string) {
+        return await Achievements.findOne({ type });
     }
     async getAll(filter: Filter): Promise<AchievementDTO[]> {
         const { page, limit, orderBy, order, query } = filter;

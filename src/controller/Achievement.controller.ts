@@ -5,8 +5,10 @@ import filterConfig from "../utils/filterConfig";
 import Filter from "../interfaces/Filter";
 import { AchievementService } from "../services/Achievement.services";
 import BuilderDTO from "../utils/builderDTO";
+import { AccountService } from "../services/account.services";
 
 const achievementService = new AchievementService();
+const accountService = new AccountService()
 
 export default class AchievementController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -72,6 +74,45 @@ export default class AchievementController implements IController {
             }
             await achievementService.delete(id);
             res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async addAdoptionAchievement(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                throw new Error("ID não foi informado.");
+            }
+            const achievement = await accountService.addAdoptionAchievement(id);
+            res.status(200).json(achievement);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+     async addSponsorshipsAchievement(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                throw new Error("ID não foi informado.");
+            }
+            const achievement = await accountService.addSponsorshipsAchievement(id);
+            res.status(200).json(achievement);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async addDonationAchievement(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                throw new Error("ID não foi informado.");
+            }
+            const achievement = await accountService.addDonationsAchievement(id);
+            res.status(200).json(achievement);
         } catch (error) {
             next(error);
         }

@@ -3,8 +3,8 @@ import { mapToDTO } from "../utils/Mapper";
 
 const commentDTOFields: (keyof IComment)[] = [
     'id',
-    'postId',
-    'author',
+    'post',
+    'account',
     'content',
     'createdAt',
     'updatedAt'
