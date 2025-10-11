@@ -5,8 +5,8 @@ import cors from "cors";
 import routes from "./src/routes/api.routes";
 import { connectDB } from "./src/config/db";
 import { errorHandler } from "./src/middleware/errorHandler";
-import rateLimit from 'express-rate-limit'; import helmet from 'helmet';
-
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 const app = express();
 

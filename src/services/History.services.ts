@@ -4,7 +4,7 @@ import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import HistoryRepository from "../repositories/History.repository";
-import { AccountService } from "./Account.services";
+import AccountService from "./Account.services";
 import { PetService } from "./Pet.services";
 
 const historyRepository = new HistoryRepository();

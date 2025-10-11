@@ -5,7 +5,7 @@ import filterConfig from "../utils/filterConfig";
 import Filter from "../interfaces/Filter";
 import { AchievementService } from "../services/Achievement.services";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/account.services";
+import AccountService from "../services/Account.services";
 
 const achievementService = new AchievementService();
 const accountService = new AccountService()

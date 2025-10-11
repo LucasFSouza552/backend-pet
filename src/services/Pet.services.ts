@@ -7,7 +7,7 @@ import IPet from "../models/Pet";
 import PetRepository from "../repositories/Pet.repository";
 import HistoryRepository from "../repositories/History.repository";
 import { CreateHistoryDTO, HistoryDTO } from "../dtos/HistoryDTO";
-import { AccountService } from "./Account.services";
+import AccountService from "./Account.services";
 
 const petRepository = new PetRepository();
 const historyRepository = new HistoryRepository();

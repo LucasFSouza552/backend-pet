@@ -5,7 +5,7 @@ import filterConfig from "../utils/filterConfig";
 import { ThrowError } from "../errors/ThrowError";
 import BuilderDTO from "../utils/builderDTO";
 import { CreateHistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
-import { AccountService } from "../services/account.services";
+import AccountService from "../services/Account.services";
 
 const historyService = new HistoryService();
 const accountService = new AccountService();

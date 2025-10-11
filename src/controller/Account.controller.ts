@@ -5,7 +5,7 @@ import Filter from "../interfaces/Filter";
 import filterConfig from "../utils/filterConfig";
 import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/account.services";
+import AccountService from "../services/Account.services";
 
 const accountService = new AccountService();
 

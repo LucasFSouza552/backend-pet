@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "../utils/JwtEncoder";
 import { ThrowError } from "../errors/ThrowError";
-import { AccountService } from "../services/account.services";
+import AccountService from "../services/Account.services";
 import { AccountDTO } from "../dtos/AccountDTO";
 
 declare global {

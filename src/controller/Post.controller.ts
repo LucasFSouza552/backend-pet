@@ -6,7 +6,7 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
-import { AccountService } from "../services/account.services";
+import AccountService from "../services/Account.services";
 import IPost from "../models/Post";
 import { gfs } from "../config/gridfs";
 

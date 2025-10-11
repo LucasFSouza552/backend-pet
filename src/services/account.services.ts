@@ -1,31 +1,31 @@
-import { Achievements, IAchievement } from "./../models/Achievements";
-import { AccountAchievement } from "./../models/AccountAchievement";
+import { IAchievement } from "../models/Achievements";
 import { AccountDTO, ChangePasswordDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import Filter from "../interfaces/Filter";
 import IService from "../interfaces/IService";
 import accountMapper from "../Mappers/accountMapper";
-import { IAccount } from "../models/Account";
 import AccountRepository from "../repositories/Account.repository";
-import { cryptPassword, validatePassword } from "../utils/aes-crypto";
+import { cryptPassword } from "../utils/aes-crypto";
 import AccountAchievementRepository from "../repositories/AccountAchievement.repository";
 import AchievementRepository from "../repositories/Achievement.repository";
 import { addAchieviment } from "../dtos/AccountAchievementDTO";
 import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
 import PostRepository from "../repositories/Post.repository";
 import achievementMapper from "../Mappers/achievementMapper";
+import AuthRepository from "../repositories/Auth.repository";
 
+const authRepository = new AuthRepository();
 const accountRepository = new AccountRepository();
 const accountAchievementRepository = new AccountAchievementRepository();
 const achievementsRepository = new AchievementRepository();
 const postRepository = new PostRepository();
 
-export class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async getStatusByAccount(accountId: string) {
         try {
             const postCount = await postRepository.getCountPosts(accountId);
             const achievements = await accountAchievementRepository.getByAccountId(accountId);
-            
+
             const achievementMapped = achievements.map((item) => achievementMapper(item.achievement as unknown as IAchievement));
             return { postCount, achievements: achievementMapped };
         } catch (error) {
@@ -80,7 +80,7 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
 
     async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
-            const account = await accountRepository.getByEmail(data.email);
+            const account = await authRepository.getByEmail(data.email);
             if (account) throw ThrowError.conflict("E-mail já cadastrado.");
 
             if (data.cpf) {
@@ -123,35 +123,8 @@ export class AccountService implements IService<CreateAccountDTO, UpdateAccountD
             throw ThrowError.internal("Não foi possível deletar o usuário.");
         }
     }
-    async getByEmail(email: string): Promise<IAccount | null> {
-        try {
-            return await accountRepository.getByEmail(email);
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Não foi possível buscar o usuário.");
-        }
-    }
-    async changePassword(accountId: string, data: ChangePasswordDTO): Promise<void> {
-        try {
-            const account = await accountRepository.getById(accountId);
-            if (!account) {
-                throw ThrowError.notFound("Usuário não encontrado.");
-            }
 
-            const passwordEncoded = await validatePassword(data.currentPassword, account.password);
-            if (!passwordEncoded) {
-                throw ThrowError.unauthorized("As senhas não concidem.");
-            }
-
-            account.password = await cryptPassword(data.newPassword);
-
-            await accountRepository.changePassword(accountId, account.password);
-
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Não foi possível atualizar a senha.");
-        }
-    }
+   
 
     async addAdoptionAchievement(id: string): Promise<void> {
         try {
