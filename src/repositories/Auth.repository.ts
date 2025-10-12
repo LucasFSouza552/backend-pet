@@ -4,7 +4,7 @@ import { Account, IAccount } from "../models/Account";
 
 export default class AuthRepository {
     async updateVerificationToken(account: IAccount): Promise<IAccount | null> {
-        return await Account.findOneAndUpdate({ _id: account._id }, { emailVerificationToken: account.emailVerificationToken, verified: account.verified });
+        return await Account.findOneAndUpdate({ _id: account._id }, { verified: account.verified });
     }
     async getByEmail(email: string): Promise<IAccount | null> {
         return await Account.findOne({ email });

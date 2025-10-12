@@ -102,7 +102,7 @@ export default class AuthController {
                 throw ThrowError.badRequest("Verificação inválida.");
             }
 
-            const account = await authService.verifyEmail({ emailVerificationToken: token });
+            const account = await authService.verifyEmail(token);
             res.status(200).json(account);
         } catch (error) {
             next(error);
@@ -137,7 +137,7 @@ export default class AuthController {
             if (!token || !password) {
                 throw ThrowError.badRequest("É necesario preencher todos os campos.");
             }
-            
+
             await authService.resetPassword(token, password);
 
             res.status(200).json({ message: "Senha alterada com sucesso." });

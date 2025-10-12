@@ -9,28 +9,7 @@ import JWT from "../utils/JwtEncoder";
 
 const authRepository = new AuthRepository();
 export class AuthService {
-    async resetPassword(token: string, password: string) {
-        try {
-            const verifyToken = authRepository.getTokenVerification(token);
-            if (!verifyToken) throw ThrowError.notFound("Token inválido.");
 
-            const decodedToken = JWT.isJwtTokenValid(token);
-            if (!decodedToken) throw ThrowError.notFound("Token inválido.");
-
-            const accountId = decodedToken?.data?.id;
-            if (!accountId) throw ThrowError.notFound("Token inválido.");
-
-            const account = await authRepository.getById(accountId);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
-            account.password = await cryptPassword(password);
-
-            await authRepository.changePassword(accountId, account.password);
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Não foi possível redefinir a senha.");
-        }
-    }
     async getByEmail(email: string): Promise<IAccount | null> {
         try {
             return await authRepository.getByEmail(email);
@@ -81,6 +60,32 @@ export class AuthService {
 
             const newAccount = await authRepository.create(data);
 
+            const token = JWT.encodeToken({ id: newAccount._id });
+
+            await sendEmail({
+                to: newAccount.email,
+                subject: "✅ Confirmação de Email - MyPets",
+                text: `Olá!\n\nObrigado por se cadastrar no MyPets.\nPor favor, confirme seu endereço de email clicando no link abaixo:\nhttp://localhost:3000/verify-email?token=${token}\n\nSe você não se cadastrou, ignore este email.`,
+                html: `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #333;">Confirmação de Email</h2>
+    <p>Olá!</p>
+    <p>Obrigado por se cadastrar no <strong>MyPets</strong>.</p>
+    <p style="text-align: center; margin: 30px 0;">
+        <a href="http://localhost:3000/verify-email?token=${token}" 
+           style="display: inline-block; padding: 12px 20px; color: #fff; background-color: #1E90FF; text-decoration: none; border-radius: 5px; font-weight: bold;">
+           Confirmar Email
+        </a>
+    </p>
+    <p>Se você não se cadastrou, ignore este email.</p>
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #555;">Atenciosamente,<br>Equipe MyPets</p>
+</div>
+`
+            }).catch(err => {
+                throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
+            });
+
             return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
@@ -88,19 +93,16 @@ export class AuthService {
         }
     }
 
-    async verifyEmail(account: AccountTokenDTO): Promise<AccountDTO> {
+    async verifyEmail(token: string): Promise<AccountDTO> {
         try {
 
-            if (!account || !account?.emailVerificationToken) throw ThrowError.notFound("Usuário não encontrado.");
+            if (!token) throw ThrowError.notFound("Usuário não encontrado.");
 
-            const accountFound = await authRepository.getTokenVerification(account.emailVerificationToken);
-            if (!accountFound) throw new Error("Token inválido ou expirado");
-            if (!accountFound.verified) throw ThrowError.notFound("Usuário já verificado.");
-
-            const decodedToken = JWT.validateAuth(account.emailVerificationToken);
+            const decodedToken = JWT.isJwtTokenValid(token);
             if (!decodedToken) throw ThrowError.notFound("Token inválido.");
+            const accountFound = await authRepository.getById(decodedToken?.data?.id);
+            if (!accountFound) throw ThrowError.notFound("Usuário não encontrado.");
 
-            accountFound.emailVerificationToken = null;
             accountFound.verified = true;
 
             const updatedAccount = await authRepository.updateVerificationToken(accountFound);
@@ -109,6 +111,7 @@ export class AuthService {
             return accountMapper(accountFound);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
+            console.log(error);
             throw ThrowError.internal("Nao foi possivel buscar o usuario.");
         }
     }
@@ -119,12 +122,6 @@ export class AuthService {
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
             const token = JWT.encodeToken({ id: account._id });
-
-            await authRepository.updateVerificationToken({
-                _id: account._id,
-                emailVerificationToken: token,
-                verified: account.verified
-            } as IAccount);
 
             await sendEmail({
                 to: email,
@@ -149,6 +146,29 @@ export class AuthService {
             }).catch(err => { throw ThrowError.internal("Não foi possivel enviar o email.") });
 
 
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível redefinir a senha.");
+        }
+    }
+
+    async resetPassword(token: string, password: string) {
+        try {
+            const verifyToken = authRepository.getTokenVerification(token);
+            if (!verifyToken) throw ThrowError.notFound("Token inválido.");
+
+            const decodedToken = JWT.isJwtTokenValid(token);
+            if (!decodedToken) throw ThrowError.notFound("Token inválido.");
+
+            const accountId = decodedToken?.data?.id;
+            if (!accountId) throw ThrowError.notFound("Token inválido.");
+
+            const account = await authRepository.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            account.password = await cryptPassword(password);
+
+            await authRepository.changePassword(accountId, account.password);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível redefinir a senha.");
