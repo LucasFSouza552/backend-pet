@@ -1,15 +1,15 @@
+import { createPetInteractionDTO, updatePetInteractionDTO } from "../dtos/AccountPetInteractionDTO";
 import { AccountPetInteraction } from "../models/AccountPetInteraction";
-import { IPetInteractionStatus } from "../types/IPetInteractionStatus";
 
 export default class AccountPetInteractionRepository {
-    async create(accountId: string, petId: string, status: IPetInteractionStatus) {
-        return await AccountPetInteraction.create({ account: accountId, pet: petId, status });
+    async create(data: createPetInteractionDTO) {
+        return await AccountPetInteraction.create(data);
     }
 
-    async updateStatus(accountId: string, petId: string, status: IPetInteractionStatus) {
+    async updateStatus(updateData: updatePetInteractionDTO) {
         return await AccountPetInteraction.findOneAndUpdate(
-            { account: accountId, pet: petId },
-            { status },
+            { account: updateData.account, pet: updateData.pet },
+            { status: updateData.status },
             { new: true, upsert: true }
         );
     }
@@ -18,11 +18,7 @@ export default class AccountPetInteractionRepository {
         return await AccountPetInteraction.find({ account: accountId });
     }
 
-    async getByPet(petId: string) {
-        return await AccountPetInteraction.find({ pet: petId });
-    }
-
-    async getInteraction(accountId: string, petId: string) {
-        return await AccountPetInteraction.findOne({ account: accountId, pet: petId });
+    async getInteraction(petId: string) {
+        return await AccountPetInteraction.findOne({ pet: petId });
     }
 }

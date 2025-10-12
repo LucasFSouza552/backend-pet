@@ -7,6 +7,7 @@ import postRoute from "./post.routes";
 import commentRoute from "./comment.routes";
 import historyRoute from "./history.routes";
 import pictureRoute from "./picture.routes";
+import interactionRoute from "./accountPetInteraction.routes";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/comment", commentRoute)
 router.use("/post", postRoute);
 router.use("/history", historyRoute);
 router.use("/picture", pictureRoute);
+router.use("/interaction", interactionRoute);
 
 export default router;

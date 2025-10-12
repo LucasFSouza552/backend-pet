@@ -6,12 +6,10 @@ import IController from "../interfaces/IController";
 import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
-import AccountService from "../services/Account.services";
 import IPost from "../models/Post";
 import { gfs } from "../config/gridfs";
 
 const postService = new PostService();
-const accountService = new AccountService();
 
 export default class PostController implements IController {
 
@@ -42,17 +40,12 @@ export default class PostController implements IController {
     }
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const post = req?.body;
         try {
+            const post = req?.body;
             post.account = req?.account?.id;
 
             const images = req.files as Express.Multer.File[];
             post.image = [];
-
-            if (!gfs) {
-                res.status(500).json({ error: "GridFS não inicializado" });
-                return;
-            }
 
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
@@ -63,15 +56,15 @@ export default class PostController implements IController {
             const newPost: CreatePostDTO = await postService.create(newPostDTO, images);
             res.status(201).json(newPost);
         } catch (error) {
-            if (post.image && post.image.length > 0 && gfs) {
-                for (const fileId of post.image) {
-                    try {
-                        await gfs.delete(fileId);
-                    } catch (err) {
-                        console.error("Erro ao remover imagem do GridFS:", err);
-                    }
-                }
-            }
+            // if (post.image && post.image.length > 0 && gfs) {
+            //     for (const fileId of post.image) {
+            //         try {
+            //             await gfs.delete(fileId);
+            //         } catch (err) {
+            //             console.error("Erro ao remover imagem do GridFS:", err);
+            //         }
+            //     }
+            // }
             next(error);
         }
     }
