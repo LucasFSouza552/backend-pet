@@ -1,0 +1,1 @@
+export type IPetInteractionStatus = "liked" | "disliked" | "viewed";
