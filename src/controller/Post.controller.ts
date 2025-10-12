@@ -7,7 +7,6 @@ import { ThrowError } from "../errors/ThrowError";
 import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
 import BuilderDTO from "../utils/builderDTO";
 import IPost from "../models/Post";
-import { gfs } from "../config/gridfs";
 
 const postService = new PostService();
 
@@ -148,6 +147,8 @@ export default class PostController implements IController {
         try {
             const accountId = req.account?.id as string;
             const posts = await postService.getPostsByAccount(accountId);
+
+            
             res.status(200).json(posts);
         } catch (error) {
             next(error);
@@ -155,7 +156,7 @@ export default class PostController implements IController {
     }
     async search(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-             const allowedQueryFields: string[] = ["title"];
+            const allowedQueryFields: string[] = ["title"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
 
             const posts = await postService.search(filters);

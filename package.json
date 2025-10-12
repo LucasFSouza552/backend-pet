@@ -26,6 +26,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@rprata/pixcode": "^1.0.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
@@ -37,6 +38,9 @@
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.9",
-    "qrcode": "^1.5.4"
+    "pixcode": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "qrcode-pix": "^5.0.0",
+    "uuid": "^13.0.0"
   }
 }

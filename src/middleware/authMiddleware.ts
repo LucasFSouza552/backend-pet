@@ -21,7 +21,7 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
         if (!authHeader) {
             throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
         }
-        
+
         const decodedToken = JWT.validateAuth(authHeader);
         if (!decodedToken) {
             throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");
@@ -36,6 +36,7 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
             throw ThrowError.notFound("Usuário não encontrado.");
         }
         req.account = account;
+
 
         next();
     } catch (error) {

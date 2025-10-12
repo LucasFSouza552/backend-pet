@@ -13,6 +13,9 @@ export default class AccountPetInteractionController {
             PetInteraction.account = req.account?.id;
             PetInteraction.pet = req.params.id;
 
+            console.log("PetInteraction", PetInteraction);
+
+
             const newPetDTO: createPetInteractionDTO = new BuilderDTO<createPetInteractionDTO>(PetInteraction)
                 .add({ key: "account" })
                 .add({ key: "pet" })
