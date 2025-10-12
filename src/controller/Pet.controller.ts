@@ -38,6 +38,18 @@ export default class PetController implements IController {
             next(error);
         }
     }
+
+     async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
+            const filters: Filter = filterConfig(req.query, allowedQueryFields);
+
+            const pets = await petService.getAll(filters);
+            res.status(200).json(pets);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];

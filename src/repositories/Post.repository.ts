@@ -41,7 +41,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
-        
+
         if (query?.account && !Types.ObjectId.isValid(query.account)) {
             delete query.account;
         }
@@ -85,5 +85,14 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
 
     async getCountPosts(account: string): Promise<number> {
         return await Post.find({ account }).countDocuments();
+    }
+
+    async search(filter: Filter): Promise<IPost[]> {
+        const words = filter?.query?.title ? filter.query.title.trim().split(/\s+/) : [];
+        const regexConditions = words.map((word: string) => ({
+            title: { $regex: word, $options: "i" }
+        }));
+
+        return await Post.find({ $and: regexConditions });
     }
 }

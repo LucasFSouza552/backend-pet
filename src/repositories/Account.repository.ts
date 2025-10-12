@@ -6,6 +6,15 @@ import { CreateAccountDTO, UpdateAccountDTO } from "../dtos/AccountDTO";
 import { ObjectId } from "mongodb";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {
+    async search(filter: Filter) {
+
+        const words = filter?.query?.name ? filter.query.name.trim().split(/\s+/) : [];
+        const regexConditions = words.map((word: string) => ({
+            name: { $regex: word, $options: "i" }
+        }));
+        
+        return await Account.find({ $and: regexConditions });
+    }
     async updateAvatar(userId: string, avatar: ObjectId): Promise<void> {
         await Account.findByIdAndUpdate(userId, { avatar }, { new: true });
     }

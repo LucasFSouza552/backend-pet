@@ -37,7 +37,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
             if (!post) return null;
 
             const alreadyLiked = post.likes.some((id) => id.equals(accountId));
-            
+
             return alreadyLiked
                 ? await postRepository.removeLike(postId, accountId)
                 : await postRepository.addLike(postId, accountId);;
@@ -80,7 +80,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
             if (files && files.length > 0) {
                 for (const file of files) {
                     const id = await PictureStorageRepository.uploadImage(file);
-                    if(!id) continue;
+                    if (!id) continue;
                     images.push(id);
                 }
             }
@@ -109,16 +109,13 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
             throw ThrowError.internal("Não foi possível deletar o post.");
         }
     }
-    // async getStatusByAccount(postId: string): Promise<number> {
-    //     try {
-    //         const postCount = await postRepository.getCountPosts(postId);
 
-            
-    //         return postCount;
-
-    //     } catch (error) {
-    //         if (error instanceof ThrowError) throw error;
-    //         throw ThrowError.internal("Não foi possível buscar o post.");
-    //     }
-    // }
+    async search(filter: Filter): Promise<IPost[]> {
+        try {
+            return await postRepository.search(filter);
+        } catch (error: any) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar os posts.");
+        }
+    }
 }

@@ -21,6 +21,16 @@ const achievementsRepository = new AchievementRepository();
 const postRepository = new PostRepository();
 
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
+    async search(filters: Filter) {
+        try {
+            return await accountRepository.search(filters);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            console.log(error);
+            throw ThrowError.internal("Erro ao buscar usuários.");
+        }
+
+    }
     async getStatusByAccount(accountId: string) {
         try {
             const postCount = await postRepository.getCountPosts(accountId);
@@ -124,7 +134,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-   
+
 
     async addAdoptionAchievement(id: string): Promise<void> {
         try {

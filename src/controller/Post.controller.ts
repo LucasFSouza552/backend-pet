@@ -160,4 +160,15 @@ export default class PostController implements IController {
             next(error);
         }
     }
+    async search(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+             const allowedQueryFields: string[] = ["title"];
+            const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
+
+            const posts = await postService.search(filters);
+            res.status(200).json(posts);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

@@ -25,6 +25,9 @@ import { ThrowError } from "../errors/ThrowError";
 const accountController = new AccountController();
 const postController = new PostController();
 
+
+
+router.get("/search", accountController.search);
 router.patch("/", AuthMiddleware, accountController.updateProfile);
 router.get("/:id", AuthMiddleware, accountController.getById);
 router.get("/profile/me", AuthMiddleware, accountController.getProfile);
@@ -37,6 +40,7 @@ router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accoun
 
 router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
 router.get("/:id/status", AuthMiddleware, accountController.getStatusByAccount);
+
 
 
 export default router;

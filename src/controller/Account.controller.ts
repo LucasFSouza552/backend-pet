@@ -10,6 +10,17 @@ import AccountService from "../services/Account.services";
 const accountService = new AccountService();
 
 export default class AccountController implements IController {
+    async search(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const allowedQueryFields: string[] = ["name"];
+            const filters: Filter = filterConfig(req.query, allowedQueryFields);
+
+            const accounts = await accountService.search(filters);
+            res.status(200).json(accounts);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getStatusByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.params?.id;
@@ -152,7 +163,7 @@ export default class AccountController implements IController {
         try {
             const accountId = req.account?.id as string;
             const file = req.file;
-            
+
             if (!file) {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
             }
