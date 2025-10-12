@@ -8,6 +8,7 @@ export default class JWT {
         return jwt.sign({ data }, JWT_SECRET, { expiresIn });
     }
 
+
     static validateAuth(authToken: string) {
         if (!authToken) {
             throw ThrowError.badRequest('Token Ausente');
@@ -32,7 +33,7 @@ export default class JWT {
         }
     }
 
-    private static isJwtTokenValid(token: string) {
+    static isJwtTokenValid(token: string) {
         try {
             const JWT_SECRET: string = process.env.JWT_SECRET as string;
             return verify(token, JWT_SECRET) as JwtPayload;

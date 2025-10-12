@@ -16,6 +16,7 @@ export interface IAccount extends Document {
     address: IAddress;
     createdAt: Date;
     updatedAt: Date;
+    emailVerificationToken?: string | null;
 }
 
 const accountSchema = new Schema<IAccount>(
@@ -98,6 +99,10 @@ const accountSchema = new Schema<IAccount>(
                 minlength: 2,
                 maxlength: 2,
             },
+        },
+        emailVerificationToken: {
+            type: String,
+            required: false,
         },
     },
     { timestamps: true, strict: true }

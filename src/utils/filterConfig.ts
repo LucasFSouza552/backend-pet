@@ -28,7 +28,6 @@ export default function filterConfig<T>(filter: FilterInput, allowedFields: stri
     const query = builderFilterQuery<T>({...rawQuery, ...rest}, allowedFields);
 
     return {
-        ...rest,
         limit: limitNumber,
         page: pageNumber,
         orderBy: orderBy || FilterDefault.orderBy,

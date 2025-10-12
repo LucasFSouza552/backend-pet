@@ -17,7 +17,7 @@ export default class PostController implements IController {
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "accountId", "date", "likes", "image"];
+            const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
 
             const posts = await postService.getAll(filters);
@@ -142,7 +142,7 @@ export default class PostController implements IController {
 
     async getPostsWithAuthor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "account", "date", "likes", "image"];
+            const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             const posts = await postService.getPostsWithAuthor(filters);
             res.status(200).json(posts);

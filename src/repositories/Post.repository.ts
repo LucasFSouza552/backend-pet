@@ -41,7 +41,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async getAll(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
-
+        
         if (query?.account && !Types.ObjectId.isValid(query.account)) {
             delete query.account;
         }

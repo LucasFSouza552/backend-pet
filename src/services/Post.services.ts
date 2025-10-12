@@ -70,7 +70,6 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
             return await postRepository.getById(id);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
-            console.log(error.message);
             throw ThrowError.internal("Não foi possível buscar o post.");
         }
     }

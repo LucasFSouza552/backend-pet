@@ -9,7 +9,6 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
     async updateAvatar(userId: string, avatar: ObjectId): Promise<void> {
         await Account.findByIdAndUpdate(userId, { avatar }, { new: true });
     }
-    
 
     async getAll(filter: Filter): Promise<IAccount[]> {
         const { page, limit, orderBy, order, query } = filter;
@@ -40,8 +39,6 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
     async delete(id: string): Promise<void> {
         await Account.findByIdAndDelete(id);
     }
-
-    
 
     async getByCpf(cpf: string) {
         return await Account.findOne({ cpf });

@@ -152,7 +152,7 @@ export default class AccountController implements IController {
         try {
             const accountId = req.account?.id as string;
             const file = req.file;
-            console.log(file);
+            
             if (!file) {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
             }

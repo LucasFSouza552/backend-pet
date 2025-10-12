@@ -89,10 +89,6 @@ export default class AuthController {
     async resendVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
 
-
-
-
-
         } catch (error) {
             next(error);
         }
@@ -100,13 +96,14 @@ export default class AuthController {
 
     async verifyEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { token } = req.query;
+            const token = req?.query?.token;
 
             if (!token || typeof token !== "string") {
                 throw ThrowError.badRequest("Verificação inválida.");
             }
 
-
+            const account = await authService.verifyEmail({ emailVerificationToken: token });
+            res.status(200).json(account);
         } catch (error) {
             next(error);
         }
@@ -122,11 +119,12 @@ export default class AuthController {
 
     async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { email } = req.body;
+            const email = req.body?.email;
             if (!email) {
                 throw ThrowError.badRequest("É necesario preencher todos os campos.");
             }
-            // Fazer o service
+
+            await authService.forgotPassword(email);
             res.status(200).json({ message: "Email enviado com sucesso." });
         } catch (error) {
             next(error);
@@ -139,7 +137,9 @@ export default class AuthController {
             if (!token || !password) {
                 throw ThrowError.badRequest("É necesario preencher todos os campos.");
             }
-            // Fazer o service
+            
+            await authService.resetPassword(token, password);
+
             res.status(200).json({ message: "Senha alterada com sucesso." });
         } catch (error) {
             next(error);
