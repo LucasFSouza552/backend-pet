@@ -1,11 +1,9 @@
 import { Router } from "express";
 import PostController from "../controller/Post.controller";
 import AuthMiddleware from "../middleware/authMiddleware";
-import multer from "multer";
+import upload from "../config/multer.config";
 
 const router = Router();
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 const postController = new PostController();
 
@@ -17,6 +15,5 @@ router.patch("/:id", AuthMiddleware, postController.update);
 router.delete("/:id", AuthMiddleware, postController.delete);
 router.get("/posts/with-author", AuthMiddleware, postController.getPostsWithAuthor);
 router.post("/:id/like", AuthMiddleware, postController.toggleLike);
-
 
 export default router;

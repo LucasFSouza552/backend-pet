@@ -1,4 +1,4 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, ObjectId, Schema, Types, model } from "mongoose";
 
 export default interface IPet extends Document {
   name: string;
@@ -6,7 +6,7 @@ export default interface IPet extends Document {
   age?: number;
   gender: "M" | "F";
   weight: number;
-  images: Buffer[];
+  images: Types.ObjectId[];
   description?: string;
   adopted: boolean;
   account: Schema.Types.ObjectId | string;
@@ -43,7 +43,7 @@ const petSchema = new Schema<IPet>(
       required: true,
     },
     images: {
-      type: [String], 
+      type: [Schema.Types.ObjectId], 
       required: true,
     },
     adopted: {

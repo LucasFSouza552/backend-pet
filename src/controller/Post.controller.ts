@@ -125,7 +125,6 @@ export default class PostController implements IController {
             }
 
             const post = await postService.toggleLike(id, accountId);
-            console.log(post);
             res.status(200).json(post);
         } catch (error) {
             next(error);
@@ -148,7 +147,6 @@ export default class PostController implements IController {
             const accountId = req.account?.id as string;
             const posts = await postService.getPostsByAccount(accountId);
 
-            
             res.status(200).json(posts);
         } catch (error) {
             next(error);

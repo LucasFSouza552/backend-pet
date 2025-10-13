@@ -8,12 +8,51 @@ import PetRepository from "../repositories/Pet.repository";
 import HistoryRepository from "../repositories/History.repository";
 import { CreateHistoryDTO, HistoryDTO } from "../dtos/HistoryDTO";
 import AccountService from "./Account.services";
+import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
+import { ObjectId } from "mongodb";
 
 const petRepository = new PetRepository();
 const historyRepository = new HistoryRepository();
 const accountService = new AccountService();
 
 export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
+    async updatePetImages(petId: string, files: Express.Multer.File[]): Promise<ObjectId[]> {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            const uploadedImages: ObjectId[] = [];
+            for (const file of files) {
+                if (!file.buffer) continue;
+
+                const imageId = await PictureStorageRepository.uploadImage(file);
+                if (imageId) uploadedImages.push(imageId);
+            }
+
+            await petRepository.update(petId, { images: uploadedImages });
+
+            return uploadedImages;
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao atualizar avatar.");
+        }
+    }
+
+    async deletePetImage(petId: string, imageId: string | ObjectId) {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+
+            await PictureStorageRepository.deleteImage(imageId);
+
+            await petRepository.update(petId, { images: pet.images.filter(image => image !== imageId) });
+            
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao deletar imagem.");
+        }
+    }
+
     async sponsor(id: string, amount: number, accountId: string) {
         try {
 
@@ -33,7 +72,7 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
 
             if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
-            
+
             const newHistory = {
                 type: "adoption",
                 pet: pet.id,

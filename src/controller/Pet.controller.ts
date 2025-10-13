@@ -8,6 +8,36 @@ import { ThrowError } from "../errors/ThrowError";
 const petService = new PetService();
 
 export default class PetController implements IController {
+    async updatePetImages(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const files = req.files as Express.Multer.File[];
+            const petId = req.params.id;
+
+            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
+            if (!files || files.length === 0) throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
+
+            const pet = await petService.updatePetImages(petId, files);
+            res.status(200).json(pet);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deletePetImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const petId = req.params.id;
+            const imageId = req.params.imageId;
+
+            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
+            if (!imageId) throw ThrowError.badRequest("ID da imagem nao foi informado.");
+
+            await petService.deletePetImage(petId, imageId);
+            res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async sponsor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
@@ -39,12 +69,12 @@ export default class PetController implements IController {
         }
     }
 
-     async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
 
-            const pets = await petService.getAll(filters);
+            const pets = await petService.getAll(filters); // TODO: Ajustar o FEED
             res.status(200).json(pets);
         } catch (error) {
             next(error);
