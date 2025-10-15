@@ -2,10 +2,9 @@ import { Document, Schema, model } from "mongoose";
 import { IHistoryStatus } from "../types/IHistoryStatus";
 
 export default interface IHistory extends Document {
-    id: string;
     type: "adoption" | "sponsorship" | "donation";
-    status: IHistoryStatus;
-    pet: Schema.Types.ObjectId | string | null;
+    status?: IHistoryStatus;
+    pet?: Schema.Types.ObjectId | string | null;
     institution?: string;
     account: Schema.Types.ObjectId | string;
     amount?: number;

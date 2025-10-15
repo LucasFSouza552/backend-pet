@@ -1,4 +1,4 @@
-import { AccountDTO, AccountTokenDTO, ChangePasswordDTO, CreateAccountDTO } from "../dtos/AccountDTO";
+import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "../dtos/AccountDTO";
 import { ThrowError } from "../errors/ThrowError";
 import accountMapper from "../Mappers/accountMapper";
 import { Account, IAccount } from "../models/Account";

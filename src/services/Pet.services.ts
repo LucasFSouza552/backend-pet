@@ -10,6 +10,8 @@ import { CreateHistoryDTO, HistoryDTO } from "../dtos/HistoryDTO";
 import AccountService from "./Account.services";
 import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
 import { ObjectId } from "mongodb";
+import { order } from "../config/mergadopago";
+import { v4 as uuidv4 } from "uuid";
 
 const petRepository = new PetRepository();
 const historyRepository = new HistoryRepository();
@@ -46,18 +48,63 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
             await PictureStorageRepository.deleteImage(imageId);
 
             await petRepository.update(petId, { images: pet.images.filter(image => image !== imageId) });
-            
+
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao deletar imagem.");
         }
     }
 
-    async sponsor(id: string, amount: number, accountId: string) {
+    async donate(id: string, amount: number, accountId: string) {
         try {
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao doar para o pet.");
+        }
+    }
+
+    async sponsor(id: string, amount: string, accountId: string) {
+        try {
+            try {
+                const idempotencyKey = uuidv4();
+                const body = {
+                    type: "online",
+                    processing_mode: "automatic",
+                    description: "Patrocinio do pet.",
+                    payer: {
+                        email: "emailfalso@hotmail.com"
+                    },
+                    transactions: {
+                        payments: [
+                            {
+                                amount: "1000.00",
+                                payment_method: {
+                                    id: "master",
+                                    type: "credit_card",
+                                    token: "2926162247",
+                                    installments: 1,
+                                    statement_descriptor: "Store name",
+                                },
+                            },
+                        ],
+                    },
+                }
+
+                const requestOptions = {
+                    idempotencyKey,
+                };
+
+                const response = await order.create({ body, requestOptions }).then((response) => response).catch((error) => error);
+
+                console.log("Pagamento criado com sucesso:", response);
+            } catch (error) {
+                console.error("Erro ao criar pagamento:", error);
+            }
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            console.log(error);
             throw ThrowError.internal("Erro ao patrocinar o pet.");
         }
     }
@@ -73,13 +120,15 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
 
             if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
 
-            const newHistory = {
+            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+
+            const newHistory: CreateHistoryDTO = {
                 type: "adoption",
-                pet: pet.id,
-                account: account.id,
-                status: "pending",
-                institution: pet.account
-            };
+                pet: pet.id as string,
+                account: account.id as string,
+                institution: pet.account as string,
+                status: "pending"
+            } as CreateHistoryDTO;
 
             const history = await historyRepository.create(newHistory as CreateHistoryDTO);
             if (!history) throw ThrowError.internal("Erro ao solicitar adotação.");

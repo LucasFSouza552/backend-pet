@@ -17,5 +17,3 @@ export type ChangePasswordDTO = {
 };
 
 export type UpdateAvatarDTO =  Pick<IAccount, "avatar">;
-
-export type AccountTokenDTO = Pick<IAccount, "emailVerificationToken">;

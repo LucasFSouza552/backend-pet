@@ -38,11 +38,19 @@ export default class PetController implements IController {
         }
     }
 
+    async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async sponsor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
             const amount = req.body?.amount;
-            const accountId = req.body?.accountId;
+            const accountId = req?.account?.id;
 
             if (!id) throw ThrowError.badRequest("ID não foi informado.");
             if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
