@@ -1,4 +1,4 @@
-import { IHistoryStatus } from "@types/IHistoryStatus"; 
+import { IHistoryStatus } from "@Itypes/IHistoryStatus";
 import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
 import { ThrowError } from "@errors/ThrowError";
 import Filter from "@interfaces/Filter";

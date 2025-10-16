@@ -1,5 +1,5 @@
 import { Document, Schema, model } from "mongoose";
-import { IHistoryStatus } from "@types/IHistoryStatus";
+import { IHistoryStatus } from "@Itypes/IHistoryStatus";
 
 export default interface IHistory extends Document {
     type: "adoption" | "sponsorship" | "donation";

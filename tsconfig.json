@@ -37,9 +37,9 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
+    // "verbatimModuleSyntax": false,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
+    // "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "baseUrl": "./src",
@@ -55,7 +55,7 @@
       "@middleware/*": ["middleware/*"],
       "@routes/*": ["routes/*"],
       "@config/*": ["config/*"],
-      "@types/*": ["types/*"],
+      "@Itypes/*": ["types/*"],
       "@Mappers/*": ["Mappers/*"],
       "@seeds/*": ["seeds/*"]
     }
