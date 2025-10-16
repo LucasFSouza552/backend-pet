@@ -3,10 +3,10 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-import routes from "@routes/api.routes";
-import { connectDB } from "@config/db";
-import { errorHandler } from "@middleware/errorHandler";
+import routes from "./routes/api.routes";
+import { connectDB } from "./config/db";
 import rateLimit from 'express-rate-limit';
+import { errorHandler } from "./middleware/errorHandler";
 import helmet from 'helmet';
 
 const app = express();
@@ -42,6 +42,8 @@ app.use(express.json());
 connectDB();
 
 const port = process.env.PORT;
+
+app.get("/", (req, res) => res.send("Hello World!"));
 
 app.use('/api', limiter, routes);
 
