@@ -1,5 +1,5 @@
 import { Document, Schema, model } from "mongoose";
-import { IHistoryStatus } from "../types/IHistoryStatus";
+import { IHistoryStatus } from "@types/IHistoryStatus";
 
 export default interface IHistory extends Document {
     type: "adoption" | "sponsorship" | "donation";
@@ -8,6 +8,7 @@ export default interface IHistory extends Document {
     institution?: string;
     account: Schema.Types.ObjectId | string;
     amount?: number;
+    externalReference?: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -36,6 +37,11 @@ const historySchema = new Schema<IHistory>({
         type: Schema.Types.ObjectId,
         ref: 'Account',
         required: true
+    },
+    externalReference: {
+        type: String,
+        required: false,
+        default: null
     },
     amount: {
         type: Number

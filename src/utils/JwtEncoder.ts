@@ -1,5 +1,5 @@
 import jwt, { JwtPayload, SignOptions, verify } from "jsonwebtoken";
-import { ThrowError } from "../errors/ThrowError";
+import { ThrowError } from "@errors/ThrowError";
 
 export default class JWT {
 

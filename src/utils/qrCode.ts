@@ -1,5 +1,5 @@
 import { QrCodePix } from 'qrcode-pix';
-import { ThrowError } from '../errors/ThrowError';
+import { ThrowError } from '@errors/ThrowError';
 
 export default async function qrCode(key: string, name: string, city: string) {
     const transactionId = Math.random().toString(36).substring(2, 12).toUpperCase();

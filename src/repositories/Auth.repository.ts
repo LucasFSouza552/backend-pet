@@ -1,6 +1,5 @@
-import { Document } from "mongoose";
-import { CreateAccountDTO } from "../dtos/AccountDTO";
-import { Account, IAccount } from "../models/Account";
+import { CreateAccountDTO } from "@dtos/AccountDTO";
+import { Account, IAccount } from "@models/Account";
 
 export default class AuthRepository {
     async updateVerificationToken(account: IAccount): Promise<IAccount | null> {

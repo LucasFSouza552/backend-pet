@@ -1,5 +1,5 @@
-import IComment from "../models/Comments";
-import { mapToDTO } from "../utils/Mapper";
+import IComment from "@models/Comments";
+import { mapToDTO } from "@utils/Mapper";
 
 const commentDTOFields: (keyof IComment)[] = [
     'id',

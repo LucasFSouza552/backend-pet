@@ -1,11 +1,11 @@
-import { CreateCommentDTO, UpdateCommentDTO } from "../dtos/CommentDTO";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import IService from "../interfaces/IService";
-import IComment from "../models/Comments";
-import CommentRepository from "../repositories/Comment.repository";
-import PostRepository from "../repositories/Post.repository";
-import AccountService from "./Account.services";
+import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import IService from "@interfaces/IService";
+import IComment from "@models/Comments";
+import CommentRepository from "@repositories/Comment.repository";
+import PostRepository from "@repositories/Post.repository";
+import AccountService from "@services/Account.services";
 
 const commentRepository = new CommentRepository();
 const postRepository = new PostRepository();

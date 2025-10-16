@@ -1,14 +1,14 @@
 import { Router } from "express";
-import authRoute from "./auth.routes";
-import accountRoute from "./account.routes";
-import achievementRoute from "./achievement.route";
-import petRoute from "./pet.routes";
-import postRoute from "./post.routes";
-import commentRoute from "./comment.routes";
-import historyRoute from "./history.routes";
-import pictureRoute from "./picture.routes";
-import interactionRoute from "./accountPetInteraction.routes";
-import AuthMiddleware from "../middleware/authMiddleware";
+import authRoute from "@routes/auth.routes";
+import accountRoute from "@routes/account.routes";
+import achievementRoute from "@routes/achievement.route";
+import petRoute from "@routes/pet.routes";
+import postRoute from "@routes/post.routes";
+import commentRoute from "@routes/comment.routes";
+import historyRoute from "@routes/history.routes";
+import interactionRoute from "@routes/accountPetInteraction.routes";
+import pictureRoute from "@routes/picture.routes";
+import AuthMiddleware from "@middleware/authMiddleware";
 
 const router = Router();
 

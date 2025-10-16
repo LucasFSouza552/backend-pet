@@ -1,11 +1,11 @@
-import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "../dtos/AccountDTO";
-import { ThrowError } from "../errors/ThrowError";
-import accountMapper from "../Mappers/accountMapper";
-import { Account, IAccount } from "../models/Account";
-import AuthRepository from "../repositories/Auth.repository";
-import { cryptPassword, validatePassword } from "../utils/aes-crypto";
-import { sendEmail } from "../utils/emailService";
-import JWT from "../utils/JwtEncoder";
+import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import { ThrowError } from "@errors/ThrowError";
+import accountMapper from "@Mappers/accountMapper";
+import { Account, IAccount } from "@models/Account";
+import AuthRepository from "@repositories/Auth.repository";
+import { cryptPassword, validatePassword } from "@utils/aes-crypto";
+import { sendEmail } from "@utils/emailService";
+import JWT from "@utils/JwtEncoder";
 
 const authRepository = new AuthRepository();
 export class AuthService {

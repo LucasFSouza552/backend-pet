@@ -1,8 +1,8 @@
-import IPet from "../models/Pet";
-import { Pet } from "../models/Pet";
-import Filter from "../interfaces/Filter";
-import IRepository from "../interfaces/IRepository";
-import { CreatePetDTO, UpdatePetDTO } from "../dtos/PetDTO";
+import IPet from "@models/Pet";
+import { Pet } from "@models/Pet";
+import Filter from "@interfaces/Filter";
+import IRepository from "@interfaces/IRepository";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
 import { FilterQuery } from "mongoose";
 
 export default class PetRepository implements IRepository<CreatePetDTO, UpdatePetDTO, IPet> {

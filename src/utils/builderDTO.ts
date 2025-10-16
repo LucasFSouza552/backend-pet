@@ -1,5 +1,4 @@
-import { ThrowError } from "../errors/ThrowError";
-import { cryptPassword } from "./aes-crypto";
+import { ThrowError } from "@errors/ThrowError";
 
 export default class BuilderDTO<T> {
     private _rawData: Record<string, T>;

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import AccountController from "../controller/Account.controller";
-import AuthMiddleware from "../middleware/authMiddleware";
-import authorizationMiddleware from "../middleware/authorizationMiddleware";
-import PostController from "../controller/Post.controller";
-import upload from "../config/multer.config";
+import AccountController from "@controller/Account.controller"; 
+import AuthMiddleware from "@middleware/authMiddleware";
+import authorizationMiddleware from "@middleware/authorizationMiddleware";
+import PostController from "@controller/Post.controller";
+import upload from "@config/multer.config";
 
 const router = Router();
 

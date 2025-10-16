@@ -1,8 +1,8 @@
 import { FilterQuery, Types } from "mongoose";
-import Filter from "../interfaces/Filter";
-import IRepository from "../interfaces/IRepository";
-import IPost, { Post } from "../models/Post";
-import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
+import Filter from "@interfaces/Filter";
+import IRepository from "@interfaces/IRepository";
+import IPost, { Post } from "@models/Post";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
 

@@ -1,8 +1,8 @@
 import { FilterQuery } from "mongoose";
-import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
-import Filter from "../interfaces/Filter";
-import IRepository from "../interfaces/IRepository";
-import IHistory, { History } from "../models/history";
+import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import Filter from "@interfaces/Filter";
+import IRepository from "@interfaces/IRepository";
+import IHistory, { History } from "@models/history";
 
 export default class HistoryRepository implements IRepository<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
 

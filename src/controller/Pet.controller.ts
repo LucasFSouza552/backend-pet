@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { PetService } from "../services/Pet.services";
-import Filter from "../interfaces/Filter";
-import filterConfig from "../utils/filterConfig";
-import IController from "../interfaces/IController";
-import { ThrowError } from "../errors/ThrowError";
+import { PetService } from "@services/Pet.services";
+import Filter from "@interfaces/Filter";
+import filterConfig from "@utils/filterConfig";
+import IController from "@interfaces/IController";
+import { ThrowError } from "@errors/ThrowError";
 
 const petService = new PetService();
 
@@ -150,6 +150,23 @@ export default class PetController implements IController {
             const filters: Filter = filterConfig({ adopted: false }, ["adopted"]);
             const pets = await petService.getAll(filters);
             res.status(200).json(pets);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async paymentReturn(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const paymentId = req.body.paymentId;
+            const status = req.body.status;
+            const externalReference = req.body.externalReference;
+
+            if (!paymentId) throw ThrowError.badRequest("ID do pagamento não foi informado.");
+            if (!status || !["completed", "cancelled", "refunded"].includes(status)) throw ThrowError.badRequest("Status do pagamento inválido.");
+            if (!externalReference) throw ThrowError.badRequest("External reference não foi informado.");
+
+            const payment = await petService.paymentReturn(paymentId, status as "completed" | "cancelled" | "refunded", externalReference);
+            res.status(200).json(payment);
         } catch (error) {
             next(error);
         }

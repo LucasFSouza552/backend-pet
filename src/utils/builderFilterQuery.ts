@@ -1,5 +1,5 @@
 import { FilterQuery } from "mongoose";
-import { isValidJSON } from "./Json";
+import { isValidJSON } from "@utils/Json";
 
 export function builderFilterQuery<T>(rawQuery: any, allowedFields: string[]): FilterQuery<T> {
     let queryObj: any;

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { ThrowError } from "../errors/ThrowError";
-import { AuthService } from "../services/AuthService.services";
-import { validatePassword } from "../utils/aes-crypto";
-import JWT from "../utils/JwtEncoder";
-import { AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
-import BuilderDTO from "../utils/builderDTO";
+import { ThrowError } from "@errors/ThrowError";
+import { AuthService } from "@services/AuthService.services";
+import { validatePassword } from "@utils/aes-crypto";
+import JWT from "@utils/JwtEncoder";
+import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import BuilderDTO from "@utils/builderDTO";
 
 const authService = new AuthService();
 

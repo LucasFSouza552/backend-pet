@@ -1,7 +1,6 @@
-import { createPetInteractionDTO } from "../dtos/AccountPetInteractionDTO";
-import { ThrowError } from "../errors/ThrowError";
-import AccountPetInteractionRepository from "../repositories/AccountPetInteraction.repository";
-import { IPetInteractionStatus } from "../types/IPetInteractionStatus";
+import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import { ThrowError } from "@errors/ThrowError";
+import AccountPetInteractionRepository from "@repositories/AccountPetInteraction.repository";
 
 const accountPetInteractionRepository = new AccountPetInteractionRepository();
 export default class AccountPetInteractionService {

@@ -1,8 +1,8 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
+import { PictureStorangeController } from "@controller/PictureStorage.controller"; 
 
 const router = Router();
 
-import { PictureStorangeController } from "../controller/PictureStorage.controller";
 const pictureStorageController = new PictureStorangeController();
 
 router.get("/:id", pictureStorageController.getPicture);

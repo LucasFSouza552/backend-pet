@@ -42,5 +42,22 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@controller/*": ["controller/*"],
+      "@services/*": ["services/*"],
+      "@models/*": ["models/*"],
+      "@repositories/*": ["repositories/*"],
+      "@dtos/*": ["dtos/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@utils/*": ["utils/*"],
+      "@errors/*": ["errors/*"],
+      "@middleware/*": ["middleware/*"],
+      "@routes/*": ["routes/*"],
+      "@config/*": ["config/*"],
+      "@types/*": ["types/*"],
+      "@Mappers/*": ["Mappers/*"],
+      "@seeds/*": ["seeds/*"]
+    }
   }
 }

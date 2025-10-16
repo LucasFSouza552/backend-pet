@@ -1,5 +1,5 @@
-import { addAchieviment } from "./../dtos/AccountAchievementDTO";
-import { AccountAchievement } from "../models/AccountAchievement";
+import { addAchieviment } from "@dtos/AccountAchievementDTO";
+import { AccountAchievement } from "@models/AccountAchievement";
 
 export default class AccountAchievementRepository {
     async getByAccountId(account: string) {

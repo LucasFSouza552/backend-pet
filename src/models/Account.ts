@@ -1,6 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
-import IAddress from "../interfaces/IAddress";
-import { ITypeAccounts } from "../types/ITypeAccounts";
+import IAddress from "@interfaces/IAddress";
+import { ITypeAccounts } from "@types/ITypeAccounts"; 
 
 export interface IAccount extends Document {
     id: string;

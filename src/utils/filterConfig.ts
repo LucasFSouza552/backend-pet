@@ -1,6 +1,6 @@
-import { ThrowError } from "../errors/ThrowError";
-import Filter, { FilterDefault } from "../interfaces/Filter";
-import { builderFilterQuery } from "./builderFilterQuery";
+import { ThrowError } from "@errors/ThrowError";
+import Filter, { FilterDefault } from "@interfaces/Filter";
+import { builderFilterQuery } from "@utils/builderFilterQuery";
 
 interface FilterInput {
     page?: string;

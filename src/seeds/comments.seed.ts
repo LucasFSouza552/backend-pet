@@ -1,4 +1,4 @@
-import { Comment } from "../models/Comments"
+import { Comment } from "@models/Comments"
 
 
 export const seedComments = async () => {

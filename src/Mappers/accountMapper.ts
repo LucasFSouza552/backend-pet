@@ -1,6 +1,6 @@
-import { AccountDTO } from "../dtos/AccountDTO";
-import { IAccount } from "../models/Account";
-import { mapToDTO } from "../utils/Mapper";
+import { AccountDTO } from "@dtos/AccountDTO";
+import { IAccount } from "@models/Account";
+import { mapToDTO } from "@utils/Mapper";
 
 const accountDTOFields: (keyof AccountDTO)[] = [
     "id",

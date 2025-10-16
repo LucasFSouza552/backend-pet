@@ -1,10 +1,10 @@
 import { Router } from "express";
+import { CommentController } from "@controller/Comment.controller"; 
+import AuthMiddleware from "@middleware/authMiddleware";
+import authorizationMiddleware from "@middleware/authorizationMiddleware";
 
 const router = Router();
 
-import { CommentController } from "../controller/Comment.controller";
-import AuthMiddleware from "../middleware/authMiddleware";
-import authorizationMiddleware from "../middleware/authorizationMiddleware";
 const commentController = new CommentController();
 
 router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), commentController.getAll);

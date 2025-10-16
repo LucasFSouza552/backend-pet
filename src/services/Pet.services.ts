@@ -1,16 +1,15 @@
-import { CreatePetDTO } from "./../dtos/PetDTO";
-import { UpdatePetDTO } from "../dtos/PetDTO";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import IService from "../interfaces/IService";
-import IPet from "../models/Pet";
-import PetRepository from "../repositories/Pet.repository";
-import HistoryRepository from "../repositories/History.repository";
-import { CreateHistoryDTO, HistoryDTO } from "../dtos/HistoryDTO";
-import AccountService from "./Account.services";
-import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import IService from "@interfaces/IService";
+import IPet from "@models/Pet";
+import PetRepository from "@repositories/Pet.repository";
+import HistoryRepository from "@repositories/History.repository";
+import { CreateHistoryDTO, HistoryDTO } from "@dtos/HistoryDTO";
+import AccountService from "@services/Account.services";
+import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 import { ObjectId } from "mongodb";
-import { order } from "../config/mergadopago";
+import { preference } from "@config/mergadopago";
 import { v4 as uuidv4 } from "uuid";
 
 const petRepository = new PetRepository();
@@ -57,50 +56,58 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
 
     async donate(id: string, amount: number, accountId: string) {
         try {
-
+            const pet = await petRepository.getById(id);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao doar para o pet.");
         }
     }
 
-    async sponsor(id: string, amount: string, accountId: string) {
+    async sponsor(petId: string, amount: string, accountId: string) {
         try {
-            try {
-                const idempotencyKey = uuidv4();
-                const body = {
-                    type: "online",
-                    processing_mode: "automatic",
-                    description: "Patrocinio do pet.",
-                    payer: {
-                        email: "emailfalso@hotmail.com"
-                    },
-                    transactions: {
-                        payments: [
-                            {
-                                amount: "1000.00",
-                                payment_method: {
-                                    id: "master",
-                                    type: "credit_card",
-                                    token: "2926162247",
-                                    installments: 1,
-                                    statement_descriptor: "Store name",
-                                },
-                            },
-                        ],
-                    },
-                }
+            const idempotencyKey = uuidv4();
 
-                const requestOptions = {
-                    idempotencyKey,
-                };
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
 
-                const response = await order.create({ body, requestOptions }).then((response) => response).catch((error) => error);
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
-                console.log("Pagamento criado com sucesso:", response);
-            } catch (error) {
-                console.error("Erro ao criar pagamento:", error);
-            }
+            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+
+            const externalReference = `${pet.account}-${uuidv4()}`;
+
+            const body = {
+                items: [
+                    {
+                        title: "Patrocínio de Pet",
+                        quantity: 1,
+                        unit_price: parseFloat(amount),
+                        currency_id: "BRL"
+                    }
+                ],
+                payer: {
+                    email: account?.email as string
+                },
+                payment_methods: {
+                    excluded_payment_methods: [
+                        {
+                            id: "ticket"
+                        }
+                    ],
+                    installments: 1
+                },
+                external_reference: pet.id as string,
+            } as any;
+
+            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
+
+            if (!response) throw ThrowError.internal("Erro ao patrocinar o pet.");
+
+            return {
+                id: response.id as string,
+                url: response.init_point,
+            };
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -140,6 +147,25 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao solicitar adotação.");
+        }
+    }
+
+    async paymentReturn(paymentId: string, status: string, externalReference: string): Promise<HistoryDTO> {
+        try {
+            const payment = await historyRepository.getById(paymentId);
+            if (!payment) throw ThrowError.notFound("Pagamento não encontrado.");
+
+            if (payment.status === "completed" || payment.status === "cancelled" || payment.status === "refunded") throw ThrowError.conflict("Pagamento já processado.");
+            if (payment.status !== status) throw ThrowError.conflict("Status do pagamento inválido.");
+
+            if (payment.externalReference !== externalReference) throw ThrowError.conflict("External reference inválido.");
+
+            await historyRepository.update(payment.id, { status: "completed" });
+
+            return payment as HistoryDTO;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao processar o retorno do pagamento.");
         }
     }
 

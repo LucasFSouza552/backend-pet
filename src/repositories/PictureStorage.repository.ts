@@ -1,5 +1,4 @@
-
-import { gfs } from "../config/gridfs";
+import { gfs } from "@config/gridfs";
 import { GridFSBucketReadStream, ObjectId } from "mongodb";
 
 export class PictureStorageRepository {

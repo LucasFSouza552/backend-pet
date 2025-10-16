@@ -1,9 +1,9 @@
-import { connectDB } from "../config/db";
-import { seedAchievements } from "./achievements.seed";
-import { seedComments } from "./comments.seed";
-import { seedPets } from "./pets.seed";
-import { seedPosts } from "./posts.seed";
-import { seedAccounts } from "./users.seed";
+import { connectDB } from "@config/db";
+import { seedAchievements } from "@seeds/achievements.seed";
+import { seedComments } from "@seeds/comments.seed";
+import { seedPets } from "@seeds/pets.seed";
+import { seedPosts } from "@seeds/posts.seed";
+import { seedAccounts } from "@seeds/users.seed";
 import dotenv from "dotenv";
 dotenv.config();
 

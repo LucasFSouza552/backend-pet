@@ -1,9 +1,8 @@
-import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "../dtos/AchievementDTO";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import IService from "../interfaces/IService";
-import AccountAchievementRepository from "../repositories/AccountAchievement.repository";
-import AchievementRepository from "../repositories/Achievement.repository";
+import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/AchievementDTO";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import IService from "@interfaces/IService";
+import AchievementRepository from "@repositories/Achievement.repository";
 
 const achievementRepository = new AchievementRepository();
 

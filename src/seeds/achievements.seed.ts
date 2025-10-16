@@ -1,4 +1,4 @@
-import { Achievements } from "../models/Achievements";
+import { Achievements } from "@models/Achievements";
 
 export const seedAchievements = async () => {
     await Achievements.deleteMany({});

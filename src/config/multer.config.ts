@@ -1,5 +1,5 @@
 import multer from "multer";
-import { ThrowError } from "../errors/ThrowError";
+import { ThrowError } from "@errors/ThrowError";
 
 const storage = multer.memoryStorage();
 const upload = multer({

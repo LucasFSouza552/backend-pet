@@ -1,5 +1,5 @@
-import { Account } from "../models/Account";
-import { Pet } from "../models/Pet";
+import { Account } from "@models/Account";
+import { Pet } from "@models/Pet";
 
 export const seedPets = async () => {
     await Pet.deleteMany({});

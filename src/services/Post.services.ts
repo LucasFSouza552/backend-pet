@@ -1,12 +1,11 @@
-
 import { ObjectId } from "mongodb";
-import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import IService from "../interfaces/IService";
-import IPost from "../models/Post";
-import PostRepository from "../repositories/Post.repository";
-import { PictureStorageRepository } from "../repositories/PictureStorage.repository";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import IService from "@interfaces/IService";
+import IPost from "@models/Post";
+import PostRepository from "@repositories/Post.repository";
+import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 
 const postRepository = new PostRepository();
 

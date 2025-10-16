@@ -2,9 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-import routes from "./src/routes/api.routes";
-import { connectDB } from "./src/config/db";
-import { errorHandler } from "./src/middleware/errorHandler";
+import routes from "@routes/api.routes";
+import { connectDB } from "@config/db";
+import { errorHandler } from "@middleware/errorHandler";
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 

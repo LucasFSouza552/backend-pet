@@ -1,11 +1,11 @@
-import { IHistoryStatus } from "./../types/IHistoryStatus";
-import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "../dtos/HistoryDTO";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import IService from "../interfaces/IService";
-import HistoryRepository from "../repositories/History.repository";
-import AccountService from "./Account.services";
-import { PetService } from "./Pet.services";
+import { IHistoryStatus } from "@types/IHistoryStatus"; 
+import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import IService from "@interfaces/IService";
+import HistoryRepository from "@repositories/History.repository";
+import AccountService from "@services/Account.services";
+import { PetService } from "@services/Pet.services";
 
 const historyRepository = new HistoryRepository();
 const petService = new PetService();

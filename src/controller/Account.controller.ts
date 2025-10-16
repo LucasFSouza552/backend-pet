@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import IController from "../interfaces/IController";
-import { ThrowError } from "../errors/ThrowError";
-import Filter from "../interfaces/Filter";
-import filterConfig from "../utils/filterConfig";
-import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "../dtos/AccountDTO";
-import BuilderDTO from "../utils/builderDTO";
-import AccountService from "../services/Account.services";
+import IController from "@interfaces/IController";
+import { ThrowError } from "@errors/ThrowError";
+import Filter from "@interfaces/Filter";
+import filterConfig from "@utils/filterConfig";
+import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import BuilderDTO from "@utils/builderDTO";
+import AccountService from "@services/Account.services";
 
 const accountService = new AccountService();
 
@@ -174,4 +174,5 @@ export default class AccountController implements IController {
             next(error);
         }
     }
+    
 }

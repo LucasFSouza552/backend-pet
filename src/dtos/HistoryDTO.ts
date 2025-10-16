@@ -1,4 +1,4 @@
-import IHistory from "../models/history";
+import IHistory from "@models/history";
 
 export type HistoryDTO = Omit<IHistory, "createdAt" | "updatedAt">;
 

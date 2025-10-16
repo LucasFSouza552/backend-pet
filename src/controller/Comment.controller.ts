@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import Filter from "../interfaces/Filter";
+import Filter from "@interfaces/Filter";
 import IController from "../interfaces/IController";
-import filterConfig from "../utils/filterConfig";
-import { CommentService } from "../services/Comment.services";
-import { ThrowError } from "../errors/ThrowError";
-import BuilderDTO from "../utils/builderDTO";
-import { CreateCommentDTO } from "../dtos/CommentDTO";
-import { UpdateCommentDTO } from "../dtos/CommentDTO";
+import filterConfig from "@utils/filterConfig";
+import { CommentService } from "@services/Comment.services";
+import { ThrowError } from "@errors/ThrowError";
+import BuilderDTO from "@utils/builderDTO";
+import { CreateCommentDTO } from "@dtos/CommentDTO";
+import { UpdateCommentDTO } from "@dtos/CommentDTO";
 
 const commentService = new CommentService();
 

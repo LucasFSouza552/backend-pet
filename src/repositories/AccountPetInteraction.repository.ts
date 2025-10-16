@@ -1,5 +1,5 @@
-import { createPetInteractionDTO, updatePetInteractionDTO } from "../dtos/AccountPetInteractionDTO";
-import { AccountPetInteraction } from "../models/AccountPetInteraction";
+import { AccountPetInteraction } from "@models/AccountPetInteraction";
+import { createPetInteractionDTO, updatePetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 
 export default class AccountPetInteractionRepository {
     async create(data: createPetInteractionDTO) {

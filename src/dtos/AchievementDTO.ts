@@ -1,4 +1,4 @@
-import { IAchievement } from "../models/Achievements";
+import { IAchievement } from "@models/Achievements";
 
 export type CreateAchievementDTO = Omit<IAchievement, "createdAt" | "updatedAt">; 
 

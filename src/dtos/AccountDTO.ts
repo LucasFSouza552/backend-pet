@@ -1,5 +1,4 @@
-import { Types } from "mongoose";
-import { IAccount } from "../models/Account";
+import { IAccount } from "@models/Account";
 
 export type UpdateAccountDTO = Partial<
     Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified" | "avatar">
@@ -16,4 +15,4 @@ export type ChangePasswordDTO = {
     newPassword: string;
 };
 
-export type UpdateAvatarDTO =  Pick<IAccount, "avatar">;
+export type UpdateAvatarDTO = Pick<IAccount, "avatar">;

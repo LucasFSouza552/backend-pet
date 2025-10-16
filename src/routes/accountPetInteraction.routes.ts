@@ -1,7 +1,6 @@
 import { Router } from "express";
-import AccountPetInteractionController from "../controller/AccountPetInteraction.controller";
-import AuthMiddleware from "../middleware/authMiddleware";
-import authorizationMiddleware from "../middleware/authorizationMiddleware";
+import AccountPetInteractionController from "@controller/AccountPetInteraction.controller";
+import authorizationMiddleware from "@middleware/authorizationMiddleware";
 
 const router = Router();
 

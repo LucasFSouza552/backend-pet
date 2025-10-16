@@ -1,8 +1,8 @@
-import { ThrowError } from "../errors/ThrowError";
+import { ThrowError } from "@errors/ThrowError";
 import { NextFunction, Request, Response } from "express";
-import AccountPetInteractionService from "../services/AccountPetInteraction.services";
-import { createPetInteractionDTO } from "../dtos/AccountPetInteractionDTO";
-import BuilderDTO from "../utils/builderDTO";
+import AccountPetInteractionService from "@services/AccountPetInteraction.services";
+import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import BuilderDTO from "@utils/builderDTO";
 
 const accountPetInteractionService = new AccountPetInteractionService();
 export default class AccountPetInteractionController {

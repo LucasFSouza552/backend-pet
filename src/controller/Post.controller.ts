@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { PostService } from "../services/Post.services";
-import Filter from "../interfaces/Filter";
-import filterConfig from "../utils/filterConfig";
-import IController from "../interfaces/IController";
-import { ThrowError } from "../errors/ThrowError";
-import { CreatePostDTO, UpdatePostDTO } from "../dtos/PostDTO";
-import BuilderDTO from "../utils/builderDTO";
-import IPost from "../models/Post";
+import { PostService } from "@services/Post.services";
+import Filter from "@interfaces/Filter";
+import filterConfig from "@utils/filterConfig";
+import IController from "@interfaces/IController";
+import { ThrowError } from "@errors/ThrowError";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+import BuilderDTO from "@utils/builderDTO";
+import IPost from "@models/Post";
 
 const postService = new PostService();
 

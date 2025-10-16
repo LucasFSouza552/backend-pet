@@ -1,6 +1,5 @@
-import { Account } from "../models/Account";
-import { AccountStats } from "../models/AccountStats";
-import { cryptPassword } from "../utils/aes-crypto";
+import { Account } from "@models/Account";
+import { cryptPassword } from "@utils/aes-crypto";
 
 export const seedAccounts = async () => {
     await Account.deleteMany({});

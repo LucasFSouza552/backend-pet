@@ -1,7 +1,6 @@
-import { AccountDTO } from "../dtos/AccountDTO";
-import { ThrowError } from "../errors/ThrowError";
-import { IAccount } from "../models/Account";
-import AccountService from "../services/Account.services";
+import { ThrowError } from "@errors/ThrowError";
+import { IAccount } from "@models/Account";
+import AccountService from "@services/Account.services";
 import { NextFunction, Response, Request } from "express";
 
 const accountService = new AccountService();

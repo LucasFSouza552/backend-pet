@@ -1,4 +1,4 @@
-import { Document, ObjectId, Schema, Types, model } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
 
 export default interface IPet extends Document {
   name: string;

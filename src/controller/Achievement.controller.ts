@@ -1,11 +1,11 @@
-import { CreateAchievementDTO } from "./../dtos/AchievementDTO";
+import { CreateAchievementDTO } from "@dtos/AchievementDTO";
 import { Request, Response, NextFunction } from "express";
-import IController from "../interfaces/IController";
-import filterConfig from "../utils/filterConfig";
-import Filter from "../interfaces/Filter";
-import { AchievementService } from "../services/Achievement.services";
-import BuilderDTO from "../utils/builderDTO";
-import AccountService from "../services/Account.services";
+import IController from "@interfaces/IController";
+import filterConfig from "@utils/filterConfig";
+import Filter from "@interfaces/Filter";
+import { AchievementService } from "@services/Achievement.services";
+import BuilderDTO from "@utils/builderDTO";
+import AccountService from "@services/Account.services";
 
 const achievementService = new AchievementService();
 const accountService = new AccountService()

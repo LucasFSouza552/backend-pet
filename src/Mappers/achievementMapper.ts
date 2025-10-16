@@ -1,7 +1,6 @@
-
-import { AchievementDTO } from "../dtos/AchievementDTO";
-import { IAchievement } from "../models/Achievements";
-import { mapToDTO } from "../utils/Mapper";
+import { AchievementDTO } from "@dtos/AchievementDTO";
+import { IAchievement } from "@models/Achievements";
+import { mapToDTO } from "@utils/Mapper";
 
 const achievementDTOFields: (keyof AchievementDTO)[] = [
     "id",
