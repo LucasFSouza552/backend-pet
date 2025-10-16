@@ -64,7 +64,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             .populate("account", "name role avatar")
             .lean({ virtuals: true })
             .exec();
-        return post;
+        return post as unknown as IPost || null;
     }
     async create(data: CreatePostDTO): Promise<IPost> {
 

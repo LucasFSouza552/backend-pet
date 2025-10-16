@@ -8,7 +8,7 @@ export interface IAchievement extends Document {
     updatedAt: Date;
 }
 
-const AchievementSchema = new Schema<IAchievement>({
+const AchievementSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -16,7 +16,7 @@ const AchievementSchema = new Schema<IAchievement>({
     },
     type: {
         type: String,
-        enum: ["donation", "sponsorship", "adoption"],
+        enum: ["donation", "sponsorship", "adoption"] as const,
         required: true,
     },
     description: {

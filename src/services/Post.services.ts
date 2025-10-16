@@ -22,7 +22,7 @@ export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost
     async getPostsWithAuthor(filter: Filter): Promise<IPost[]> {
         try {
             const posts = await postRepository.getPostsWithAuthor(filter);
-            const post = posts.map((post) => ({ ...post, id: post?._id.toString() } as IPost));
+            const post = posts.map((post) => ({ ...post, id: post?._id.toString() } as unknown as IPost));
             return post;
         } catch (error) {
             if (error instanceof ThrowError) throw error;

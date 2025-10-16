@@ -157,9 +157,11 @@ export default class PetController implements IController {
 
     async paymentReturn(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const paymentId = req.body.paymentId;
+            const paymentId = req.body.id;
             const status = req.body.status;
             const externalReference = req.body.externalReference;
+
+            console.log(req.body);
 
             if (!paymentId) throw ThrowError.badRequest("ID do pagamento não foi informado.");
             if (!status || !["completed", "cancelled", "refunded"].includes(status)) throw ThrowError.badRequest("Status do pagamento inválido.");

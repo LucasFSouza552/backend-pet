@@ -17,11 +17,10 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
         try {
             const replies = await commentRepository.getReplies(commentId);
 
-            return replies.map(reply =>
-                reply.isDeleted
-                    ? { ...reply, content: "Comentário removido", account: null }
-                    : reply
-            ) as IComment[];
+            return replies.map(reply => reply.isDeleted
+                ? { ...reply, content: "Comentário removido" }
+                : { ...reply, account: reply.account ?? null }
+            ) as unknown as IComment[];
 
         } catch (error) {
             if (error instanceof Error) throw error;
@@ -44,7 +43,7 @@ export class CommentService implements IService<CreateCommentDTO, UpdateCommentD
             if (!comment) {
                 throw ThrowError.notFound("Comentário não encontrado.");
             }
-            
+
             if (comment?.account?.toString() !== accountId) {
                 throw ThrowError.forbidden("Acesso negado.");
             }

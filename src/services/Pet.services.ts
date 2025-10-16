@@ -10,7 +10,7 @@ import AccountService from "@services/Account.services";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 import { ObjectId } from "mongodb";
 import { preference } from "@config/mergadopago";
-import { v4 as uuidv4 } from "uuid";
+
 
 const petRepository = new PetRepository();
 const historyRepository = new HistoryRepository();
@@ -54,17 +54,60 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
         }
     }
 
-    async donate(id: string, amount: number, accountId: string) {
+    async donate(amount: string, accountId: string) {
         try {
-            const pet = await petRepository.getById(id);
+
+            const { v4: uuidv4 } = await import('uuid');
+            const idempotencyKey = uuidv4();
+
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            const externalReference = `petApp-${uuidv4()}`;
+
+            const body = {
+                items: [
+                    {
+                        title: "Doação",
+                        quantity: 1,
+                        unit_price: parseFloat(amount),
+                        currency_id: "BRL"
+                    }
+                ],
+                payer: {
+                    email: account?.email as string
+                },
+                payment_methods: {
+                    excluded_payment_methods: [
+                        {
+                            id: "ticket"
+                        }
+                    ],
+                    installments: 1
+                },
+                external_reference: externalReference,
+            } as any;
+
+            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
+
+            if (!response) throw ThrowError.internal("Erro ao doar para petApp.");
+
+            return {
+                id: response.id as string,
+                url: response.init_point,
+            };
+
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao doar para o pet.");
+            console.log(error);
+            throw ThrowError.internal("Erro ao patrocinar o pet.");
         }
     }
 
     async sponsor(petId: string, amount: string, accountId: string) {
         try {
+
+            const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
 
             const pet = await petRepository.getById(petId);
@@ -97,7 +140,7 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
                     ],
                     installments: 1
                 },
-                external_reference: pet.id as string,
+                external_reference: externalReference,
             } as any;
 
             const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
