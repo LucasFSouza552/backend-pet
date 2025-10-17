@@ -8,6 +8,9 @@ import { connectDB } from "./config/db";
 import rateLimit from 'express-rate-limit';
 import { errorHandler } from "./middleware/errorHandler";
 import helmet from 'helmet';
+import path from 'path';
+
+const publicPath = path.join(__dirname, '../public');
 
 const app = express();
 
@@ -38,12 +41,15 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.static(publicPath));
 
 connectDB();
 
 const port = process.env.PORT;
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(publicPath, 'view/index.html'));
+});
 
 app.use('/api', limiter, routes);
 

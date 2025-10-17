@@ -7,7 +7,7 @@ export default interface IHistory extends Document {
     pet?: Schema.Types.ObjectId | string | null;
     institution?: string;
     account: Schema.Types.ObjectId | string;
-    amount?: number;
+    amount?: string;
     externalReference?: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -44,7 +44,7 @@ const historySchema = new Schema<IHistory>({
         default: null
     },
     amount: {
-        type: Number
+        type: String
     }
 }, { timestamps: true, strict: true });
 

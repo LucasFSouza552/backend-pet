@@ -33,4 +33,12 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     async delete(id: string): Promise<void> {
         await Pet.findByIdAndDelete(id);
     }
+
+    async getByList(seenPetIds: string[]): Promise<IPet | null> {
+        const [nextPet] = await Pet.aggregate([
+            { $match: { _id: { $nin: seenPetIds } } },
+            { $sample: { size: 1 } }
+        ]);
+        return nextPet;
+    }
 }

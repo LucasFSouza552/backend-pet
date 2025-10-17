@@ -62,9 +62,10 @@ export class CommentController implements IController {
     }
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const comment = req?.body;
-
+            const postId = req.params.id;
+            const comment = req?.body.comment;
             comment.account = req.account?.id;
+            comment.post = postId;
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "post" })
                 .add({ key: "account" })

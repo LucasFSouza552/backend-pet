@@ -1,8 +1,9 @@
+import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
 import { ThrowError } from "@errors/ThrowError";
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
-import IPet from "@models/Pet";
+import IPet, { Pet } from "@models/Pet";
 import PetRepository from "@repositories/Pet.repository";
 import HistoryRepository from "@repositories/History.repository";
 import { CreateHistoryDTO, HistoryDTO } from "@dtos/HistoryDTO";
@@ -10,11 +11,12 @@ import AccountService from "@services/Account.services";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 import { ObjectId } from "mongodb";
 import { preference } from "@config/mergadopago";
-
+import AccountPetInteractionService from "./AccountPetInteraction.services";
 
 const petRepository = new PetRepository();
 const historyRepository = new HistoryRepository();
 const accountService = new AccountService();
+const accountPetInteraction = new AccountPetInteractionService();
 
 export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async updatePetImages(petId: string, files: Express.Multer.File[]): Promise<ObjectId[]> {
@@ -54,16 +56,27 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
         }
     }
 
-    async donate(amount: string, accountId: string) {
+    async donate(id: string, amount: string, accountId: string) {
         try {
-
             const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
 
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
-            const externalReference = `petApp-${uuidv4()}`;
+
+            const newHistory: CreateHistoryDTO = {
+                type: "donation",
+                amount: amount,
+                account: account.id as string,
+                status: "pending"
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
+
+
+            const externalReference = `petApp-${newHistory.id}`;
 
             const body = {
                 items: [
@@ -99,7 +112,6 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Erro ao patrocinar o pet.");
         }
     }
@@ -117,6 +129,16 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
             if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+
+            const newHistory: CreateHistoryDTO = {
+                type: "sponsorship",
+                amount: amount,
+                account: account.id as string,
+                status: "pending"
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
 
             const externalReference = `${pet.account}-${uuidv4()}`;
 
@@ -154,7 +176,6 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Erro ao patrocinar o pet.");
         }
     }
@@ -263,6 +284,28 @@ export class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao deletar o pet.");
+        }
+    }
+
+    async getFeed(accountId: string, filter: Filter): Promise<IPet[]> {
+        try {
+            const interactions = await accountPetInteraction.getByAccount(accountId);
+            const seenPetIds = interactions.map((i) => i.id);
+
+            const nextPet = await petRepository.getByList(seenPetIds);
+
+            if (!nextPet) return [];
+
+            await accountPetInteraction.create({
+                status: "viewed",
+                account: accountId as string,
+                pet: nextPet._id as string
+            } as createPetInteractionDTO);
+
+            return [nextPet];
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar o feed.");
         }
     }
 }

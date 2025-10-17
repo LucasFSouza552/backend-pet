@@ -40,7 +40,16 @@ export default class PetController implements IController {
 
     async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+            const id = req.params.id;
+            const amount = req.body?.amount;
+            const accountId = req?.account?.id;
+
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
+            if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+
+            const pet = await petService.donate(id, amount, accountId);
+            res.status(200).json(pet);
         } catch (error) {
             next(error);
         }
@@ -79,10 +88,13 @@ export default class PetController implements IController {
 
     async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const accountId = req?.account?.id as string;
             const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
             const filters: Filter = filterConfig(req.query, allowedQueryFields);
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const pets = await petService.getAll(filters); // TODO: Ajustar o FEED
+            const pets = await await petService.getFeed(accountId, filters);
+            console.log(pets);
             res.status(200).json(pets);
         } catch (error) {
             next(error);
@@ -160,8 +172,6 @@ export default class PetController implements IController {
             const paymentId = req.body.id;
             const status = req.body.status;
             const externalReference = req.body.externalReference;
-
-            console.log(req.body);
 
             if (!paymentId) throw ThrowError.badRequest("ID do pagamento não foi informado.");
             if (!status || !["completed", "cancelled", "refunded"].includes(status)) throw ThrowError.badRequest("Status do pagamento inválido.");

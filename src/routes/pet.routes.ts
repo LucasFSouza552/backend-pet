@@ -20,7 +20,7 @@ router.post("/:id/adopt", AuthMiddleware, petController.requestAdoption);
 router.post("/:id/sponsor", AuthMiddleware, petController.sponsor);
 router.post("/:id/donate", AuthMiddleware, petController.donate);
 
-router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution"]),upload.array("avatar", 6), petController.updatePetImages);
+router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution"]), upload.array("avatar", 6), petController.updatePetImages);
 router.delete("/:id/avatar/:imageId", AuthMiddleware, authorizationMiddleware(["institution"]), petController.deletePetImage);
 
 router.post("/payment-return", petController.paymentReturn);

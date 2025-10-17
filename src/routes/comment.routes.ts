@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { CommentController } from "@controller/Comment.controller"; 
+import { CommentController } from "@controller/Comment.controller";
 import AuthMiddleware from "@middleware/authMiddleware";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";
 
@@ -17,7 +17,7 @@ router.get("/post/:id", AuthMiddleware, commentController.getAllByPost);
 router.get("/:id", AuthMiddleware, commentController.getById);
 
 // Rota para criar um comentário
-router.post("/", AuthMiddleware, commentController.create);
+router.post("/:id", AuthMiddleware, commentController.create);
 
 // Rota para responder um comentário
 router.post("/:id/reply", AuthMiddleware, commentController.reply);
