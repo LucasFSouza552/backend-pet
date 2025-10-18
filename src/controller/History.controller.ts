@@ -1,14 +1,20 @@
 import { Request, Response, NextFunction } from "express";
-import IController from "@interfaces/IController";
-import HistoryService from "../services/History.services";
-import filterConfig from "@utils/filterConfig";
-import { ThrowError } from "@errors/ThrowError";
-import BuilderDTO from "@utils/builderDTO";
-import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
-import AccountService from "@services/Account.services";
 
-const historyService = new HistoryService();
-const accountService = new AccountService();
+// DTOS
+import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+
+// Interfaces
+import IController from "@interfaces/IController";
+
+// Errors
+import { ThrowError } from "@errors/ThrowError";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
+import BuilderDTO from "@utils/builderDTO";
+
+// Services
+import { accountService, historyService } from "@services/index";
 
 export default class HistoryController implements IController {
     async updateHistoryStatus(req: Request, res: Response, next: NextFunction): Promise<void> {

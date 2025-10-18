@@ -1,17 +1,21 @@
+// DTOS
 import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+/// Interfaces
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
+
+// Models
 import IComment from "@models/Comments";
-import CommentRepository from "@repositories/Comment.repository";
-import PostRepository from "@repositories/Post.repository";
-import AccountService from "@services/Account.services";
 
-const commentRepository = new CommentRepository();
-const postRepository = new PostRepository();
-const accountService = new AccountService();
+// Repositories
+import { postRepository, commentRepository } from "@repositories/index";
+import { accountService } from "./index";
 
-export class CommentService implements IService<CreateCommentDTO, UpdateCommentDTO, IComment> {
+export default class CommentService implements IService<CreateCommentDTO, UpdateCommentDTO, IComment> {
 
     async getReplies(commentId: string): Promise<IComment[]> {
         try {

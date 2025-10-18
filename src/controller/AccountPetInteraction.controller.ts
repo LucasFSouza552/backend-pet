@@ -1,10 +1,17 @@
-import { ThrowError } from "@errors/ThrowError";
 import { NextFunction, Request, Response } from "express";
-import AccountPetInteractionService from "@services/AccountPetInteraction.services";
+
+// Erros
+import { ThrowError } from "@errors/ThrowError";
+
+// DTOS
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+
+// Utils
 import BuilderDTO from "@utils/builderDTO";
 
-const accountPetInteractionService = new AccountPetInteractionService();
+// Services
+import { accountPetInteractionService } from "@services/index";
+
 export default class AccountPetInteractionController {
     async createInteraction(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -12,9 +19,6 @@ export default class AccountPetInteractionController {
 
             PetInteraction.account = req.account?.id;
             PetInteraction.pet = req.params.id;
-
-            console.log("PetInteraction", PetInteraction);
-
 
             const newPetDTO: createPetInteractionDTO = new BuilderDTO<createPetInteractionDTO>(PetInteraction)
                 .add({ key: "account" })

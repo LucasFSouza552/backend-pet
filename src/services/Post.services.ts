@@ -1,15 +1,23 @@
 import { ObjectId } from "mongodb";
+
+// DTOS
 import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
+
+// Models
 import IPost from "@models/Post";
-import PostRepository from "@repositories/Post.repository";
+
+// Repositories
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { postRepository } from "@repositories/index";
 
-const postRepository = new PostRepository();
-
-export class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+export default class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
 
     async getPostsByAccount(accountId: string) {
         try {

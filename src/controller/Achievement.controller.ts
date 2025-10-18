@@ -1,14 +1,18 @@
-import { CreateAchievementDTO } from "@dtos/AchievementDTO";
 import { Request, Response, NextFunction } from "express";
-import IController from "@interfaces/IController";
-import filterConfig from "@utils/filterConfig";
-import Filter from "@interfaces/Filter";
-import { AchievementService } from "@services/Achievement.services";
-import BuilderDTO from "@utils/builderDTO";
-import AccountService from "@services/Account.services";
 
-const achievementService = new AchievementService();
-const accountService = new AccountService()
+// DTOS
+import { CreateAchievementDTO } from "@dtos/AchievementDTO";
+
+// Interfaces
+import IController from "@interfaces/IController";
+import Filter from "@interfaces/Filter";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
+import BuilderDTO from "@utils/builderDTO";
+
+// Services
+import { achievementService, accountService } from "@services/index";
 
 export default class AchievementController implements IController {
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -92,7 +96,7 @@ export default class AchievementController implements IController {
         }
     }
 
-     async addSponsorshipsAchievement(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async addSponsorshipsAchievement(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
             if (!id) {

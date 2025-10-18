@@ -1,24 +1,40 @@
+import { Types } from "mongoose";
+
+// Models
 import { IAchievement } from "@models/Achievements";
-import { AccountDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "@dtos/AccountDTO";
+import IPet from "@models/Pet";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
-import accountMapper from "@Mappers/accountMapper";
-import AccountRepository from "@repositories/Account.repository";
-import { cryptPassword } from "@utils/aes-crypto";
-import AccountAchievementRepository from "@repositories/AccountAchievement.repository";
-import AchievementRepository from "@repositories/Achievement.repository";
-import { addAchieviment } from "@dtos/AccountAchievementDTO";
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
-import PostRepository from "@repositories/Post.repository";
-import achievementMapper from "@Mappers/achievementMapper";
-import AuthRepository from "@repositories/Auth.repository";
 
-const authRepository = new AuthRepository();
-const accountRepository = new AccountRepository();
-const accountAchievementRepository = new AccountAchievementRepository();
-const achievementsRepository = new AchievementRepository();
-const postRepository = new PostRepository();
+// Mappers
+import accountMapper from "@Mappers/accountMapper";
+import achievementMapper from "@Mappers/achievementMapper";
+
+// Utils
+import { cryptPassword } from "@utils/aes-crypto";
+
+// DTOS
+import { addAchieviment } from "@dtos/AccountAchievementDTO";
+import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import { AccountDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "@dtos/AccountDTO";
+
+// Repositories
+import {
+    authRepository,
+    accountRepository,
+    accountAchievementRepository,
+    achievementRepository,
+    postRepository,
+    accountPetInteractionRepository,
+    petRepository
+} from "@repositories/index";
+import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+
 
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async search(filters: Filter) {
@@ -26,7 +42,6 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             return await accountRepository.search(filters);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Erro ao buscar usuários.");
         }
 
@@ -134,13 +149,11 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-
-
     async addAdoptionAchievement(id: string): Promise<void> {
         try {
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-            const achievements = await achievementsRepository.getByType("adoption");
+            const achievements = await achievementRepository.getByType("adoption");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -152,7 +165,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         try {
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-            const achievements = await achievementsRepository.getByType("sponsorship");
+            const achievements = await achievementRepository.getByType("sponsorship");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
 
         } catch (error) {
@@ -165,12 +178,33 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         try {
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-            const achievements = await achievementsRepository.getByType("donation");
+            const achievements = await achievementRepository.getByType("donation");
             await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
+        }
+    }
+
+    async getFeed(accountId: string, filter: Filter): Promise<IPet[]> {
+        try {
+            const interactions = await accountPetInteractionRepository.getByAccount(accountId);
+            const seenPetIds = interactions.map(i => new Types.ObjectId(i.pet as string));
+            const nextPet = await petRepository.getNextAvailable(seenPetIds);
+
+            if (!nextPet) return [];
+
+            await accountPetInteractionRepository.create({
+                status: "viewed",
+                account: accountId as string,
+                pet: nextPet._id as string
+            } as createPetInteractionDTO);
+
+            return [nextPet];
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar o feed.");
         }
     }
 

@@ -1,11 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { PetService } from "@services/Pet.services";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
-import filterConfig from "@utils/filterConfig";
 import IController from "@interfaces/IController";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
 
-const petService = new PetService();
+// Services
+import { petService } from "@services/index";
 
 export default class PetController implements IController {
     async updatePetImages(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -86,20 +92,19 @@ export default class PetController implements IController {
         }
     }
 
-    async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const accountId = req?.account?.id as string;
-            const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
-            const filters: Filter = filterConfig(req.query, allowedQueryFields);
-            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+    // async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //     try {
+    //         const accountId = req?.account?.id as string;
+    //         const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
+    //         const filters: Filter = filterConfig(req.query, allowedQueryFields);
+    //         if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const pets = await await petService.getFeed(accountId, filters);
-            console.log(pets);
-            res.status(200).json(pets);
-        } catch (error) {
-            next(error);
-        }
-    }
+    //         const pets = await await petService.(accountId, filters);
+    //         res.status(200).json(pets);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];

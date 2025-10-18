@@ -8,7 +8,7 @@ const router = Router();
 
 const petController = new PetController();
 
-router.get("/feed", AuthMiddleware, petController.getFeed);
+// router.get("/feed", AuthMiddleware, petController.getFeed);
 router.get("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.getAll);
 router.post("/", AuthMiddleware, authorizationMiddleware(["institution"]), petController.create);
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["institution"]), petController.update);

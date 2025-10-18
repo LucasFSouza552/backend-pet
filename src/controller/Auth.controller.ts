@@ -1,12 +1,18 @@
 import { Request, Response, NextFunction } from "express";
+
+// DTOS
+import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
-import { AuthService } from "@services/AuthService.services";
+
+// Utils
 import { validatePassword } from "@utils/aes-crypto";
 import JWT from "@utils/JwtEncoder";
-import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
 import BuilderDTO from "@utils/builderDTO";
 
-const authService = new AuthService();
+// Services
+import { authService } from "@services/index";
 
 export default class AuthController {
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {

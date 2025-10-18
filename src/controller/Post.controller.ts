@@ -1,14 +1,24 @@
 import { NextFunction, Request, Response } from "express";
-import { PostService } from "@services/Post.services";
-import Filter from "@interfaces/Filter";
-import filterConfig from "@utils/filterConfig";
-import IController from "@interfaces/IController";
-import { ThrowError } from "@errors/ThrowError";
+
+// DTOS
 import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+
+// Interfaces
+import Filter from "@interfaces/Filter";
+import IController from "@interfaces/IController";
+
+// Errors
+import { ThrowError } from "@errors/ThrowError";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
 import BuilderDTO from "@utils/builderDTO";
+
+// Models
 import IPost from "@models/Post";
 
-const postService = new PostService();
+// Services
+import { postService } from "@services/index";
 
 export default class PostController implements IController {
 

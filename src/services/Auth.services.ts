@@ -1,14 +1,26 @@
+// DTOS
 import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Mappers
 import accountMapper from "@Mappers/accountMapper";
-import { Account, IAccount } from "@models/Account";
-import AuthRepository from "@repositories/Auth.repository";
+
+// Models
+import { IAccount } from "@models/Account";
+
+// Utils
 import { cryptPassword, validatePassword } from "@utils/aes-crypto";
 import { sendEmail } from "@utils/emailService";
 import JWT from "@utils/JwtEncoder";
 
-const authRepository = new AuthRepository();
-export class AuthService {
+// Repositories
+import {
+    authRepository
+} from "@repositories/index";
+
+export default class AuthService {
 
     async getByEmail(email: string): Promise<IAccount | null> {
         try {

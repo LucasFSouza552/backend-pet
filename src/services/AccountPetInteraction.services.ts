@@ -1,8 +1,12 @@
+// DTOS
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
-import { ThrowError } from "@errors/ThrowError";
-import AccountPetInteractionRepository from "@repositories/AccountPetInteraction.repository";
 
-const accountPetInteractionRepository = new AccountPetInteractionRepository();
+// Errors
+import { ThrowError } from "@errors/ThrowError";
+
+// Repositories
+import { accountPetInteractionRepository } from "@repositories/index";
+
 export default class AccountPetInteractionService {
 
     async getPetInteraction(petId: string) {
@@ -38,6 +42,15 @@ export default class AccountPetInteractionService {
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar interações com os pets.");
+        }
+    }
+
+    async getViewedPets(accountId: string) {
+        try {
+            return await accountPetInteractionRepository.getViewedPets(accountId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar pets visualizados.");
         }
     }
 }

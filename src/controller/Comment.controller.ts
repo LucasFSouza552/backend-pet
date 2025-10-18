@@ -1,16 +1,23 @@
 import { NextFunction, Request, Response } from "express";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
 import IController from "../interfaces/IController";
-import filterConfig from "@utils/filterConfig";
-import { CommentService } from "@services/Comment.services";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
 import BuilderDTO from "@utils/builderDTO";
-import { CreateCommentDTO } from "@dtos/CommentDTO";
-import { UpdateCommentDTO } from "@dtos/CommentDTO";
 
-const commentService = new CommentService();
+// DTOS
+import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
 
-export class CommentController implements IController {
+// Services
+import { commentService } from "@services/index";
+
+export default class CommentController implements IController {
     async getReplies(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const commentId = req.params.id;

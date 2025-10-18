@@ -3,7 +3,7 @@ import { Pet } from "@models/Pet";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
 import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 export default class PetRepository implements IRepository<CreatePetDTO, UpdatePetDTO, IPet> {
     async getAll(filter: Filter): Promise<IPet[]> {
@@ -34,11 +34,12 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
         await Pet.findByIdAndDelete(id);
     }
 
-    async getByList(seenPetIds: string[]): Promise<IPet | null> {
+    async getNextAvailable(seenPetIds: Types.ObjectId[]): Promise<IPet | null> {
         const [nextPet] = await Pet.aggregate([
             { $match: { _id: { $nin: seenPetIds } } },
             { $sample: { size: 1 } }
         ]);
+        
         return nextPet;
     }
 }

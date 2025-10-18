@@ -1,12 +1,19 @@
+// DTOS
 import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/AchievementDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
-import AchievementRepository from "@repositories/Achievement.repository";
 
-const achievementRepository = new AchievementRepository();
+// Repositories
+import {
+    achievementRepository
+} from "@repositories/index";
 
-export class AchievementService implements IService<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
+export default class AchievementService implements IService<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
    
     async getAll(filter: Filter): Promise<AchievementDTO[]> {
         try {

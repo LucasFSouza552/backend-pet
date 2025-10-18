@@ -1,13 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import IController from "@interfaces/IController";
-import { ThrowError } from "@errors/ThrowError";
-import Filter from "@interfaces/Filter";
-import filterConfig from "@utils/filterConfig";
-import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
-import BuilderDTO from "@utils/builderDTO";
-import AccountService from "@services/Account.services";
 
-const accountService = new AccountService();
+// DTOS
+import { UpdateAccountDTO, AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+
+// Interfaces
+import IController from "@interfaces/IController";
+import Filter from "@interfaces/Filter";
+
+// Errors
+import { ThrowError } from "@errors/ThrowError";
+
+// Utils
+import filterConfig from "@utils/filterConfig";
+import BuilderDTO from "@utils/builderDTO";
+
+// Services
+import { accountService } from "@services/index";
 
 export default class AccountController implements IController {
     async search(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -174,5 +182,5 @@ export default class AccountController implements IController {
             next(error);
         }
     }
-    
+
 }

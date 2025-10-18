@@ -21,4 +21,8 @@ export default class AccountPetInteractionRepository {
     async getInteraction(petId: string) {
         return await AccountPetInteraction.findOne({ pet: petId });
     }
+
+    async getViewedPets(accountId: string) {
+        return await AccountPetInteraction.find({ account: accountId, status: "viewed" });
+    }
 }

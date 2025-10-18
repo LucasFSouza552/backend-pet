@@ -1,15 +1,26 @@
+// Types
 import { IHistoryStatus } from "@Itypes/IHistoryStatus";
+
+// DTOS
 import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+
+// Errors
 import { ThrowError } from "@errors/ThrowError";
+
+// Interfaces
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
-import HistoryRepository from "@repositories/History.repository";
-import AccountService from "@services/Account.services";
-import { PetService } from "@services/Pet.services";
 
-const historyRepository = new HistoryRepository();
-const petService = new PetService();
-const accountService = new AccountService();
+// Repositories
+import {
+    historyRepository
+} from "@repositories/index";
+
+// Services
+import {
+    petService,
+    accountService
+} from "./index";
 
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
     getByAccount(filter: Filter, accountId: string) {
