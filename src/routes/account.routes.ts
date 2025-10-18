@@ -10,6 +10,9 @@ const router = Router();
 const accountController = new AccountController();
 const postController = new PostController();
 
+// Rota para retornar o feed dos pets de uma conta
+router.get("/feed", AuthMiddleware, accountController.getFeed);
+
 // Rota para pesquisar contas
 router.get("/search", accountController.search);
 
@@ -42,5 +45,6 @@ router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
 
 // Rota para retornar o status de uma conta
 router.get("/:id/status", AuthMiddleware, accountController.getStatusByAccount);
+
 
 export default router;

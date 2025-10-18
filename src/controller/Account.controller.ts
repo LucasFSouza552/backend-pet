@@ -18,6 +18,21 @@ import BuilderDTO from "@utils/builderDTO";
 import { accountService } from "@services/index";
 
 export default class AccountController implements IController {
+
+    async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req?.account?.id as string;
+            const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
+            const filters: Filter = filterConfig(req.query, allowedQueryFields);
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            const feed = await accountService.getFeed(accountId, filters);
+            res.status(200).json(feed);
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async search(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["name"];
