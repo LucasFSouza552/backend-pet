@@ -123,7 +123,6 @@ export default class AuthService {
             return accountMapper(accountFound);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Nao foi possivel buscar o usuario.");
         }
     }

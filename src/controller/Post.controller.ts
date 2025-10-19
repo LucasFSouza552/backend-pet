@@ -41,7 +41,6 @@ export default class PostController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const post = await postService.getById(id);
-            console.log(post);
             res.status(200).json(post);
         } catch (error) {
             next(error);
@@ -65,15 +64,6 @@ export default class PostController implements IController {
             const newPost: CreatePostDTO = await postService.create(newPostDTO, images);
             res.status(201).json(newPost);
         } catch (error) {
-            // if (post.image && post.image.length > 0 && gfs) {
-            //     for (const fileId of post.image) {
-            //         try {
-            //             await gfs.delete(fileId);
-            //         } catch (err) {
-            //             console.error("Erro ao remover imagem do GridFS:", err);
-            //         }
-            //     }
-            // }
             next(error);
         }
     }
@@ -129,6 +119,7 @@ export default class PostController implements IController {
     async toggleLike(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
+            
             const accountId = req.account?.id.toString();
             if (!id || !accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");

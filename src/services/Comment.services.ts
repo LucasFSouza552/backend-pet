@@ -17,10 +17,10 @@ import { accountService } from "./index";
 
 export default class CommentService implements IService<CreateCommentDTO, UpdateCommentDTO, IComment> {
 
-    async getReplies(commentId: string): Promise<IComment[]> {
+    async getReplies(commentId: string, filter: Filter): Promise<IComment[]> {
         try {
-            const replies = await commentRepository.getReplies(commentId);
-
+            const replies = await commentRepository.getReplies(commentId, filter);
+            if(!replies) return [];
             return replies.map(reply => reply.isDeleted
                 ? { ...reply, content: "Comentário removido" }
                 : { ...reply, account: reply.account ?? null }
@@ -32,9 +32,9 @@ export default class CommentService implements IService<CreateCommentDTO, Update
         }
     }
 
-    async getAllByPost(postId: string): Promise<IComment[]> {
+    async getAllByPost(postId: string, filter: Filter): Promise<IComment[]> {
         try {
-            const comments = await commentRepository.getByPostId(postId);
+            const comments = await commentRepository.getByPostId(postId, filter);
             return comments;
         } catch (error) {
             if (error instanceof Error) throw error;
@@ -113,8 +113,6 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             if (!comment) {
                 throw ThrowError.notFound("Comentário não encontrado.");
             }
-            // console.log(comment);
-            // return null;
             if (comment.account?.toString() !== data.account) {
                 throw ThrowError.forbidden("Acesso negado.");
             }

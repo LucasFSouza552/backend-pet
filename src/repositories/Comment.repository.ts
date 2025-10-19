@@ -5,16 +5,20 @@ import IComment, { Comment } from "@models/Comments";
 import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
 
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
-    async getReplies(commentId: string) {
-        const replies = await Comment.find({ parent: commentId }).sort({ createdAt: 1 }).lean();
+    async getReplies(commentId: string, filter: Filter): Promise<IComment[] | null> {
+        const replies = await Comment.find({ parent: commentId }).sort({ createdAt: 1 });
 
-        return replies
+        return replies;
     }
 
-    async getByPostId(postId: string) {
+    async getByPostId(postId: string, filter: Filter): Promise<IComment[]> {
+        const { page, limit, orderBy, order, query } = filter;
         return await Comment
             .find({ post: postId, isDeleted: false, parent: null })
-            .sort({ createdAt: 1 });
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate("account", "name role avatar")
+            .sort({ createdAt: -1 });
     }
     async softDelete(accountId: string, id: string): Promise<IComment | null> {
         return await Comment.findByIdAndUpdate(
