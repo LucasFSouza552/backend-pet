@@ -4,7 +4,6 @@ import { ITypeAccounts } from "@Itypes/ITypeAccounts";
 import defaultTransform from "@utils/transformModel";
 
 export interface IAccount extends Document {
-    id: string;
     name: string;
     email: string;
     avatar?: Types.ObjectId;

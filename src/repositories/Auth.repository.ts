@@ -1,4 +1,5 @@
-import { CreateAccountDTO } from "@dtos/AccountDTO";
+import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import accountMapper from "@Mappers/accountMapper";
 import { Account, IAccount } from "@models/Account";
 
 export default class AuthRepository {
@@ -14,8 +15,7 @@ export default class AuthRepository {
     }
 
     async getById(id: string): Promise<IAccount | null> {
-        const account = await Account.findById({ _id: id }).lean({ virtuals: true }).exec();
-        return { ...account, id: account?._id } as IAccount;
+         return await Account.findById({ _id: id }).exec();
     }
 
     async create(data: CreateAccountDTO): Promise<IAccount> {
