@@ -100,6 +100,10 @@ const accountSchema = new Schema<IAccount>(
                 minlength: 2,
                 maxlength: 2,
             },
+            neighborhood: {
+                type: String,
+                required: true,
+            },
         },
     },
     {

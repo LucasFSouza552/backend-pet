@@ -20,7 +20,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
     async getReplies(commentId: string, filter: Filter): Promise<IComment[]> {
         try {
             const replies = await commentRepository.getReplies(commentId, filter);
-            if(!replies) return [];
+            if (!replies) return [];
             return replies.map(reply => reply.isDeleted
                 ? { ...reply, content: "Comentário removido" }
                 : { ...reply, account: reply.account ?? null }
