@@ -82,6 +82,7 @@ export default class AuthController {
                 .add({ key: "address.city" })
                 .add({ key: "address.cep" })
                 .add({ key: "address.state" })
+                .add({ key: "address.neighborhood" })
                 .build();
 
             const newAccount: AccountDTO = await authService.create(newAccountDTO);
@@ -94,7 +95,13 @@ export default class AuthController {
 
     async resendVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-
+            const accountId = req.account?.id as string;
+            console.log(accountId);
+            if(!accountId) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+            const account = await authService.resendVerification(accountId);
+            res.status(200).json(account);
         } catch (error) {
             next(error);
         }
@@ -110,14 +117,6 @@ export default class AuthController {
 
             const account = await authService.verifyEmail(token);
             res.status(200).json(account);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-
         } catch (error) {
             next(error);
         }
@@ -139,7 +138,8 @@ export default class AuthController {
 
     async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { token, password } = req.body;
+            const token = req?.query.token as string;
+            const { password } = req.body;
             if (!token || !password) {
                 throw ThrowError.badRequest("É necesario preencher todos os campos.");
             }

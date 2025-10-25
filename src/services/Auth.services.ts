@@ -19,6 +19,8 @@ import JWT from "@utils/JwtEncoder";
 import {
     authRepository
 } from "@repositories/index";
+import forgotPasswordTemplate from "templetes/forgotPasswordTemplate";
+import validateEmailTemplate from "templetes/validateEmailTemplate";
 
 export default class AuthService {
 
@@ -53,6 +55,30 @@ export default class AuthService {
         }
     }
 
+    async resendVerification(accountId: string) {
+        try {
+            const account = await authRepository.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+            
+            const token = JWT.encodeToken({ id: account.id });
+
+            const html = validateEmailTemplate(account.name, token);
+            await sendEmail({
+                to: account.email,
+                subject: "Confirmação de Email - MyPets",
+                text: `Olá!\n\nObrigado por se cadastrar no MyPets.\nPor favor, confirme seu endereço de email clicando no link abaixo:\nhttp://localhost:3000/verify-email?token=${token}\n\nSe você não se cadastrou, ignore este email.`,
+                html
+            }).catch(err => {
+                throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
+            });
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            console.log(error);
+            throw ThrowError.internal("Não foi possível reenviar o email de confirmação.");
+        }
+    }
+
+
     async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = await authRepository.getByEmail(data.email);
@@ -70,30 +96,18 @@ export default class AuthService {
 
             data.password = await cryptPassword(data.password);
 
-            const newAccount = await authRepository.create(data);
+            const newAccount = await authRepository.create(data).catch(err => {
+                throw ThrowError.internal(err.message);
+            });
 
             const token = JWT.encodeToken({ id: newAccount._id });
 
+            const html = validateEmailTemplate(newAccount.name, token);
             await sendEmail({
                 to: newAccount.email,
                 subject: "✅ Confirmação de Email - MyPets",
                 text: `Olá!\n\nObrigado por se cadastrar no MyPets.\nPor favor, confirme seu endereço de email clicando no link abaixo:\nhttp://localhost:3000/verify-email?token=${token}\n\nSe você não se cadastrou, ignore este email.`,
-                html: `
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-    <h2 style="color: #333;">Confirmação de Email</h2>
-    <p>Olá!</p>
-    <p>Obrigado por se cadastrar no <strong>MyPets</strong>.</p>
-    <p style="text-align: center; margin: 30px 0;">
-        <a href="http://localhost:3000/verify-email?token=${token}" 
-           style="display: inline-block; padding: 12px 20px; color: #fff; background-color: #1E90FF; text-decoration: none; border-radius: 5px; font-weight: bold;">
-           Confirmar Email
-        </a>
-    </p>
-    <p>Se você não se cadastrou, ignore este email.</p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-    <p style="font-size: 12px; color: #555;">Atenciosamente,<br>Equipe MyPets</p>
-</div>
-`
+                html
             }).catch(err => {
                 throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
             });
@@ -101,6 +115,7 @@ export default class AuthService {
             return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
+
             throw ThrowError.internal("Não foi possível criar o usuário.");
         }
     }
@@ -123,7 +138,6 @@ export default class AuthService {
             return accountMapper(accountFound);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Nao foi possivel buscar o usuario.");
         }
     }
@@ -135,26 +149,13 @@ export default class AuthService {
 
             const token = JWT.encodeToken({ id: account._id });
 
+            const html = forgotPasswordTemplate(account.name, token);
+
             await sendEmail({
                 to: email,
-                subject: "🔒 Recuperação de Senha - MyPets",
+                subject: "Recuperação de Senha - MyPets",
                 text: `Olá!\n\nRecebemos uma solicitação para redefinir sua senha.\nUse este link para criar uma nova senha: http://localhost:3000/reset-password?token=${token}\n\nSe você não solicitou, ignore este email.`,
-                html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-        <h2 style="color: #333;">🔒 Recuperação de Senha</h2>
-        <p>Olá!</p>
-        <p>Recebemos uma solicitação para redefinir sua senha.</p>
-        <p style="text-align: center;">
-            <a href="http://localhost:3000/reset-password?token=${token}" 
-               style="display: inline-block; padding: 12px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px; font-weight: bold;">
-               Redefinir Senha
-            </a>
-        </p>
-        <p>Se você não solicitou a redefinição, pode ignorar este email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="font-size: 12px; color: #888;">Equipe MyPets</p>
-    </div>
-    `
+                html
             }).catch(err => { throw ThrowError.internal("Não foi possivel enviar o email.") });
 
 

@@ -53,17 +53,19 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async getById(id: string): Promise<IPost | null> {
         const post = await Post.findById(id)
-            .populate({
-                path: "comments",
-                match: { isDeleted: false },
-                populate: [
-                    { path: "account", select: "name avatar" },
-                    { path: "parentId", select: "content account" }
-                ]
-            })
+            // .populate({
+            //     path: "comments",
+            //     match: { isDeleted: false },
+            //     populate: [
+            //         { path: "account", select: "name avatar" },
+            //         { path: "parent", select: "content account" }
+            //     ]
+            // })
             .populate("account", "name role avatar")
             .lean({ virtuals: true })
             .exec();
+
+        
         return post as unknown as IPost || null;
     }
     async create(data: CreatePostDTO): Promise<IPost> {

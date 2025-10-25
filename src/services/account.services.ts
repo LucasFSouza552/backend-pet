@@ -34,6 +34,8 @@ import {
     petRepository
 } from "@repositories/index";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import petMapper from "@Mappers/petMapper";
+import { PetDTO } from "@dtos/PetDTO";
 
 
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
@@ -187,13 +189,15 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-    async getFeed(accountId: string, filter: Filter): Promise<IPet[]> {
+    async getFeed(accountId: string, filter: Filter): Promise<PetDTO | null> {
         try {
             const interactions = await accountPetInteractionRepository.getByAccount(accountId);
             const seenPetIds = interactions.map(i => new Types.ObjectId(i.pet as string));
             const nextPet = await petRepository.getNextAvailable(seenPetIds);
 
-            if (!nextPet) return [];
+            if (!nextPet) {
+                return null;
+            }
 
             await accountPetInteractionRepository.create({
                 status: "viewed",
@@ -201,7 +205,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
                 pet: nextPet._id as string
             } as createPetInteractionDTO);
 
-            return [nextPet];
+            return petMapper(nextPet);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar o feed.");

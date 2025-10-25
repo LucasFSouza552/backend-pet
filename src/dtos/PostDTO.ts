@@ -5,5 +5,3 @@ export type CreatePostDTO = Omit<IPost, "data" | "likes">;
 export type UpdatePostDTO = Partial<Omit<IPost, "createdAt" | "updatedAt" | "date" | "likes">>;
 
 export type UpdatePostlikesDTO = Pick<IPost, "likes">;
-
-export type PostWithoutBuffer = Omit<IPost, "image"> & { image?: string[] };

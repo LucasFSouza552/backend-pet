@@ -18,14 +18,16 @@ import { PictureStorageRepository } from "@repositories/PictureStorage.repositor
 import { historyRepository, petRepository } from "@repositories/index";
 
 // Services
-import { accountService } from "./index";
+import { accountPetInteractionService, accountService } from "./index";
+import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async updatePetImages(petId: string, files: Express.Multer.File[]): Promise<ObjectId[]> {
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-            const uploadedImages: ObjectId[] = [];
+            if (pet.images?.length + files?.length > 5 || pet.images?.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
+            const uploadedImages: ObjectId[] = [...pet.images];
             for (const file of files) {
                 if (!file.buffer) continue;
 
@@ -58,14 +60,13 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async donate(id: string, amount: string, accountId: string) {
+    async donate(amount: string, accountId: string) {
         try {
             const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
 
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
 
             const newHistory: CreateHistoryDTO = {
                 type: "donation",
@@ -182,6 +183,32 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
+    async rejectAdoption(petId: string, accountId: string) {
+        try {
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+
+            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+            
+            const newInteraction: createPetInteractionDTO = {
+                account: account.id as string,
+                pet: pet.id as string,
+                status: "disliked",
+            } as createPetInteractionDTO;
+
+            const interaction = await accountPetInteractionService.create(newInteraction);
+            if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
+
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao rejeitar adotação.");
+        }
+    }
+
     async requestAdoption(petId: string, accountId: string): Promise<HistoryDTO> {
         try {
 
@@ -206,7 +233,14 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             const history = await historyRepository.create(newHistory as CreateHistoryDTO);
             if (!history) throw ThrowError.internal("Erro ao solicitar adotação.");
 
-            await petRepository.update(pet.id, { adopted: true });
+            const newInteraction: createPetInteractionDTO = {
+                account: account.id as string,
+                pet: pet.id as string,
+                status: "liked",
+            } as createPetInteractionDTO;
+
+            const interaction = await accountPetInteractionService.create(newInteraction);
+            if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
 
             return history;
 
@@ -288,8 +322,4 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             throw ThrowError.internal("Erro ao deletar o pet.");
         }
     }
-
-
-
-
 }

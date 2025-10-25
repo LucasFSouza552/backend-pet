@@ -23,7 +23,7 @@ router.post("/:id/reply", AuthMiddleware, commentController.reply);
 // Rota para atualizar um comentário
 router.patch("/:id", AuthMiddleware, commentController.update);
 
-// Rota para ocultar um comentário
+// Rota para ocultar/apagar um comentário
 router.patch("/own/:id", AuthMiddleware, commentController.deleteOwnComment);
 
 // Rota para retornar todas as respostas de um comentário

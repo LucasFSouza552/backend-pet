@@ -6,7 +6,6 @@ export default interface IPost extends Document {
     commentsCount?: number;
     content: string;
     image?: Types.ObjectId[];
-    date: Date;
     likes: Types.ObjectId[];
     account: Types.ObjectId | string;
     createdAt: Date;
@@ -25,10 +24,6 @@ const postSchema = new Schema<IPost>({
     image: {
         type: [Schema.Types.ObjectId],
         required: false
-    },
-    date: {
-        type: Date,
-        default: Date.now,
     },
     likes: [
         {

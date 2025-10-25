@@ -21,11 +21,13 @@ export default class CommentController implements IController {
     async getReplies(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const commentId = req.params.id;
+            const allowedQueryFields: string[] = ["post"];
+            const filter: Filter = filterConfig(req.query, allowedQueryFields);
             if (!commentId) {
                 throw ThrowError.badRequest("ID do comentário não foi informado.");
             }
 
-            const replies = await commentService.getReplies(commentId);
+            const replies = await commentService.getReplies(commentId, filter);
             res.status(200).json(replies);
         } catch (error) {
             next(error);
@@ -34,11 +36,14 @@ export default class CommentController implements IController {
     async getAllByPost(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const postId = req.params.id;
+
+            const allowedQueryFields: string[] = ["post"];
+            const filters: Filter = filterConfig(req.query, allowedQueryFields);
             if (!postId) {
                 throw ThrowError.badRequest("ID do post não foi informado.");
             }
 
-            const comments = commentService.getAllByPost(postId);
+            const comments = await commentService.getAllByPost(postId, filters);
             res.status(200).json(comments);
         } catch (error) {
             next(error);
@@ -70,9 +75,12 @@ export default class CommentController implements IController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const postId = req.params.id;
-            const comment = req?.body.comment;
-            comment.account = req.account?.id;
-            comment.post = postId;
+            const comment = {
+                ...req?.body,
+                account: req.account?.id,
+                post: postId
+            };
+            console.log(comment);
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "post" })
                 .add({ key: "account" })

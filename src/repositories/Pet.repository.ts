@@ -36,10 +36,16 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
 
     async getNextAvailable(seenPetIds: Types.ObjectId[]): Promise<IPet | null> {
         const [nextPet] = await Pet.aggregate([
-            { $match: { _id: { $nin: seenPetIds } } },
-            { $sample: { size: 1 } }
+            {
+                $match: {
+                    _id: { $nin: seenPetIds },
+                    adopted: false,
+                },
+            },
+            { $sample: { size: 1 } },
         ]);
-        
-        return nextPet;
+
+
+        return await Pet.findById(nextPet?._id).populate("account", "name address");
     }
 }

@@ -1,9 +1,9 @@
 import { Document, Schema, Types, model } from "mongoose";
 import IAddress from "@interfaces/IAddress";
-import { ITypeAccounts } from "@Itypes/ITypeAccounts"; 
+import { ITypeAccounts } from "@Itypes/ITypeAccounts";
+import defaultTransform from "@utils/transformModel";
 
 export interface IAccount extends Document {
-    id: string;
     name: string;
     email: string;
     avatar?: Types.ObjectId;
@@ -17,6 +17,7 @@ export interface IAccount extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
 
 const accountSchema = new Schema<IAccount>(
     {
@@ -98,9 +99,23 @@ const accountSchema = new Schema<IAccount>(
                 minlength: 2,
                 maxlength: 2,
             },
+            neighborhood: {
+                type: String,
+                required: true,
+            },
         },
     },
-    { timestamps: true, strict: true }
+    {
+        timestamps: true, strict: true,
+        toJSON: {
+            virtuals: true,
+            transform: defaultTransform,
+        },
+        toObject: {
+            virtuals: true,
+            transform: defaultTransform,
+        },
+    }
 );
 
 

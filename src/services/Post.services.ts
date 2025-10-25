@@ -16,6 +16,7 @@ import IPost from "@models/Post";
 // Repositories
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 import { postRepository } from "@repositories/index";
+import postMapper from "@Mappers/postMapper";
 
 export default class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
 
@@ -45,9 +46,11 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
 
             const alreadyLiked = post.likes.some((id) => id.equals(accountId));
 
-            return alreadyLiked
+            const updatedPost = alreadyLiked
                 ? await postRepository.removeLike(postId, accountId)
-                : await postRepository.addLike(postId, accountId);;
+                : await postRepository.addLike(postId, accountId);
+            if(!updatedPost) return null;
+            return postMapper(updatedPost);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível curtir o post.");
@@ -66,7 +69,6 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
             const posts = await postRepository.getAll(filter);
             return posts;
         } catch (error: any) {
-            console.log(error);
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar os posts.");
         }
@@ -74,7 +76,9 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
 
     async getById(id: string): Promise<IPost | null> {
         try {
-            return await postRepository.getById(id);
+            const post = await postRepository.getById(id);
+            if (!post) return null;
+            return postMapper(post);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar o post.");

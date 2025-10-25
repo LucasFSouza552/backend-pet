@@ -46,15 +46,13 @@ export default class PetController implements IController {
 
     async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const id = req.params.id;
             const amount = req.body?.amount;
             const accountId = req?.account?.id;
 
-            if (!id) throw ThrowError.badRequest("ID não foi informado.");
             if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const pet = await petService.donate(id, amount, accountId);
+            const pet = await petService.donate(amount, accountId);
             res.status(200).json(pet);
         } catch (error) {
             next(error);
@@ -92,7 +90,21 @@ export default class PetController implements IController {
         }
     }
 
-  
+    async rejectAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const petId = req.params?.id;
+            const accountId = req.account?.id;
+
+            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+
+            await petService.rejectAdoption(petId, accountId);
+            res.status(201).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["name", "type", "age", "gender", "adopted", "account"];
