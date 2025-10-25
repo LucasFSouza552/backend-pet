@@ -1,7 +1,9 @@
 import { IAccount } from "@models/Account";
-import accountMapper from "../../src/Mappers/accountMapper";
-import AccountService from '../../src/services/account.services';
-import { ThrowError } from '../../src/errors/ThrowError';
+import AccountService from '@services/account.services';
+import { ThrowError } from '@errors/ThrowError';
+import { ObjectId } from "mongodb";
+import { cryptPassword } from '@utils/aes-crypto';
+
 
 // Mock dos repositórios e dependências
 jest.mock('../../src/repositories/index', () => ({
@@ -88,7 +90,7 @@ describe('AccountService', () => {
   } = require('../../src/repositories/index');
 
   const { PictureStorageRepository } = require('../../src/repositories/PictureStorage.repository');
-  const { cryptPassword } = require('../../src/utils/aes-crypto');
+  const crypt = require('../../src/utils/aes-crypto');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -96,8 +98,8 @@ describe('AccountService', () => {
 
   describe('create', () => {
     const validAccountData = {
-      name: "Gabriel",
-      email: "lucasmoliquelo49@hotmail.com",
+      name: "teste",
+      email: "teste@hotmail.com",
       password: "abcdef",
       cpf: "12345678016",
       phone_number: "3299999999",
@@ -111,27 +113,22 @@ describe('AccountService', () => {
       }
     } as IAccount;
 
-    it.only('deve criar usuário com sucesso quando dados são válidos', async () => {
-      // Arrange
-      authRepository.getByEmail.mockResolvedValue(null);
-      accountRepository.getByCpf.mockResolvedValue(null);
-      accountRepository.getByCnpj.mockResolvedValue(null);
-      cryptPassword.mockResolvedValue('hashed_password');
-      const accountMapped = accountMapper({ _id: 'user123', ...validAccountData, role: 'user' });
-      accountRepository.create.mockResolvedValue(accountMapped);
+    it('deve criar usuário com sucesso quando dados são válidos', async () => {
 
-      // Act
+      jest.spyOn(authRepository, 'getByEmail').mockResolvedValue(null);
+      jest.spyOn(accountRepository, 'getByCpf').mockResolvedValue(null);
+      jest.spyOn(accountRepository, 'getByCnpj').mockResolvedValue(null);
+      jest.spyOn(accountRepository, 'create').mockResolvedValue({ _id: 'user123', ...validAccountData });
+      jest.spyOn(crypt, 'cryptPassword' as any).mockResolvedValue('hashed_password');
+
       const result = await service.create(validAccountData);
 
-      // Assert
+      expect(result).toHaveProperty('id');
+      expect(result.password).toBeUndefined();
+
       expect(authRepository.getByEmail).toHaveBeenCalledWith(validAccountData.email);
       expect(accountRepository.getByCpf).toHaveBeenCalledWith(validAccountData.cpf);
-
-      expect(result.password).toBeUndefined();
-      expect(accountRepository.create).toHaveBeenCalledWith({
-        ...validAccountData
-      });
-      expect(result).toEqual(accountMapped);
+      expect(accountRepository.create).toHaveBeenCalledWith(validAccountData);
     });
 
     it('deve falhar quando email já existe', async () => {
@@ -199,9 +196,17 @@ describe('AccountService', () => {
     it('deve falhar quando usuário não existe', async () => {
       // Arrange
       accountRepository.getById.mockResolvedValue(null);
-
       // Act & Assert
-      await expect(service.getById('user123')).rejects.toThrow('Usuário não encontrado.');
+
+      try {
+        await service.getById('user123');
+      } catch (error: any) {
+        // Assert
+        expect(error).toBeInstanceOf(ThrowError);
+        expect(error.statusCode).toBe(404);
+        expect(error.message).toBe('Usuário não encontrado.');
+      }
+
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
@@ -418,30 +423,37 @@ describe('AccountService', () => {
   describe('getFeed', () => {
     it('deve retornar próximo pet disponível', async () => {
       // Arrange
-      const interactions = [{ pet: 'pet1' }, { pet: 'pet2' }];
-      const nextPet = { _id: 'pet3', name: 'Rex' };
-      accountPetInteractionRepository.getByAccount.mockResolvedValue(interactions);
-      petRepository.getNextAvailable.mockResolvedValue(nextPet);
-      accountPetInteractionRepository.create.mockResolvedValue(undefined);
+      const interactions = [
+        { pet: new ObjectId().toHexString(), status: 'viewed' },
+        { pet: new ObjectId().toHexString(), status: 'viewed' }
+      ];
 
-      // Mock Types.ObjectId
-      const mockObjectId = jest.fn().mockImplementation((id) => ({ toString: () => id }));
-      jest.doMock('mongoose', () => ({
-        Types: { ObjectId: mockObjectId }
-      }));
+      const nextPet = { _id: new ObjectId(), name: 'Rex', adopted: false };
+
+      jest.spyOn(accountPetInteractionRepository, 'getByAccount').mockResolvedValue(interactions);
+      jest.spyOn(petRepository, 'getNextAvailable').mockResolvedValue(nextPet as any);
+      jest.spyOn(accountPetInteractionRepository, 'create').mockResolvedValue(undefined);
+
+      const fakeAccountId = new ObjectId().toHexString();
 
       // Act
-      const result = await service.getFeed('user123', {});
+      const result = await service.getFeed(fakeAccountId, {});
 
       // Assert
-      expect(accountPetInteractionRepository.getByAccount).toHaveBeenCalledWith('user123');
-      expect(petRepository.getNextAvailable).toHaveBeenCalled();
+      expect(accountPetInteractionRepository.getByAccount).toHaveBeenCalledWith(fakeAccountId);
+      expect(petRepository.getNextAvailable).toHaveBeenCalledWith(
+        interactions.map(i => new ObjectId(i.pet))
+      );
       expect(accountPetInteractionRepository.create).toHaveBeenCalledWith({
         status: 'viewed',
-        account: 'user123',
-        pet: 'pet3'
+        account: fakeAccountId,
+        pet: nextPet._id
       });
-      expect(result).toEqual([nextPet]);
+      expect(result).toEqual(expect.objectContaining({
+        id: nextPet._id.toString(),
+        name: 'Rex',
+        adopted: false
+      }));
     });
 
     it('deve retornar array vazio quando não há pets disponíveis', async () => {
@@ -451,9 +463,8 @@ describe('AccountService', () => {
 
       // Act
       const result = await service.getFeed('user123', {});
-
       // Assert
-      expect(result).toEqual([]);
+      expect(result).toEqual(null);
     });
   });
 

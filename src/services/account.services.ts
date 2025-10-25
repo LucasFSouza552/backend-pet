@@ -119,11 +119,10 @@ export default class AccountService implements IService<CreateAccountDTO, Update
                 const accountByCnpj = await accountRepository.getByCnpj(data.cnpj);
                 if (accountByCnpj) throw ThrowError.conflict("CNPJ já cadastrado.");
             }
-
+            
             data.password = await cryptPassword(data.password);
 
             const newAccount = await accountRepository.create(data);
-            console.log(Object.values(newAccount));
             return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
@@ -208,6 +207,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             return petMapper(nextPet);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
+            console.log(error)
             throw ThrowError.internal("Erro ao buscar o feed.");
         }
     }
