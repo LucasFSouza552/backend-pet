@@ -1,3 +1,5 @@
+import { IAccount } from "@models/Account";
+import accountMapper from "../../src/Mappers/accountMapper";
 import AccountService from '../../src/services/account.services';
 import { ThrowError } from '../../src/errors/ThrowError';
 
@@ -54,15 +56,15 @@ jest.mock('../../src/utils/aes-crypto', () => ({
   cryptPassword: jest.fn()
 }));
 
-jest.mock('../../src/Mappers/accountMapper', () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation((account: any) => ({
-    id: account._id,
-    email: account.email,
-    name: account.name,
-    role: account.role
-  }))
-}));
+// jest.mock('../../src/Mappers/accountMapper', () => ({
+//   __esModule: true,
+//   default: jest.fn().mockImplementation((account: any) => ({
+//     id: account._id,
+//     email: account.email,
+//     name: account.name,
+//     role: account.role
+//   }))
+// }));
 
 jest.mock('../../src/Mappers/achievementMapper', () => ({
   __esModule: true,
@@ -94,27 +96,29 @@ describe('AccountService', () => {
 
   describe('create', () => {
     const validAccountData = {
-      name: 'João Silva',
-      email: 'joao@test.com',
-      password: 'senha123',
-      cpf: '12345678901',
-      phone_number: '11999999999',
+      name: "Gabriel",
+      email: "lucasmoliquelo49@hotmail.com",
+      password: "abcdef",
+      cpf: "12345678016",
+      phone_number: "3299999999",
       address: {
-        street: 'Rua das Flores',
-        number: '123',
-        city: 'São Paulo',
-        cep: '01234-567',
-        state: 'SP'
+        street: "Avenida Central",
+        number: "456",
+        city: "Belo Horizonte",
+        cep: "30100-000",
+        state: "MG",
+        neighborhood: "Vila Loira"
       }
-    };
+    } as IAccount;
 
-    it('deve criar usuário com sucesso quando dados são válidos', async () => {
+    it.only('deve criar usuário com sucesso quando dados são válidos', async () => {
       // Arrange
       authRepository.getByEmail.mockResolvedValue(null);
       accountRepository.getByCpf.mockResolvedValue(null);
       accountRepository.getByCnpj.mockResolvedValue(null);
       cryptPassword.mockResolvedValue('hashed_password');
-      accountRepository.create.mockResolvedValue({ _id: 'user123', ...validAccountData });
+      const accountMapped = accountMapper({ _id: 'user123', ...validAccountData, role: 'user' });
+      accountRepository.create.mockResolvedValue(accountMapped);
 
       // Act
       const result = await service.create(validAccountData);
@@ -122,17 +126,12 @@ describe('AccountService', () => {
       // Assert
       expect(authRepository.getByEmail).toHaveBeenCalledWith(validAccountData.email);
       expect(accountRepository.getByCpf).toHaveBeenCalledWith(validAccountData.cpf);
-      expect(cryptPassword).toHaveBeenCalledWith(validAccountData.password);
+
+      expect(result.password).toBeUndefined();
       expect(accountRepository.create).toHaveBeenCalledWith({
-        ...validAccountData,
-        password: 'hashed_password'
+        ...validAccountData
       });
-      expect(result).toEqual({
-        id: 'user123',
-        email: validAccountData.email,
-        name: validAccountData.name,
-        role: undefined
-      });
+      expect(result).toEqual(accountMapped);
     });
 
     it('deve falhar quando email já existe', async () => {

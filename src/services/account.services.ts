@@ -121,7 +121,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             data.password = await cryptPassword(data.password);
 
             const newAccount = await accountRepository.create(data);
-
+            console.log(Object.values(newAccount));
             return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
