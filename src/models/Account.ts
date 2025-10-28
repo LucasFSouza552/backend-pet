@@ -103,7 +103,7 @@ const accountSchema = new Schema<IAccount>(
                 type: String,
                 required: true,
             },
-        },
+        }
     },
     {
         timestamps: true, strict: true,
@@ -117,6 +117,21 @@ const accountSchema = new Schema<IAccount>(
         },
     }
 );
+
+
+accountSchema.virtual("achievements", {
+    ref: "AccountAchievement",
+    localField: "_id",
+    foreignField: "account"
+});
+
+accountSchema.virtual("postCount", {
+    ref: "Post",          
+    localField: "_id",    
+    foreignField: "account", 
+    count: true
+});
+
 
 
 export const Account = model<IAccount>("Account", accountSchema);

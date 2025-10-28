@@ -22,6 +22,7 @@ import { postService } from "@services/index";
 
 export default class PostController implements IController {
 
+
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
@@ -119,7 +120,7 @@ export default class PostController implements IController {
     async toggleLike(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            
+
             const accountId = req.account?.id.toString();
             if (!id || !accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
@@ -137,6 +138,7 @@ export default class PostController implements IController {
             const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             const posts = await postService.getPostsWithAuthor(filters);
+
             res.status(200).json(posts);
         } catch (error) {
             next(error);
@@ -164,4 +166,26 @@ export default class PostController implements IController {
             next(error);
         }
     }
+
+    async softDelete(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const accountId = req.account?.id as string;
+
+            if (!accountId) {
+                throw ThrowError.unauthorized("Usuário não autenticado.");
+            }
+
+            if (!id) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+
+            await postService.softDelete(id, accountId);
+            res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
 }
