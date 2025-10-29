@@ -23,6 +23,7 @@ export const seedAccounts = async () => {
                 city: "São Paulo",
                 cep: "01001000",
                 state: "SP",
+                neighborhood: "Centro",
             },
         },
         {
@@ -40,6 +41,7 @@ export const seedAccounts = async () => {
                 city: "Rio de Janeiro",
                 cep: "20040002",
                 state: "RJ",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -57,6 +59,7 @@ export const seedAccounts = async () => {
                 city: "Belo Horizonte",
                 cep: "30130010",
                 state: "MG",
+                neighborhood: "Botafogo",
             },
         },
         {
@@ -74,6 +77,7 @@ export const seedAccounts = async () => {
                 city: "Curitiba",
                 cep: "80020010",
                 state: "PR",
+                neighborhood: "Botafogo",
             },
         },
         {
@@ -91,6 +95,7 @@ export const seedAccounts = async () => {
                 city: "São Paulo",
                 cep: "03010000",
                 state: "SP",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -108,6 +113,7 @@ export const seedAccounts = async () => {
                 city: "Brasília",
                 cep: "70040900",
                 state: "DF",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -125,6 +131,7 @@ export const seedAccounts = async () => {
                 city: "Campinas",
                 cep: "13010100",
                 state: "SP",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -142,6 +149,7 @@ export const seedAccounts = async () => {
                 city: "Salvador",
                 cep: "40020110",
                 state: "BA",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -159,6 +167,7 @@ export const seedAccounts = async () => {
                 city: "Recife",
                 cep: "50030020",
                 state: "PE",
+                neighborhood: "Copacabana",
             },
         },
         {
@@ -176,6 +185,7 @@ export const seedAccounts = async () => {
                 city: "Belo Horizonte",
                 cep: "30120090",
                 state: "MG",
+                neighborhood: "Copacabana",
             },
         },
     ];

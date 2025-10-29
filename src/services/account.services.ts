@@ -2,7 +2,6 @@ import { Types } from "mongoose";
 
 // Models
 import { IAchievement } from "@models/Achievements";
-import IPet from "@models/Pet";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";

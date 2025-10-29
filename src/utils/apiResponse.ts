@@ -1,7 +1,7 @@
 export interface ApiResponse<T = any> {
     success: boolean;
     data?: T;
-    error?: string;
+    message?: string;
     details?: any;
 }
 
@@ -15,6 +15,6 @@ export const errorResponse = (
     details: any = null
 ): ApiResponse => ({
     success: false,
-    error: message,
+    message: message,
     ...(details && { details }),
 });

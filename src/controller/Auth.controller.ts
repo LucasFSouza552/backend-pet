@@ -76,13 +76,6 @@ export default class AuthController {
                 .add({ key: "cnpj", required: data?.role === "institution" })
                 .add({ key: "avatar", required: false })
                 .add({ key: "phone_number" })
-                .add({ key: "address.street" })
-                .add({ key: "address.number", type: "number" })
-                .add({ key: "address.complement", required: false })
-                .add({ key: "address.city" })
-                .add({ key: "address.cep" })
-                .add({ key: "address.state" })
-                .add({ key: "address.neighborhood" })
                 .build();
 
             const newAccount: AccountDTO = await authService.create(newAccountDTO);
@@ -96,8 +89,7 @@ export default class AuthController {
     async resendVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id as string;
-            console.log(accountId);
-            if(!accountId) {
+            if (!accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await authService.resendVerification(accountId);

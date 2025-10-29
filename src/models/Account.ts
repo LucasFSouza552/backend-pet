@@ -13,7 +13,7 @@ export interface IAccount extends Document {
     cpf?: string;
     cnpj?: string;
     verified: boolean;
-    address: IAddress;
+    address?: IAddress;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -76,32 +76,32 @@ const accountSchema = new Schema<IAccount>(
         address: {
             street: {
                 type: String,
-                required: true,
+                required: false,
             },
             number: {
                 type: String,
-                required: true,
+                required: false,
             },
             complement: {
                 type: String,
             },
             city: {
                 type: String,
-                required: true,
+                required: false,
             },
             cep: {
                 type: String,
-                required: true,
+                required: false,
             },
             state: {
                 type: String,
-                required: true,
+                required: false,
                 minlength: 2,
                 maxlength: 2,
             },
             neighborhood: {
                 type: String,
-                required: true,
+                required: false,
             },
         },
     },

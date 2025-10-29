@@ -13,11 +13,11 @@ async function runSeeds() {
         await connectDB();
 
         // Seeds to test code
-        // await seedAccounts();
-        // await seedAchievements();
+        await seedAccounts();
+        await seedAchievements();
+        await seedPosts();
         await seedComments();
-        // await seedPosts();
-        // await seedPets();
+        await seedPets();
         console.log("All seeds executed successfully ✅");
         process.exit(0);
     } catch (error) {
