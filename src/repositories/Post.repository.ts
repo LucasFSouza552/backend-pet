@@ -3,8 +3,12 @@ import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
 import IPost, { Post } from "@models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+import { Account } from "@models/Account";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
+    async softDelete(id: string) {
+        await Post.findByIdAndUpdate(id, { deletedAt: Date.now() }, { new: true });
+    }
 
     async getPostsByAccount(account: string) {
         return await Post.find({ account });
@@ -15,12 +19,28 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
             delete query.accountId;
         }
+
         const posts = await Post.find(query as FilterQuery<IPost>)
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit)
-            .populate({ path: "account", select: "name role avatar" })
-            .lean()
+            .populate({
+                path: "account",
+                select: "name role avatar verified",
+                populate: [{
+                    path: "achievements",
+                    model: "AccountAchievement",
+                    select: "createdAt",
+                    populate: {
+                        path: "achievement",
+                        model: "Achievement",
+                        select: "name type description"
+                    }
+                }, {
+                    path: "postCount"
+                }]
+            })
+            .lean({ virtuals: true })
             .exec();
 
         return posts;
@@ -65,13 +85,16 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             .lean({ virtuals: true })
             .exec();
 
-        
+
         return post as unknown as IPost || null;
     }
     async create(data: CreatePostDTO): Promise<IPost> {
 
         const post = new Post(data);
         await post.save();
+
+        await Account.findByIdAndUpdate(data.account, { $inc: { postCount: 1 } });
+
         return post;
     }
     async update(id: string, data: UpdatePostDTO): Promise<IPost | null> {
@@ -86,7 +109,10 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
 
     async getCountPosts(account: string): Promise<number> {
-        return await Post.find({ account }).countDocuments();
+        const countPosts = await Post.find({ account }).countDocuments();
+
+        await Account.findByIdAndUpdate(account, { postCount: countPosts });
+        return countPosts;
     }
 
     async search(filter: Filter): Promise<IPost[]> {

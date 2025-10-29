@@ -3,7 +3,7 @@ import { seedAchievements } from "@seeds/achievements.seed";
 import { seedComments } from "@seeds/comments.seed";
 import { seedPets } from "@seeds/pets.seed";
 import { seedPosts } from "@seeds/posts.seed";
-import { seedAccounts } from "@seeds/users.seed";
+import { seedAccounts } from "@seeds/accounts.seed";
 import dotenv from "dotenv";
 dotenv.config();
 

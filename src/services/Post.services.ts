@@ -17,8 +17,23 @@ import IPost from "@models/Post";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
 import { postRepository } from "@repositories/index";
 import postMapper from "@Mappers/postMapper";
+import { IAchievement } from "@models/Achievements";
+import { IAccount } from "@models/Account";
+import { IAccountAchievement } from "@models/AccountAchievement";
+import { PostWithAccount } from "@Itypes/ITypePost";
 
 export default class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+    async softDelete(id: string, accountId: string) {
+        try {
+            const post = await postRepository.getById(id);
+            if(post?.account?.toString() !== accountId) return null;
+
+            return postRepository.softDelete(id);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível deletar o post.");
+        }
+    }
 
     async getPostsByAccount(accountId: string) {
         try {
@@ -28,11 +43,29 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
             throw ThrowError.internal("Não foi possível buscar os posts.");
         }
     }
-    async getPostsWithAuthor(filter: Filter): Promise<IPost[]> {
+    async getPostsWithAuthor(filter: Filter): Promise<PostWithAccount[]> {
         try {
             const posts = await postRepository.getPostsWithAuthor(filter);
-            const post = posts.map((post) => ({ ...post, id: post?._id.toString() } as unknown as IPost));
-            return post;
+            const postMapped = posts.map(post => {
+                const account = post.account as unknown as IAccount & { achievements?: IAccountAchievement[]; };
+
+                const achievements = account.achievements?.map(a => {
+                    const ach = a.achievement as unknown as IAchievement;
+                    return {
+                        ...ach,
+                        obtainedAt: a.createdAt
+                    };
+                }) ?? [];
+
+                return {
+                    ...post,
+                    id: post._id,
+                    account: { ...account, id: account._id, achievements: achievements }
+                };
+            }) as unknown as PostWithAccount[];
+
+
+            return postMapped;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar os posts.");
@@ -49,7 +82,7 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
             const updatedPost = alreadyLiked
                 ? await postRepository.removeLike(postId, accountId)
                 : await postRepository.addLike(postId, accountId);
-            if(!updatedPost) return null;
+            if (!updatedPost) return null;
             return postMapper(updatedPost);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;

@@ -8,8 +8,9 @@ export default interface IPost extends Document {
     image?: Types.ObjectId[];
     likes: Types.ObjectId[];
     account: Types.ObjectId | string;
-    createdAt: Date;
     updatedAt: Date;
+    createdAt: Date;
+    deletedAt?: Date;
 }
 
 const postSchema = new Schema<IPost>({
@@ -35,6 +36,9 @@ const postSchema = new Schema<IPost>({
         type: Schema.Types.ObjectId,
         ref: 'Account',
         required: true
+    },
+    deletedAt: {
+        type: Date
     }
 }, { timestamps: true, strict: true });
 

@@ -1,4 +1,4 @@
-import { addAchieviment } from "@dtos/AccountAchievementDTO";
+import { addAchievement } from "@dtos/AccountAchievementDTO";
 import { AccountAchievement } from "@models/AccountAchievement";
 
 export default class AccountAchievementRepository {
@@ -6,7 +6,7 @@ export default class AccountAchievementRepository {
         return await AccountAchievement.find({ account }).populate("achievement");
     }
 
-    async addAchieviment(achievements: addAchieviment) {
+    async addAchievement(achievements: addAchievement) {
         return await AccountAchievement.create(achievements);
     }
 

@@ -18,7 +18,7 @@ import achievementMapper from "@Mappers/achievementMapper";
 import { cryptPassword } from "@utils/aes-crypto";
 
 // DTOS
-import { addAchieviment } from "@dtos/AccountAchievementDTO";
+import { addAchievement } from "@dtos/AccountAchievementDTO";
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 import { AccountDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "@dtos/AccountDTO";
 
@@ -51,7 +51,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         try {
             const postCount = await postRepository.getCountPosts(accountId);
             const achievements = await accountAchievementRepository.getByAccountId(accountId);
-
+            
             const achievementMapped = achievements.map((item) => achievementMapper(item.achievement as unknown as IAchievement));
             return { postCount, achievements: achievementMapped };
         } catch (error) {
@@ -154,7 +154,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("adoption");
-            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
+            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
@@ -166,7 +166,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("sponsorship");
-            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
+            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -179,7 +179,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const account = await accountRepository.getById(id);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("donation");
-            await accountAchievementRepository.addAchieviment({ account: id, achievement: achievements?.id } as addAchieviment);
+            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;

@@ -1,5 +1,5 @@
 import { FilterQuery } from "mongoose";
-import Filter from "@interfaces/Filter"; 
+import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
 import { IAccount, Account } from "@models/Account";
 import { CreateAccountDTO, UpdateAccountDTO } from "@dtos/AccountDTO";
@@ -12,7 +12,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
         const regexConditions = words.map((word: string) => ({
             name: { $regex: word, $options: "i" }
         }));
-        
+
         return await Account.find({ $and: regexConditions });
     }
     async updateAvatar(userId: string, avatar: ObjectId): Promise<void> {
@@ -30,7 +30,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
         return accounts;
     }
     async getById(id: string): Promise<IAccount | null> {
-        const account = await Account.findById({ _id: id }).lean({ virtuals: true }).exec();
+        const account = await Account.findById(id).lean({ virtuals: true }).populate("postCount").exec();
         return { ...account, id: account?._id } as IAccount;
     }
     async create(data: CreateAccountDTO): Promise<IAccount> {
