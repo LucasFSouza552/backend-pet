@@ -93,7 +93,7 @@ export default class AccountController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const account = await accountService.getById(id);
-
+            console.log("account", account)
             res.status(200).json(account);
         } catch (error) {
             next(error);

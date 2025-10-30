@@ -10,6 +10,16 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         await Post.findByIdAndUpdate(id, { deletedAt: Date.now() }, { new: true });
     }
 
+    async getPostWithAuthor(id: string): Promise<IPost | null> {
+        const post = await Post.findById(id)
+            .populate({
+                path: "account", select: "name role avatar",
+            })
+            .lean({ virtuals: true })
+            .exec();
+
+        return post as unknown as IPost || null;
+    }
     async getPostsByAccount(account: string) {
         return await Post.find({ account });
     }
@@ -68,27 +78,19 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit);
-        console.log(post);
         return post;
     }
     async getById(id: string): Promise<IPost | null> {
         const post = await Post.findById(id)
             // .populate({
-            //     path: "comments",
-            //     match: { isDeleted: false },
-            //     populate: [
-            //         { path: "account", select: "name avatar" },
-            //         { path: "parent", select: "content account" }
-            //     ]
+            //     path: "account", select: "name role avatar",
             // })
-            .populate({
-                path: "account", select: "name role avatar",
-            })
             .lean({ virtuals: true })
             .exec();
 
         return post as unknown as IPost || null;
     }
+
     async create(data: CreatePostDTO): Promise<IPost> {
 
         const post = new Post(data);

@@ -25,8 +25,11 @@ import { PostWithAccount } from "@Itypes/ITypePost";
 export default class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
     async softDelete(id: string, accountId: string) {
         try {
-            const post = await postRepository.getById(id);
-            if(post?.account?.toString() !== accountId) return null;
+            const post = await postRepository.getPostWithAuthor(id);
+            if (post?.deletedAt) {
+                throw ThrowError.conflict("A publicação já foi deletada.");
+            }
+            if (post?.account?.toString() !== accountId) return null;
 
             return postRepository.softDelete(id);
         } catch (error) {
@@ -41,6 +44,17 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar os posts.");
+        }
+    }
+
+    async getPostWithAuthor(postId:string) {
+        try {
+            
+            const post = await postRepository.getPostWithAuthor(postId);
+            return post;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar o post")
         }
     }
     async getPostsWithAuthor(filter: Filter): Promise<PostWithAccount[]> {

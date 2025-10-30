@@ -126,10 +126,11 @@ accountSchema.virtual("achievements", {
 });
 
 accountSchema.virtual("postCount", {
-    ref: "Post",          
-    localField: "_id",    
-    foreignField: "account", 
-    count: true
+    ref: "Post",
+    localField: "_id",
+    foreignField: "account",
+    count: true,
+    match: {deletedAt: null}
 });
 
 

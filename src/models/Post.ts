@@ -67,7 +67,6 @@ postSchema.set("toJSON", {
     }
 });
 
-
 postSchema.set("toObject", { virtuals: true });
 postSchema.set("toJSON", { virtuals: true });
 

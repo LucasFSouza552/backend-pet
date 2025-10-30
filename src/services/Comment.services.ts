@@ -47,7 +47,6 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             if (!comment) {
                 throw ThrowError.notFound("Comentário não encontrado.");
             }
-
             if (comment?.account?.toString() !== accountId) {
                 throw ThrowError.forbidden("Acesso negado.");
             }

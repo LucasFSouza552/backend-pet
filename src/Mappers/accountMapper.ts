@@ -15,6 +15,7 @@ const accountDTOFields: (keyof AccountDTO)[] = [
     "phone_number",
     "createdAt",
     "updatedAt",
+    "postCount"
 ];
 
 const accountMapper = (account: IAccount) => mapToDTO<IAccount, AccountDTO>(account, accountDTOFields);

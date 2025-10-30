@@ -39,7 +39,7 @@ router.post("/:id/sponsor", AuthMiddleware, petController.sponsor);
 router.post("/:id/donate", AuthMiddleware, petController.donate);
 
 // Rota para atualizar a imagem de um pet
-router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution"]), upload.array("avatar", 6), petController.updatePetImages);
+router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), upload.array("avatar", 6), petController.updatePetImages);
 
 // Rota para deletar uma imagem de um pet
 router.delete("/:id/avatar/:imageId", AuthMiddleware, authorizationMiddleware(["institution"]), petController.deletePetImage);

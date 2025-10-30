@@ -35,6 +35,21 @@ export default class PostController implements IController {
         }
     }
 
+
+    async getPostWithAuthor(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                throw ThrowError.badRequest("ID não foi informado.");
+            }
+
+            const post = await postService.getPostWithAuthor(id);
+            res.status(200).json(post);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
@@ -144,6 +159,7 @@ export default class PostController implements IController {
             next(error);
         }
     }
+
 
     async getPostsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

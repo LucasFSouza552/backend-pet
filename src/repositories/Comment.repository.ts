@@ -38,6 +38,7 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
     async getById(id: string): Promise<IComment | null> {
         return await Comment.findById(id);
     }
+
     async create(data: CreateCommentDTO): Promise<IComment> {
         const comment = new Comment(data);
         await comment.save().then((comment) => comment.populate("account", "name role avatar"));

@@ -27,10 +27,11 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
             if (pet.images?.length + files?.length > 5 || pet.images?.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
+
             const uploadedImages: ObjectId[] = [...pet.images];
             for (const file of files) {
                 if (!file.buffer) continue;
-
+                
                 const imageId = await PictureStorageRepository.uploadImage(file);
                 if (imageId) uploadedImages.push(imageId);
             }

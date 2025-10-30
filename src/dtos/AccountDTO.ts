@@ -8,7 +8,7 @@ export type UpdateAccountDTO = Partial<
 
 export type CreateAccountDTO = Omit<IAccount, "createdAt" | "updatedAt" | "verified">;
 
-export type AccountDTO = Omit<IAccount, "password">;
+export type AccountDTO = Omit<IAccount, "password"> & {postCount?: number};
 
 export type ChangePasswordDTO = {
     currentPassword: string;
