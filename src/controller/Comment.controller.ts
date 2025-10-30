@@ -131,11 +131,11 @@ export default class CommentController implements IController {
         try {
             const comment = req?.body;
             comment.account = req.account?.id;
-            comment.parentId = req.params?.id;
+            comment.parent = req.params?.id;
 
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "account" })
-                .add({ key: "parentId" })
+                .add({ key: "parent" })
                 .add({ key: "content" })
                 .build();
 

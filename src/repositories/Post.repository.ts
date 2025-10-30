@@ -20,7 +20,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             delete query.accountId;
         }
 
-        const posts = await Post.find(query as FilterQuery<IPost>)
+        const posts = await Post.find({ ...query, deletedAt: null } as FilterQuery<IPost>)
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit)
@@ -42,7 +42,6 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             })
             .lean({ virtuals: true })
             .exec();
-
         return posts;
     }
     async addLike(postId: string, accountId: string): Promise<IPost | null> {
@@ -65,11 +64,12 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         if (query?.account && !Types.ObjectId.isValid(query.account)) {
             delete query.account;
         }
-
-        return await Post.find(query as FilterQuery<IPost>)
+        const post = await Post.find(query as FilterQuery<IPost>)
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit);
+        console.log(post);
+        return post;
     }
     async getById(id: string): Promise<IPost | null> {
         const post = await Post.findById(id)
@@ -81,10 +81,11 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             //         { path: "parent", select: "content account" }
             //     ]
             // })
-            .populate("account", "name role avatar")
+            .populate({
+                path: "account", select: "name role avatar",
+            })
             .lean({ virtuals: true })
             .exec();
-
 
         return post as unknown as IPost || null;
     }

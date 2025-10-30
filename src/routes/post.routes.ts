@@ -16,7 +16,7 @@ router.get("/:id", postController.getById);
 router.post("/", AuthMiddleware, upload.array("images"), postController.create);
 
 // SoftDelete do post
-router.post("/:id/delete", AuthMiddleware, authorizationMiddleware(["admin"]), postController.softDelete);
+router.post("/:id/delete", AuthMiddleware, postController.softDelete);
 
 router.patch("/:id", AuthMiddleware, postController.update);
 router.get("/posts/with-author", postController.getPostsWithAuthor);

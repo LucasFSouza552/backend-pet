@@ -79,7 +79,7 @@ export default class AuthService {
     }
 
 
-    async create(data: CreateAccountDTO): Promise<AccountDTO> {
+    async create(data: CreateAccountDTO): Promise<void> {
         try {
             const account = await authRepository.getByEmail(data.email);
             if (account) throw ThrowError.conflict("E-mail já cadastrado.");
@@ -111,8 +111,6 @@ export default class AuthService {
             }).catch(err => {
                 throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
             });
-
-            return accountMapper(newAccount);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
 

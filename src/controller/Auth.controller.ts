@@ -78,9 +78,9 @@ export default class AuthController {
                 .add({ key: "phone_number" })
                 .build();
 
-            const newAccount: AccountDTO = await authService.create(newAccountDTO);
+            await authService.create(newAccountDTO);
 
-            res.status(201).json(newAccount);
+            res.status(201).json();
         } catch (error) {
             next(error);
         }

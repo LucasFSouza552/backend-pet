@@ -69,8 +69,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             if (!data?.parent) {
                 throw ThrowError.badRequest("Comentário pai deve ser informado.");
             }
-
-            const commentParent = await commentRepository.getById(data.parent.toString());
+            const commentParent = await commentRepository.getById(data.parent as string);
             if (!commentParent) {
                 throw ThrowError.badRequest("Comentário pai associado ao comentário não existe.");
             }
