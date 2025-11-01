@@ -5,4 +5,5 @@
 /*.map
 *.js
 /*.d.ts
-
+.vscode/
+/coverage
