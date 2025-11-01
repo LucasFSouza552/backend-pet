@@ -28,7 +28,6 @@ import {
     accountRepository,
     accountAchievementRepository,
     achievementRepository,
-    postRepository,
     accountPetInteractionRepository,
     petRepository
 } from "@repositories/index";

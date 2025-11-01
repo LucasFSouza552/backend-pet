@@ -21,7 +21,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
         try {
             const replies = await commentRepository.getReplies(commentId, filter);
             if (!replies) return [];
-            return replies.map(reply => reply.isDeleted
+            return replies.map(reply => reply.deletedAt
                 ? { ...reply, content: "Comentário removido" }
                 : { ...reply, account: reply.account ?? null }
             ) as unknown as IComment[];

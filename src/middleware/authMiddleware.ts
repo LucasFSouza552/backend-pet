@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "@utils/JwtEncoder";
 import { ThrowError } from "@errors/ThrowError";
-import AccountService from "@services/Account.services";
 import { AccountDTO } from "@dtos/AccountDTO";
+
+import { accountService } from "@services/index";
 
 declare global {
     namespace Express {
@@ -12,7 +13,6 @@ declare global {
     }
 }
 
-const accountService = new AccountService();
 
 export default async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
 
