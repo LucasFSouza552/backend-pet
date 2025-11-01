@@ -8,8 +8,11 @@ const router = Router();
 
 const petController = new PetController();
 
-// (ADMIN | INSTITUTION) Retonar todos os pets
-router.get("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.getAll);
+// (ADMIN) Retonar todos os pets
+router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), petController.getAll);
+
+// (INSTITUTION) rota para retornar todos os pets de uma instituição
+router.get("/institution/:id", AuthMiddleware, petController.getAllByInstitution);
 
 // (ADMIN | INSTITUTION) Rota para criar um pet
 router.post("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.create);
@@ -46,5 +49,8 @@ router.delete("/:id/avatar/:imageId", AuthMiddleware, authorizationMiddleware(["
 
 // Rota para retorno de pagamento
 router.post("/payment-return", petController.paymentReturn);
+
+// SoftDelete do pet
+router.post("/:id/delete", AuthMiddleware, petController.softDelete);
 
 export default router;

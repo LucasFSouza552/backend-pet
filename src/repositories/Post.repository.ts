@@ -7,7 +7,7 @@ import { Account } from "@models/Account";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
     async softDelete(id: string) {
-        await Post.findByIdAndUpdate(id, { deletedAt: Date.now() }, { new: true });
+        await Post.findByIdAndUpdate(id, { deletedAt: Date.now() });
     }
 
     async getPostWithAuthor(id: string): Promise<IPost | null> {

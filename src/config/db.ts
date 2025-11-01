@@ -13,8 +13,6 @@ export const connectDB = async () => {
     const MONGO_URL = process.env.MONGO_URL;
     const uri = prod ? `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority` : MONGO_URL;
 
-    console.log("INICIAR MODO EM DESENVOLVIMENTO", uri);
-
     if (!uri) {
         console.log("❌ MongoDB: sem conexão", uri);
         process.exit(1);

@@ -18,6 +18,37 @@ import { petService } from "@services/index";
 import BuilderDTO from "@utils/builderDTO";
 
 export default class PetController implements IController {
+
+    async softDelete(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const accountId = req.account?.id as string;
+
+            if (!accountId) throw ThrowError.unauthorized("Usuário não autenticado.");
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
+
+            await petService.softDelete(id, accountId);
+            res.status(200).json();
+
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getAllByInstitution(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const institutionId = req.params.id;
+            if (!institutionId) throw ThrowError.badRequest("ID não foi informado.");
+
+            const allowedQueryFields: string[] = ["account"];
+            const filters: Filter = filterConfig({ ...req.query, account: institutionId }, allowedQueryFields);
+
+            const pets = await petService.getAllByInstitution(filters);
+
+            res.status(200).json(pets);
+        } catch (error) {
+            next(error);
+        }
+    }
     async updatePetImages(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const files = req.files as Express.Multer.File[];

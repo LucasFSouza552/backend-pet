@@ -22,6 +22,20 @@ import { accountPetInteractionService, accountService } from "./index";
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
+
+    async softDelete(petId: string, accountId: string) {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (pet?.deletedAt) throw ThrowError.conflict("O Pet já foi deletado.");
+            console.log(pet);
+            if (pet?.account?.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode deletar o pet.");
+            return await petRepository.softDelete(petId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao deletar pet.");
+        }
+    }
+
     async updatePetImages(petId: string, files: Express.Multer.File[]): Promise<ObjectId[]> {
         try {
             const pet = await petRepository.getById(petId);
@@ -53,7 +67,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-            if(!pet?.images) throw ThrowError.notFound("Imagem não encontrada.");
+            if (!pet?.images) throw ThrowError.notFound("Imagem não encontrada.");
             await PictureStorageRepository.deleteImage(imageId);
 
             await petRepository.update(petId, { images: pet.images.filter(image => image !== imageId) });
@@ -280,6 +294,15 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar os pets.");
+        }
+    }
+
+    async getAllByInstitution(filter: Filter) {
+        try {
+            return await petRepository.getAll(filter);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar pets da instituição.");
         }
     }
 

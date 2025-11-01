@@ -6,6 +6,9 @@ import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
 import { FilterQuery, Types } from "mongoose";
 
 export default class PetRepository implements IRepository<CreatePetDTO, UpdatePetDTO, IPet> {
+    async softDelete(petId: string) {
+        await Pet.findByIdAndUpdate(petId, { deletedAt: new Date() });
+    }
     async getAll(filter: Filter): Promise<IPet[]> {
         const { page, limit, orderBy, order, query } = filter;
 

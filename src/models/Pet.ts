@@ -13,6 +13,7 @@ export default interface IPet extends Document {
   adoptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 }
 
 const petSchema = new Schema<IPet>(
@@ -56,6 +57,9 @@ const petSchema = new Schema<IPet>(
       required: true,
     },
     adoptedAt: {
+      type: Date,
+    },
+    deletedAt: {
       type: Date,
     },
   },

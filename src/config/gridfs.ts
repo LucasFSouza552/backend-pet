@@ -14,6 +14,4 @@ export const initGridFS = async (): Promise<void> => {
   gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: "pictures",
   });
-
-  console.log("✅ GridFS pronto!");
 };
