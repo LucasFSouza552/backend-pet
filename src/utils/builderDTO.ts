@@ -1,5 +1,13 @@
 import { ThrowError } from "@errors/ThrowError";
 
+type FieldType = "string" | "number" | "boolean" | "array";
+interface AddOptions<T = any> {
+    key: string;
+    type?: FieldType;
+    required?: boolean;
+    enum?: T[];
+}
+
 export default class BuilderDTO<T> {
     private _rawData: Record<string, T>;
     private _data: Record<string, T>;
@@ -13,7 +21,7 @@ export default class BuilderDTO<T> {
         return path.split('.').reduce((acc, key) => acc && acc[key], obj);
     }
 
-    add({ key, type = "string", required = true }: { key: string, type?: "string" | "number" | "boolean" | "array", required?: boolean }): BuilderDTO<T> {
+    add({ key, type = "string", required = true, enum: enumValues }: AddOptions): BuilderDTO<T> {
         let value: any = this.getValueByPath(this._rawData, key);
         if (value === undefined) {
             if (required) {
@@ -38,6 +46,10 @@ export default class BuilderDTO<T> {
             case "array":
                 value = Array.isArray(value) ? value : [value];
                 break;
+        }
+
+        if (enumValues && !enumValues.includes(value)) {
+            throw new Error(`Campo ${key} deve ser um dos valores: ${enumValues.join(", ")}`);
         }
 
         this._data[key] = value;

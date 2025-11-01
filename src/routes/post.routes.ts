@@ -19,9 +19,8 @@ router.post("/", AuthMiddleware, upload.array("images"), postController.create);
 router.post("/:id/delete", AuthMiddleware, postController.softDelete);
 
 router.patch("/:id", AuthMiddleware, postController.update);
-router.get("/posts/with-author", postController.getPostsWithAuthor);
+router.get("/with-author", postController.getPostsWithAuthor);
 router.get("/:id/with-author", postController.getPostWithAuthor);
-
 
 router.post("/:id/like", AuthMiddleware, postController.toggleLike);
 

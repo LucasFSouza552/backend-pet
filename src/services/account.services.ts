@@ -49,11 +49,10 @@ export default class AccountService implements IService<CreateAccountDTO, Update
     }
     async getStatusByAccount(accountId: string) {
         try {
-            const postCount = await postRepository.getCountPosts(accountId);
             const achievements = await accountAchievementRepository.getByAccountId(accountId);
             
             const achievementMapped = achievements.map((item) => achievementMapper(item.achievement as unknown as IAchievement));
-            return { postCount, achievements: achievementMapped };
+            return { achievements: achievementMapped };
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar status.");

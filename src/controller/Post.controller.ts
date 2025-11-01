@@ -90,9 +90,13 @@ export default class PostController implements IController {
             if (!id) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
+            const data = req.body;
+            data.account = req.account?.id;
+
             const updateData = new BuilderDTO<UpdatePostDTO>(req.body)
                 .add({ key: "title", required: false })
                 .add({ key: "content", required: false })
+                .add({ key: "account" })
                 .build();
             const post = await postService.update(id, updateData);
             res.status(200).json(post);

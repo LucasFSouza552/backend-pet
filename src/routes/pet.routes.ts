@@ -17,8 +17,8 @@ router.post("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"
 // (ADMIN) Rota para atualizar um pet
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), petController.update);
 
-// (ADMIN | INSTITUTION) Rota para deletar um pet
-router.delete("/:id", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.delete);
+// (ADMIN) Rota para deletar um pet
+router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), petController.delete);
 
 // Rota para retornar todos os pets disponíveis
 router.get("/avaliable", AuthMiddleware, petController.getAvailable);

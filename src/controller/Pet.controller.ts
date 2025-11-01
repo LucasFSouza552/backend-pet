@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
+//DTO
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+
 // Interfaces
 import Filter from "@interfaces/Filter";
 import IController from "@interfaces/IController";
@@ -12,6 +15,7 @@ import { ThrowError } from "@errors/ThrowError";
 
 // Services
 import { petService } from "@services/index";
+import BuilderDTO from "@utils/builderDTO";
 
 export default class PetController implements IController {
     async updatePetImages(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -130,7 +134,22 @@ export default class PetController implements IController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const pet = await petService.create(req.body);
+            const accountId = req?.account?.id;
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            if (!req.account?.role || req.account?.role === "user") throw ThrowError.forbidden("Apenas instituições podem criar pets.");
+
+            req.body.account = accountId;
+
+            const newPetDTO: CreatePetDTO = new BuilderDTO<CreatePetDTO>(req.body)
+                .add({ key: "account" })
+                .add({ key: "type" })
+                .add({ key: "name" })
+                .add({ key: "age", type: "number" })
+                .add({ key: "gender", enum: ["male", "female"] })
+                .add({ key: "description", required: false })
+                .build();
+
+            const pet = await petService.create(newPetDTO);
             res.status(201).json(pet);
         } catch (error) {
             next(error);

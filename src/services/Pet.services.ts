@@ -26,12 +26,15 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-            if (pet.images?.length + files?.length > 5 || pet.images?.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
 
-            const uploadedImages: ObjectId[] = [...pet.images];
+            const petImages = pet.images || [];
+
+            if (petImages.length + files?.length > 5 || petImages.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
+
+            const uploadedImages: ObjectId[] = petImages;
             for (const file of files) {
                 if (!file.buffer) continue;
-                
+
                 const imageId = await PictureStorageRepository.uploadImage(file);
                 if (imageId) uploadedImages.push(imageId);
             }
@@ -50,7 +53,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-
+            if(!pet?.images) throw ThrowError.notFound("Imagem não encontrada.");
             await PictureStorageRepository.deleteImage(imageId);
 
             await petRepository.update(petId, { images: pet.images.filter(image => image !== imageId) });
@@ -193,7 +196,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
 
             if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
-            
+
             const newInteraction: createPetInteractionDTO = {
                 account: account.id as string,
                 pet: pet.id as string,

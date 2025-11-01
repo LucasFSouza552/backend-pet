@@ -4,9 +4,9 @@ export default interface IPet extends Document {
   name: string;
   type: "Cachorro" | "Gato" | "Pássaro" | "Outro";
   age?: number;
-  gender: "M" | "F";
+  gender: "male" | "famale";
   weight: number;
-  images: Types.ObjectId[];
+  images?: Types.ObjectId[];
   description?: string;
   adopted: boolean;
   account: Schema.Types.ObjectId | string;
@@ -35,7 +35,7 @@ const petSchema = new Schema<IPet>(
     },
     gender: {
       type: String,
-      enum: ["M", "F"],
+      enum: ["male", "female"],
       required: true,
     },
     weight: {
@@ -44,7 +44,7 @@ const petSchema = new Schema<IPet>(
     },
     images: {
       type: [Schema.Types.ObjectId], 
-      required: true,
+      required: false,
     },
     adopted: {
       type: Boolean,
