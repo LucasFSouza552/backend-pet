@@ -14,11 +14,11 @@ router.get("/post/:id", commentController.getAllByPost);
 // Rota para retornar um comentário pelo id
 router.get("/:id", commentController.getById);
 
-// Rota para criar um comentário
-router.post("/:id", AuthMiddleware, commentController.create);
-
 // Rota para responder um comentário
 router.post("/:id/reply", AuthMiddleware, commentController.reply);
+
+// Rota para criar um comentário
+router.post("/:id", AuthMiddleware, commentController.create);
 
 // Rota para atualizar um comentário
 router.patch("/:id", AuthMiddleware, commentController.update);

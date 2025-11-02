@@ -7,7 +7,6 @@ import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/C
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getReplies(commentId: string, filter: Filter): Promise<IComment[] | null> {
         const replies = await Comment.find({ parent: commentId }).sort({ createdAt: 1 });
-
         return replies;
     }
 
@@ -55,6 +54,7 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
             .limit(limit);
     }
     async getById(id: string): Promise<IComment | null> {
+        console.log(id);
         return await Comment.findById(id);
     }
 

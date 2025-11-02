@@ -5,6 +5,7 @@ import IPost, { Post } from "@models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
 import { Account } from "@models/Account";
 import { PostWithAccount } from "@Itypes/ITypePost";
+import postMapper from "@Mappers/postMapper";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
     async getTopPosts() {
@@ -104,13 +105,10 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
     async getById(id: string): Promise<IPost | null> {
         const post = await Post.findById(id)
-            // .populate({
-            //     path: "account", select: "name role avatar",
-            // })
             .lean({ virtuals: true })
             .exec();
 
-        return post as unknown as IPost || null;
+        return postMapper(post as unknown as IPost);
     }
 
     async create(data: CreatePostDTO): Promise<IPost> {

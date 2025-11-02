@@ -14,12 +14,14 @@ import IComment from "@models/Comments";
 // Repositories
 import { postRepository, commentRepository } from "@repositories/index";
 import { accountService } from "./index";
+import { mapCommentsWithAuthor } from "@Mappers/commentsWithAuthorMapper";
 
 export default class CommentService implements IService<CreateCommentDTO, UpdateCommentDTO, IComment> {
 
     async getReplies(commentId: string, filter: Filter): Promise<IComment[]> {
         try {
             const replies = await commentRepository.getReplies(commentId, filter);
+            
             if (!replies) return [];
             return replies.map(reply => reply.deletedAt
                 ? { ...reply, content: "Comentário removido" }
@@ -35,7 +37,8 @@ export default class CommentService implements IService<CreateCommentDTO, Update
     async getAllByPost(postId: string, filter: Filter): Promise<CommentsWithAuthors[]> {
         try {
             const comments = await commentRepository.getByPostId(postId, filter);
-            return comments;
+            
+            return comments.map(mapCommentsWithAuthor);
         } catch (error) {
             if (error instanceof Error) throw error;
             throw ThrowError.internal("Não foi possivel obter os comentários.");
@@ -60,7 +63,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
 
     async reply(data: CreateCommentDTO): Promise<IComment> {
         try {
-            const account = await accountService.getById(data.account.toString());
+            const account = await accountService.getById(data.account as string);
             if (!account) {
                 throw ThrowError.badRequest("Conta associada ao comentário não existe.");
             }
@@ -74,11 +77,12 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             }
 
             const post = await postRepository.getById(commentParent.post.toString());
+            console.log("POST: ",post);
             if (!post) {
                 throw ThrowError.badRequest("Post associado ao comentário não existe.");
             };
             data.post = post.id;
-
+            console.log("NOVO COMENTÁRIO:",data);
             return await commentRepository.create(data);
         } catch (error: any) {
             if (error instanceof Error) throw error;
