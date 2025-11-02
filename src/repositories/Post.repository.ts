@@ -4,25 +4,47 @@ import IRepository from "@interfaces/IRepository";
 import IPost, { Post } from "@models/Post";
 import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
 import { Account } from "@models/Account";
+import { PostWithAccount } from "@Itypes/ITypePost";
 
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
+    async getTopPosts() {
+       const posts = await Post.find({ deletedAt: null }).sort({ likes: -1 }).limit(5);
+        return posts;
+    }
     async softDelete(id: string) {
-        await Post.findByIdAndUpdate(id, { deletedAt: Date.now() });
+        const post = await Post.findByIdAndUpdate(id, { deletedAt: Date.now() });
+        console.log("DELETAR", post);
     }
 
-    async getPostWithAuthor(id: string): Promise<IPost | null> {
-        const post = await Post.findById(id)
+
+    async getPostsByAccount(account: string) {
+        return await Post.find({ account, deletedAt: null });
+    }
+
+    async getPostWithAuthor(id: string): Promise<PostWithAccount> {
+        console.log(id);
+        const post = await Post.find({ id, deletedAt: null })
             .populate({
-                path: "account", select: "name role avatar",
+                path: "account",
+                select: "name role avatar verified",
+                populate: [{
+                    path: "achievements",
+                    model: "AccountAchievement",
+                    select: "createdAt",
+                    populate: {
+                        path: "achievement",
+                        model: "Achievement",
+                        select: "name type description"
+                    }
+                }, {
+                    path: "postCount"
+                }]
             })
             .lean({ virtuals: true })
             .exec();
+        return post as unknown as PostWithAccount;
+    }
 
-        return post as unknown as IPost || null;
-    }
-    async getPostsByAccount(account: string) {
-        return await Post.find({ account });
-    }
     async getPostsWithAuthor(filter: Filter) {
         const { page, limit, orderBy, order, query } = filter;
 

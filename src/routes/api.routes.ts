@@ -16,7 +16,7 @@ router.use("/account", accountRoute);
 router.use("/achievement", achievementRoute);
 router.use("/auth", authRoute);
 router.use("/pet", petRoute);
-router.use("/comment", commentRoute)
+router.use("/comment", commentRoute);
 router.use("/post", postRoute);
 router.use("/history", historyRoute);
 router.use("/picture", pictureRoute);

@@ -1,5 +1,5 @@
 // DTOS
-import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -32,7 +32,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
         }
     }
 
-    async getAllByPost(postId: string, filter: Filter): Promise<IComment[]> {
+    async getAllByPost(postId: string, filter: Filter): Promise<CommentsWithAuthors[]> {
         try {
             const comments = await commentRepository.getByPostId(postId, filter);
             return comments;
@@ -98,7 +98,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
                 throw ThrowError.badRequest("Post associado não existe.");
             };
 
-            return commentRepository.create(data);
+            return await commentRepository.create(data);
         } catch (error: any) {
             if (error instanceof Error) throw error;
             throw ThrowError.internal("Não foi possível criar o comentário.");

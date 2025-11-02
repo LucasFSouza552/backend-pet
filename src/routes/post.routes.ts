@@ -12,6 +12,10 @@ router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), postCo
 
 router.get("/search", postController.search);
 router.get("/", postController.getAll);
+
+router.get("/top-posts", postController.getTopPosts);
+router.get("/with-author", postController.getPostsWithAuthor);
+router.get("/:id/with-author", postController.getPostWithAuthor);
 router.get("/:id", postController.getById);
 router.post("/", AuthMiddleware, upload.array("images"), postController.create);
 
@@ -19,9 +23,8 @@ router.post("/", AuthMiddleware, upload.array("images"), postController.create);
 router.post("/:id/delete", AuthMiddleware, postController.softDelete);
 
 router.patch("/:id", AuthMiddleware, postController.update);
-router.get("/with-author", postController.getPostsWithAuthor);
-router.get("/:id/with-author", postController.getPostWithAuthor);
 
 router.post("/:id/like", AuthMiddleware, postController.toggleLike);
+
 
 export default router;

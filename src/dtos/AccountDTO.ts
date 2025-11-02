@@ -1,4 +1,6 @@
 import { IAccount } from "@models/Account";
+import { IAccountAchievement } from "@models/AccountAchievement";
+import { AchievementDTO } from "./AchievementDTO";
 
 export type UpdateAccountDTO = Partial<
     Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified" | "avatar">
@@ -16,3 +18,5 @@ export type ChangePasswordDTO = {
 };
 
 export type UpdateAvatarDTO = Pick<IAccount, "avatar">;
+
+export type IAccountPopulated = Omit<IAccount, "password"> & {postCount?: number, achievements?: AchievementDTO[]};

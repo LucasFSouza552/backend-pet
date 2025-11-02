@@ -53,7 +53,8 @@ export default class PostController implements IController {
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            if (!id) {
+            
+            if (!id || isNaN(parseInt(id))) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const post = await postService.getById(id);
@@ -74,6 +75,7 @@ export default class PostController implements IController {
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })
                 .add({ key: "content" })
+                .add({ key: "image", required: false })
                 .add({ key: "account" })
                 .build();
 
@@ -202,6 +204,15 @@ export default class PostController implements IController {
 
             await postService.softDelete(id, accountId);
             res.status(204).json();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getTopPosts(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const posts = await postService.getTopPosts();
+            res.status(200).json(posts);
         } catch (error) {
             next(error);
         }

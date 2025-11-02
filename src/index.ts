@@ -9,16 +9,18 @@ import rateLimit from 'express-rate-limit';
 import { errorHandler } from "./middleware/errorHandler";
 import helmet from 'helmet';
 import path from 'path';
+import { Request, Response, NextFunction } from "express";
+
 
 const publicPath = path.join(__dirname, '../public');
 
 const app = express();
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10000,
-    message: 'Muitas tentativas, tente novamente em 15 minutos'
-});
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000,
+//     max: 10000,
+//     message: 'Muitas tentativas, tente novamente em 15 minutos'
+// });
 
 app.use(cors({
     origin: "*",
@@ -48,10 +50,35 @@ connectDB();
 const port = process.env.PORT;
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(publicPath, 'view/index.html'));
+    res.sendFile(path.join(publicPath, 'view/index.html'));
 });
 
-app.use('/api', limiter, routes);
+const routerViewer = (req: Request, res: Response, next: NextFunction) => {
+    console.log({
+        method: req.method,
+        route: req.originalUrl,
+    });
+
+    next();
+}
+
+app.use('/api', routes);
+
+
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log({
+        success: false,
+        message: "Rota não encontrada",
+        method: req.method,
+        route: req.originalUrl,
+    });
+    res.status(404).json({
+        success: false,
+        message: "Rota não encontrada",
+        route: req.originalUrl
+    });
+});
 
 app.use(errorHandler);
 

@@ -137,7 +137,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async sponsor(petId: string, amount: string, accountId: string) {
+    async sponsor(petId: string, amount: string | number, accountId: string) {
         try {
 
             const { v4: uuidv4 } = await import('uuid');
@@ -168,7 +168,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
                     {
                         title: "Patrocínio de Pet",
                         quantity: 1,
-                        unit_price: parseFloat(amount),
+                        unit_price: typeof amount === "string" ? parseFloat(amount) : amount,
                         currency_id: "BRL"
                     }
                 ],

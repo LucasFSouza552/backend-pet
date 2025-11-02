@@ -100,6 +100,8 @@ export default class PetController implements IController {
             const amount = req.body?.amount;
             const accountId = req?.account?.id;
 
+            console.log("id: ", id, "amount: ", amount, "accountId: ", accountId);
+
             if (!id) throw ThrowError.badRequest("ID não foi informado.");
             if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");

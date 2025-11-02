@@ -13,7 +13,7 @@ interface FilterInput {
 
 export default function filterConfig<T>(filter: FilterInput, allowedFields: string[]): Filter {
     const { page, limit, orderBy, order, query: rawQuery, ...rest } = filter;
-    console.log(filter);
+
     const limitNumber = limit ? parseInt(limit) : FilterDefault.limit;
     const pageNumber = page ? parseInt(page) : FilterDefault.page;
 
@@ -32,6 +32,6 @@ export default function filterConfig<T>(filter: FilterInput, allowedFields: stri
         page: pageNumber,
         orderBy: orderBy || FilterDefault.orderBy,
         order: order || FilterDefault.order,
-        query
-    }
+        query: {...query, deletedAt: null}
+    };
 }

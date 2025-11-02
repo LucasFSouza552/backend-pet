@@ -31,7 +31,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
     }
     async getById(id: string): Promise<IAccount | null> {
         const account = await Account.findById(id).lean({ virtuals: true }).populate("postCount").exec();
-        return { ...account, id: account?._id } as IAccount;
+        return { ...account } as IAccount;
     }
     async create(data: CreateAccountDTO): Promise<IAccount> {
         const account = new Account(data);

@@ -2,7 +2,7 @@ import { FilterQuery } from "mongoose";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
 import IComment, { Comment } from "@models/Comments";
-import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
 
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getReplies(commentId: string, filter: Filter): Promise<IComment[] | null> {
@@ -11,14 +11,33 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
         return replies;
     }
 
-    async getByPostId(postId: string, filter: Filter): Promise<IComment[]> {
-        const { page, limit, orderBy, order, query } = filter;
-        return await Comment
-            .find({ post: postId, isDeleted: false, parent: null })
+    async getByPostId(post: string, filter: Filter): Promise<CommentsWithAuthors[]> {
+        const { page, limit, orderBy, query } = filter;
+
+        const comment = await Comment
+            .find({ post, deletedAt: null, parent: null })
             .skip((page - 1) * limit)
+            .sort({ createdAt: -1 })
             .limit(limit)
-            .populate("account", "name role avatar")
-            .sort({ createdAt: -1 });
+            .populate({
+                path: "account",
+                select: "name role avatar verified",
+                populate: [{
+                    path: "achievements",
+                    model: "AccountAchievement",
+                    select: "createdAt",
+                    populate: {
+                        path: "achievement",
+                        model: "Achievement",
+                        select: "name type description"
+                    }
+                }, {
+                    path: "postCount"
+                }]
+            })
+            .lean({ virtuals: true })
+            .exec();
+        return comment as unknown as CommentsWithAuthors[];
     }
     async softDelete(accountId: string, id: string): Promise<IComment | null> {
         return await Comment.findByIdAndUpdate(
@@ -41,8 +60,31 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
 
     async create(data: CreateCommentDTO): Promise<IComment> {
         const comment = new Comment(data);
-        await comment.save().then((comment) => comment.populate("account", "name role avatar"));
-        return comment;
+
+        await comment.save();
+
+        await comment.populate({
+            path: "account",
+            select: "name role avatar verified",
+            populate: [
+                {
+                    path: "achievements",
+                    model: "AccountAchievement",
+                    select: "createdAt",
+                    populate: {
+                        path: "achievement",
+                        model: "Achievement",
+                        select: "name type description"
+                    }
+                },
+                {
+                    path: "postCount"
+                }
+            ]
+        });
+
+        return comment.toObject({ virtuals: true });
+
     }
     async update(id: string, data: UpdateCommentDTO): Promise<IComment | null> {
         const updatedComment = await Comment.findByIdAndUpdate(id, data, {

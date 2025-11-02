@@ -21,16 +21,28 @@ import { IAchievement } from "@models/Achievements";
 import { IAccount } from "@models/Account";
 import { IAccountAchievement } from "@models/AccountAchievement";
 import { PostWithAccount } from "@Itypes/ITypePost";
+import { mapPostWithAuthor } from "@Mappers/postWithAuthorMapper";
 
 export default class PostService implements IService<CreatePostDTO, UpdatePostDTO, IPost> {
+    async getTopPosts() {
+        try {
+            return await postRepository.getTopPosts();
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível buscar os posts.");
+        }
+    }
     async softDelete(id: string, accountId: string) {
         try {
-            const post = await postRepository.getPostWithAuthor(id);
+            const post = await postRepository.getById(id);
+            if(!post) {
+                throw ThrowError.notFound("A publicação não foi encontrada.");
+            }
             if (post?.deletedAt) {
                 throw ThrowError.conflict("A publicação já foi deletada.");
             }
             if (post?.account?.toString() !== accountId) return null;
-
+            
             return postRepository.softDelete(id);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -51,7 +63,7 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
         try {
             
             const post = await postRepository.getPostWithAuthor(postId);
-            return post;
+            return mapPostWithAuthor(post);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Não foi possível buscar o post")
@@ -123,6 +135,7 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
 
     async getById(id: string): Promise<IPost | null> {
         try {
+
             const post = await postRepository.getById(id);
             if (!post) return null;
             return postMapper(post);

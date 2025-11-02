@@ -80,7 +80,7 @@ export default class CommentController implements IController {
                 account: req.account?.id,
                 post: postId
             };
-            console.log(comment);
+
             const newCommentDTO: CreateCommentDTO = new BuilderDTO<CreateCommentDTO>(comment)
                 .add({ key: "post" })
                 .add({ key: "account" })
