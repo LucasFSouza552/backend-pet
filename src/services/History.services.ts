@@ -23,9 +23,10 @@ import {
 } from "./index";
 
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
-    getByAccount(filter: Filter, accountId: string) {
+    async getByAccount(filter: Filter, accountId: string) {
         try {
-            const histories = historyRepository.getByAccount(filter, accountId);
+            const histories = await historyRepository.getByAccount(filter, accountId);
+            
             if (!histories) throw ThrowError.notFound("Históricos não encontrados.");
             return histories;
         } catch (error) {

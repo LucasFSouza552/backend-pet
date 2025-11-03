@@ -25,6 +25,7 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
     }
     async create(data: CreateHistoryDTO): Promise<HistoryDTO> {
         const history = new History(data);
+        console.log(data);
         await history.save();
         return history;
     }
@@ -38,10 +39,11 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         await History.findByIdAndDelete(id);
     }
 
-    async getByAccount(filter: Filter, accountId: string): Promise<HistoryDTO[]> {
+    async getByAccount(filter: Filter, account: string): Promise<HistoryDTO[]> {
 
         const { page, limit, orderBy, order, query } = filter;
-        return await History.find({ account: accountId, ...query })
+
+        return await History.find({ account, ...query })
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
             .limit(limit);

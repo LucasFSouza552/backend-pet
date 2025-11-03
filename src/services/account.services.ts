@@ -188,9 +188,9 @@ export default class AccountService implements IService<CreateAccountDTO, Update
     async getFeed(accountId: string, filter: Filter): Promise<PetDTO | null> {
         try {
             const interactions = await accountPetInteractionRepository.getByAccount(accountId);
-            const seenPetIds = interactions.map(i => new Types.ObjectId(i.pet as string));
+            
+            const seenPetIds = interactions.map(i => new Types.ObjectId(i.pet._id.toString() as string));
             const nextPet = await petRepository.getNextAvailable(seenPetIds);
-
             if (!nextPet) {
                 return null;
             }

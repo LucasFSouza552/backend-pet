@@ -16,11 +16,11 @@ const publicPath = path.join(__dirname, '../public');
 
 const app = express();
 
-// const limiter = rateLimit({
-//     windowMs: 15 * 60 * 1000,
-//     max: 10000,
-//     message: 'Muitas tentativas, tente novamente em 15 minutos'
-// });
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10000,
+    message: 'Muitas tentativas, tente novamente em 15 minutos'
+});
 
 app.use(cors({
     origin: "*",
@@ -62,7 +62,7 @@ const routerViewer = (req: Request, res: Response, next: NextFunction) => {
     next();
 }
 
-app.use('/api', routes);
+app.use('/api', limiter, routes);
 
 
 

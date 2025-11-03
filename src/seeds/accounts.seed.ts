@@ -63,14 +63,14 @@ export const seedAccounts = async () => {
             },
         },
         {
-            name: "Ana Pereira",
-            email: "ana.pereira@example.com",
+            name: "Breno Khun",
+            email: "breno@example.com",
             avatar: null,
             password,
             phone_number: "41966665555",
             role: "user",
             cpf: "45678901234",
-            verified: false,
+            verified: true,
             address: {
                 street: "Rua XV de Novembro",
                 number: "321",

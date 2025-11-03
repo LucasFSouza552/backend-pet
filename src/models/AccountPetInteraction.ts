@@ -1,8 +1,8 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
 
 export interface AccountPetInteraction extends Document {
-    account: Schema.Types.ObjectId | string;
-    pet: Schema.Types.ObjectId | string;
+    account: Types.ObjectId | string;
+    pet: Types.ObjectId | string;
     status: "liked" | "disliked" | "viewed";
     createdAt: Date;
     updatedAt: Date;
@@ -15,6 +15,7 @@ const accountPetInteractionSchema = new Schema<AccountPetInteraction>({
     },
     pet: {
         type: Schema.Types.ObjectId,
+        ref: "Pet",
         required: true,
     },
     status: {

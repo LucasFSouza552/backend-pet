@@ -14,8 +14,20 @@ export default class AccountPetInteractionRepository {
         );
     }
 
-    async getByAccount(accountId: string) {
-        return await AccountPetInteraction.find({ account: accountId, status: { $ne: "viewed" } });
+    async getByAccount(account: string) {
+        const accountpetInteraction = await AccountPetInteraction
+            .find({ account, status: { $ne: "viewed" } })
+            .populate({
+                path: "pet",
+                select: "name type account description age gender weight images adopted instituition",
+                populate: {
+                    path: "account",
+                },
+            })
+            .lean({ virtuals: true })
+            .exec();
+
+        return accountpetInteraction;
     }
 
     async getInteraction(petId: string) {

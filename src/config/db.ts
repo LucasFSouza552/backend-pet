@@ -18,6 +18,8 @@ export const connectDB = async () => {
         process.exit(1);
     }
 
+    console.log(uri);
+
     try {
         await mongoose.connect(uri);
 
