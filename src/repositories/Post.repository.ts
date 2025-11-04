@@ -23,8 +23,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
 
     async getPostWithAuthor(id: string): Promise<PostWithAccount> {
-        console.log(id);
-        const post = await Post.find({ id, deletedAt: null })
+        const post = await Post.findOne({ _id: id, deletedAt: null })
             .populate({
                 path: "account",
                 select: "name role avatar verified",
@@ -43,6 +42,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             })
             .lean({ virtuals: true })
             .exec();
+            console.log(post);
         return post as unknown as PostWithAccount;
     }
 
