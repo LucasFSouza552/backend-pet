@@ -159,6 +159,7 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
             return await postRepository.create(data);
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
+            console.error(error);
             throw ThrowError.internal("Não foi possível criar o post.");
         }
     }

@@ -90,4 +90,15 @@ export default class AccountPetInteractionController {
             next(error);
         }
     }
+
+    async getInteractionByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const accountId = req.params.id as string;
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            const interactions = await accountPetInteractionService.getByAccount(accountId);
+            res.status(200).json(interactions);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

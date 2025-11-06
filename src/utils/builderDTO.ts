@@ -23,7 +23,8 @@ export default class BuilderDTO<T> {
 
     add({ key, type = "string", required = true, enum: enumValues }: AddOptions): BuilderDTO<T> {
         let value: any = this.getValueByPath(this._rawData, key);
-        if (value === undefined) {
+
+        if (value === undefined || !value || value.length === 0 ||  value?.trim() === "") {
             if (required) {
                 console.error("Por favor, preencha todos os campos obrigatórios: ", key);
                 throw ThrowError.badRequest("Por favor, preencha todos os campos obrigatórios");

@@ -1,3 +1,4 @@
+import IHistory from "@models/history";
 // DTOS
 import { CreateHistoryDTO, HistoryDTO } from "@dtos/HistoryDTO";
 import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
@@ -22,6 +23,36 @@ import { accountPetInteractionService, accountService } from "./index";
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
+    async requestedAdoption(institutionId: string, accountId: string) {
+        try {
+            const history = await historyRepository.getRequestedAdoption(institutionId, accountId);
+                console.log(history);
+
+            return history;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao solicitar adotação.");
+        }
+    }
+    async acceptAdoption(petId: string, accountId: string, institutionId: string) {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (pet.account !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
+            return await petRepository.update(petId, { adopted: true, account: accountId });
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao aceitar adotação.");
+        }
+    }
+    async getAdoptionsByAccount(accountId: string) {
+        try {
+            return await petRepository.getAdoptionsByAccount(accountId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar pets adotados.");
+        }
+    }
 
     async softDelete(petId: string, accountId: string) {
         try {
@@ -238,7 +269,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
 
             if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
 
-            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+            if (pet?.account?.toString() === accountId) throw ThrowError.conflict("Usuário proprietário.");
 
             const newHistory: CreateHistoryDTO = {
                 type: "adoption",

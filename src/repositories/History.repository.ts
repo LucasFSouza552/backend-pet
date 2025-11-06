@@ -5,6 +5,16 @@ import IRepository from "@interfaces/IRepository";
 import IHistory, { History } from "@models/history";
 
 export default class HistoryRepository implements IRepository<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
+    async getRequestedAdoption(institutionId: string, accountId: string) {
+        return await History.find({
+            institution: institutionId,
+            type: "adoption",
+            status: "pending",
+        })
+            .populate({ path: "pet" })
+            .populate({ path: "institution" })
+            .exec();
+    }
 
     async updateStatus(id: string, status: UpdateHistoryDTO): Promise<HistoryDTO | null> {
         return await History.findByIdAndUpdate(id, { status }, {
@@ -25,7 +35,6 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
     }
     async create(data: CreateHistoryDTO): Promise<HistoryDTO> {
         const history = new History(data);
-        console.log(data);
         await history.save();
         return history;
     }

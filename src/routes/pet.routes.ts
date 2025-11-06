@@ -12,7 +12,7 @@ const petController = new PetController();
 router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), petController.getAll);
 
 // (INSTITUTION) rota para retornar todos os pets de uma instituição
-router.get("/institution/:id", AuthMiddleware, petController.getAllByInstitution);
+router.get("/institutions/:id/pets", AuthMiddleware, petController.getAllByInstitution);
 
 // (ADMIN | INSTITUTION) Rota para criar um pet
 router.post("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.create);
@@ -30,16 +30,19 @@ router.get("/avaliable", AuthMiddleware, petController.getAvailable);
 router.get("/:id", AuthMiddleware, petController.getById);
 
 // Rota para solicitar uma adoção
-router.post("/:id/adopt", AuthMiddleware, petController.requestAdoption);
+router.post("/:id/request", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.requestAdoption);
+
+// Rota para aceitar uma adoção
+router.post("/:id/accept", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.acceptAdoption);
 
 // Rota para rejeitar uma adoção
-router.post("/:id/reject", AuthMiddleware, petController.rejectAdoption);
+router.post("/:id/reject", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.rejectAdoption);
 
 // Rota para apadrinhar um pet
-router.post("/:id/sponsor", AuthMiddleware, petController.sponsor);
+router.post("/:id/sponsor", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.sponsor);
 
 // Rota para doar para o aplicativo
-router.post("/:id/donate", AuthMiddleware, petController.donate);
+router.post("/:id/donate", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.donate);
 
 // Rota para atualizar a imagem de um pet
 router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), upload.array("avatar", 6), petController.updatePetImages);
@@ -51,6 +54,11 @@ router.delete("/:id/avatar/:imageId", AuthMiddleware, authorizationMiddleware(["
 router.post("/payment-return", petController.paymentReturn);
 
 // SoftDelete do pet
-router.post("/:id/delete", AuthMiddleware, petController.softDelete);
+router.post("/:id/delete", AuthMiddleware,authorizationMiddleware(["institution", "admin"]), petController.softDelete);
+
+router.get("/adopted/:id", AuthMiddleware, petController.getAdoptions);
+
+// Rota para retornar os pets de uma instituição que alguem deseja adotar
+router.get("/institutions/:id/pets/requested", AuthMiddleware, petController.requestedAdoption);
 
 export default router;

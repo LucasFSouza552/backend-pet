@@ -53,7 +53,7 @@ export default class PostController implements IController {
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
-            
+
             if (!id || isNaN(parseInt(id))) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
@@ -71,6 +71,8 @@ export default class PostController implements IController {
 
             const images = req.files as Express.Multer.File[];
             post.image = [];
+
+            console.log(post);
 
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
                 .add({ key: "title" })

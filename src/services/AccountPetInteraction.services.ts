@@ -53,4 +53,5 @@ export default class AccountPetInteractionService {
             throw ThrowError.internal("Erro ao buscar pets visualizados.");
         }
     }
+
 }
