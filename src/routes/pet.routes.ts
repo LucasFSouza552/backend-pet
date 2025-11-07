@@ -56,7 +56,7 @@ router.post("/payment-return", petController.paymentReturn);
 // SoftDelete do pet
 router.post("/:id/delete", AuthMiddleware,authorizationMiddleware(["institution", "admin"]), petController.softDelete);
 
-router.get("/adopted/:id", AuthMiddleware, petController.getAdoptions);
+router.get("/adopted/:id", AuthMiddleware, petController.getAdoptionsByAccount);
 
 // Rota para retornar os pets de uma instituição que alguem deseja adotar
 router.get("/institutions/:id/pets/requested", AuthMiddleware, petController.requestedAdoption);

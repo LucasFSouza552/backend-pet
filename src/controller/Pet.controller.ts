@@ -18,7 +18,7 @@ import { petService } from "@services/index";
 import BuilderDTO from "@utils/builderDTO";
 
 export default class PetController implements IController {
-    async getAdoptions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getAdoptionsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.params.id as string;
 

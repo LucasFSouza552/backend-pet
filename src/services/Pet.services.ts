@@ -26,7 +26,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
     async requestedAdoption(institutionId: string, accountId: string) {
         try {
             const history = await historyRepository.getRequestedAdoption(institutionId, accountId);
-                console.log(history);
 
             return history;
         } catch (error) {
@@ -38,7 +37,8 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-            if (pet.account !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
+            if(!pet.account) throw ThrowError.forbidden("Conta não existente")
+            if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
             return await petRepository.update(petId, { adopted: true, account: accountId });
         } catch (error) {
             if (error instanceof ThrowError) throw error;

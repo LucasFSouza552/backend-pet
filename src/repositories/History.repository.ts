@@ -13,6 +13,7 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         })
             .populate({ path: "pet" })
             .populate({ path: "institution" })
+            .populate({ path: 'account' })
             .exec();
     }
 
