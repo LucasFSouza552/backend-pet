@@ -15,6 +15,7 @@ import BuilderDTO from "@utils/builderDTO";
 
 // Services
 import { accountService, historyService } from "@services/index";
+import { error } from "console";
 
 export default class HistoryController implements IController {
     async updateHistoryStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -110,6 +111,11 @@ export default class HistoryController implements IController {
             const filters = filterConfig(req.query, allowedQueryFields);
 
             const accountId = req.account?.id as string;
+            
+            if(!accountId) {
+                throw ThrowError.badRequest("ID é inválido");
+            }
+
             const histories = await historyService.getByAccount(filters, accountId);
             res.status(200).json(histories);
         } catch (error) {

@@ -7,7 +7,7 @@ import { FilterQuery, Types } from "mongoose";
 
 export default class PetRepository implements IRepository<CreatePetDTO, UpdatePetDTO, IPet> {
     async getAdoptionsByAccount(accountId: string) {
-        await Pet.find({ adopted: true, account: accountId });
+        return await Pet.find({ adopted: true, account: accountId });
     }
     async softDelete(petId: string) {
         await Pet.findByIdAndUpdate(petId, { deletedAt: new Date() });

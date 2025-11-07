@@ -14,7 +14,7 @@ router.post("/", AuthMiddleware, authorizationMiddleware(["admin"]), historyCont
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), historyController.update);
 router.delete("/:id", historyController.delete);
 
-router.get("/profile/me", historyController.listByAccount);
+router.get("/profile/me", AuthMiddleware, historyController.listByAccount);
 
 router.patch("/status/:id", AuthMiddleware, authorizationMiddleware(["institution"]), historyController.updateHistoryStatus);
 

@@ -56,7 +56,9 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         return await History.find({ account, ...query })
             .sort({ [orderBy]: order })
             .skip((page - 1) * limit)
+            .populate("institution", "name email phone_number address role createdAt verified")
             .limit(limit);
+
     }
 
 }

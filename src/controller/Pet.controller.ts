@@ -21,7 +21,6 @@ export default class PetController implements IController {
     async getAdoptionsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.params.id as string;
-
             if (!accountId) throw ThrowError.unauthorized("Usuário não autenticado.");
 
             const pets = await petService.getAdoptionsByAccount(accountId);
