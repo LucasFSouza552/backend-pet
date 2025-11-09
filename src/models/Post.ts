@@ -16,7 +16,7 @@ export default interface IPost extends Document {
 const postSchema = new Schema<IPost>({
     title: {
         type: String,
-        required: true
+        required: false
     },
     content: {
         type: String,

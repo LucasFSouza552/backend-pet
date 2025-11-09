@@ -27,7 +27,7 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         const { page, limit, orderBy, order, query } = filter;
 
         return await History.find(query as FilterQuery<IHistory>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
     }
@@ -54,9 +54,10 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         const { page, limit, orderBy, order, query } = filter;
 
         return await History.find({ account, ...query })
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
-            .populate("institution", "name email phone_number address role createdAt verified")
+            .populate("institution", "name email avatar phone_number address role createdAt verified")
+            .populate("pet")
             .limit(limit);
 
     }

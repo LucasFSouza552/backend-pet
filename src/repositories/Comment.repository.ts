@@ -49,7 +49,7 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
         const { page, limit, orderBy, order, query } = filter;
 
         return await Comment.find(query as FilterQuery<IComment>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
     }

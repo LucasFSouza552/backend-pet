@@ -73,7 +73,7 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
         try {
             const posts = await postRepository.getPostsWithAuthor(filter);
             const postMapped = posts.map(post => {
-                const account = post.account as unknown as IAccount & { achievements?: IAccountAchievement[]; };
+                const account = post.account as unknown as IAccount & { achievements?: IAccountAchievement[] };
 
                 const achievements = account.achievements?.map(a => {
                     const ach = a.achievement as unknown as IAchievement;
@@ -89,7 +89,6 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
                     account: { ...account, id: account._id, achievements: achievements }
                 };
             }) as unknown as PostWithAccount[];
-
 
             return postMapped;
         } catch (error) {

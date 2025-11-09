@@ -23,7 +23,7 @@ export default class AccountRepository implements IRepository<CreateAccountDTO, 
         const { page, limit, orderBy, order, query } = filter;
 
         const accounts = await Account.find(query as FilterQuery<IAccount>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1  })
             .skip((page - 1) * limit)
             .limit(limit);
 

@@ -16,7 +16,7 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
         const { page, limit, orderBy, order, query } = filter;
 
         const pets = await Pet.find(query as FilterQuery<IPet>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
         return pets;

@@ -12,7 +12,7 @@ export default class AchievementRepository implements IRepository<CreateAchievem
         const { page, limit, orderBy, order, query } = filter;
 
         return await Achievements.find(query as FilterQuery<IAchievement>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit) as AchievementDTO[];
     }

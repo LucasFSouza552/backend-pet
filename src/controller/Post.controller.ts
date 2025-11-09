@@ -72,10 +72,7 @@ export default class PostController implements IController {
             const images = req.files as Express.Multer.File[];
             post.image = [];
 
-            console.log(post);
-
             const newPostDTO: CreatePostDTO = new BuilderDTO<CreatePostDTO>(post)
-                .add({ key: "title" })
                 .add({ key: "content" })
                 .add({ key: "image", required: false })
                 .add({ key: "account" })
@@ -181,10 +178,11 @@ export default class PostController implements IController {
     }
     async search(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title"];
+            const allowedQueryFields: string[] = ["content"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
-
+            console.log(filters);
             const posts = await postService.search(filters);
+            console.log(posts);
             res.status(200).json(posts);
         } catch (error) {
             next(error);

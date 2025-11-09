@@ -7,17 +7,16 @@ import { Account } from "@models/Account";
 import { PostWithAccount } from "@Itypes/ITypePost";
 import postMapper from "@Mappers/postMapper";
 
+const t = [];
+
 export default class PostRepository implements IRepository<CreatePostDTO, UpdatePostDTO, IPost> {
     async getTopPosts() {
-       const posts = await Post.find({ deletedAt: null }).sort({ likes: -1 }).limit(5);
+        const posts = await Post.find({ deletedAt: null }).sort({ likes: -1 }).limit(5);
         return posts;
     }
     async softDelete(id: string) {
         const post = await Post.findByIdAndUpdate(id, { deletedAt: Date.now() });
-        console.log("DELETAR", post);
     }
-
-
     async getPostsByAccount(account: string) {
         return await Post.find({ account, deletedAt: null });
     }
@@ -42,7 +41,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             })
             .lean({ virtuals: true })
             .exec();
-            console.log(post);
+        console.log(post);
         return post as unknown as PostWithAccount;
     }
 
@@ -52,9 +51,8 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
         if (query?.accountId && !Types.ObjectId.isValid(query.accountId)) {
             delete query.accountId;
         }
-
-        const posts = await Post.find({ ...query, deletedAt: null } as FilterQuery<IPost>)
-            .sort({ [orderBy]: order })
+        const posts = await Post.find({ ...query } as FilterQuery<IPost>)
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit)
             .populate({
@@ -75,6 +73,8 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             })
             .lean({ virtuals: true })
             .exec();
+
+
         return posts;
     }
     async addLike(postId: string, accountId: string): Promise<IPost | null> {
@@ -98,7 +98,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             delete query.account;
         }
         const post = await Post.find(query as FilterQuery<IPost>)
-            .sort({ [orderBy]: order })
+            .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
         return post;
@@ -139,11 +139,16 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
     }
 
     async search(filter: Filter): Promise<IPost[]> {
+        const { page, limit, orderBy, order, query } = filter;
         const words = filter?.query?.title ? filter.query.title.trim().split(/\s+/) : [];
         const regexConditions = words.map((word: string) => ({
             title: { $regex: word, $options: "i" }
         }));
 
-        return await Post.find({ $and: regexConditions });
+        return await Post.find({ $and: regexConditions })
+            .sort({ [orderBy]: order, _id: 1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate("account");
     }
 }
