@@ -22,4 +22,12 @@ export class PictureStorangeController {
             next(error);
         }
     }
+
+    async setPicture(req: Request, res: Response, next: NextFunction) {
+        try {
+            
+        } catch (error) {
+            next(error);
+        }
+    }
 }
