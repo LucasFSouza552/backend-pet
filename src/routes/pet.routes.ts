@@ -30,13 +30,16 @@ router.get("/avaliable", AuthMiddleware, petController.getAvailable);
 router.get("/:id", AuthMiddleware, petController.getById);
 
 // Rota para solicitar uma adoção
-router.post("/:id/request", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.requestAdoption);
+router.post("/:id/like", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.likePet);
+
+// Rota para quando não quero adotar
+router.post("/:id/dislike", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.dislikePet);
 
 // Rota para aceitar uma adoção
-router.post("/:id/accept", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.acceptAdoption);
+router.post("/:id/accept", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.acceptRequestedAdoption);
 
 // Rota para rejeitar uma adoção
-router.post("/:id/reject", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.rejectAdoption);
+router.post("/:id/reject", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.rejectRequestedAdoption);
 
 // Rota para apadrinhar um pet
 router.post("/:id/sponsor", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.sponsor);

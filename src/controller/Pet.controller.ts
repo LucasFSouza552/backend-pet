@@ -122,16 +122,31 @@ export default class PetController implements IController {
             next(error);
         }
     }
-    async requestAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async likePet(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const petId = req.params?.id;
             const accountId = req.account?.id;
 
+            console.log(petId, accountId);
+
             if (!petId) throw ThrowError.badRequest("ID não foi informado.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const history = await petService.requestAdoption(petId, accountId);
+            const history = await petService.likePet(petId, accountId);
+            console.log(history);
             res.status(200).json(history);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async dislikePet(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const petId = req.params?.id;
+            const accountId = req.account?.id;
+            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            const interaction = await petService.dislikePet(petId, accountId);
+            res.status(200).json(interaction);
         } catch (error) {
             next(error);
         }
@@ -153,7 +168,7 @@ export default class PetController implements IController {
         }
     }
 
-    async acceptAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async acceptRequestedAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const petId = req.params?.id;
             const accountId = req.body.account;
@@ -163,22 +178,24 @@ export default class PetController implements IController {
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
             if (!institutionId) throw ThrowError.badRequest("Instituição não foi informada.");
 
-            await petService.acceptAdoption(petId, accountId, institutionId);
+            await petService.acceptRequestedAdoption(petId, accountId, institutionId);
             res.status(201).json();
         } catch (error) {
             next(error);
         }
     }
 
-    async rejectAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async rejectRequestedAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const petId = req.params?.id;
-            const accountId = req.account?.id;
+            const accountId = req.body.account;
+            const institutionId = req.account?.id;
 
             if (!petId) throw ThrowError.badRequest("ID não foi informado.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            if (!institutionId) throw ThrowError.badRequest("Instituição não foi informada.");
 
-            await petService.rejectAdoption(petId, accountId);
+            await petService.rejectRequestedAdoption(petId, accountId, institutionId);
             res.status(201).json();
         } catch (error) {
             next(error);

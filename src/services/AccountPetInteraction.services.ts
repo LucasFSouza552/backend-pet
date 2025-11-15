@@ -38,7 +38,7 @@ export default class AccountPetInteractionService {
 
     async getByAccount(accountId: string) {
         try {
-            return await accountPetInteractionRepository.getByAccount(accountId);
+            return await accountPetInteractionRepository.getByAccountWithPets(accountId);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar interações com os pets.");

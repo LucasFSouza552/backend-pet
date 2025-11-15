@@ -1,10 +1,9 @@
-import { PostService } from "@services/Post.services";
 import { beforeEach, describe } from "node:test";
 import { afterEach, expect, it, jest } from "@jest/globals";
 import PostRepository from "@repositories/Post.repository";
-import { CreatePostDTO } from "@dtos/PostDTO";
-import { Types } from "mongoose";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import PostService from "@services/Post.services";
+import { Types } from "mongoose";
 
 jest.mock("../repositories/Post.repository");
 jest.mock("../repositories/PictureStorage.repository");
@@ -38,17 +37,26 @@ describe("PostService", () => {
     it("deve criar um post com arquivos", async () => {
         const dto = { content: "Teste" } as any;
         const fakeFiles = [{ originalname: "img.png" }] as any;
-        const fakeObjectId = "objectid123";
+
+        const fakeObjectId = new Types.ObjectId(); 
 
         pictureStorageMock.uploadImage.mockResolvedValue(fakeObjectId);
-        postRepositoryMock.create.mockResolvedValue({ ...dto, _id: "123", image: [fakeObjectId] } as any);
+        postRepositoryMock.create.mockResolvedValue({
+            ...dto,
+            _id: new Types.ObjectId(),
+            image: [fakeObjectId]
+        } as any);
 
         const result = await postService.create(dto, fakeFiles);
 
         expect(pictureStorageMock.uploadImage).toHaveBeenCalledTimes(1);
-        expect(postRepositoryMock.create).toHaveBeenCalledWith({ ...dto, image: [fakeObjectId] });
+        expect(postRepositoryMock.create).toHaveBeenCalledWith({
+            ...dto,
+            image: [fakeObjectId]
+        });
         expect(result.image).toContain(fakeObjectId);
     });
+
 
     it("deve retornar post por ID", async () => {
         const fakePost = { _id: "123", content: "Teste" } as any;

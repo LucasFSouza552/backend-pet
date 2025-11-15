@@ -1,3 +1,3 @@
-export type IHistoryStatus = "pending" | "completed" | "cancelled" | "refunded";
+export type IHistoryStatus = "pending" | "completed" | "cancelled" | "rejected";
 
-export const IHistoryStatus = ["pending", "completed", "cancelled", "refunded"];
+export const IHistoryStatus = ["pending", "completed", "cancelled", "rejected"];

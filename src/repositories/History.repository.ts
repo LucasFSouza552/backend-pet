@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
@@ -49,6 +49,10 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
         await History.findByIdAndDelete(id);
     }
 
+    async getByPetId(pet: string): Promise<IHistory[]> {
+        return await History.find({ pet: new Types.ObjectId(pet) });
+    }
+
     async getByAccount(filter: Filter, account: string): Promise<HistoryDTO[]> {
 
         const { page, limit, orderBy, order, query } = filter;
@@ -59,7 +63,10 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
             .populate("institution", "name email avatar phone_number address role createdAt verified")
             .populate("pet")
             .limit(limit);
+    }
 
+    async getByAccountAndPet(account: string, pet: string): Promise<IHistory | null> {
+        return await History.findOne({ account: new Types.ObjectId(account), pet: new Types.ObjectId(pet) });
     }
 
 }

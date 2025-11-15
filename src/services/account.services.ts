@@ -35,7 +35,6 @@ import { PictureStorageRepository } from "@repositories/PictureStorage.repositor
 import petMapper from "@Mappers/petMapper";
 import { PetDTO } from "@dtos/PetDTO";
 
-
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async search(filters: Filter) {
         try {
@@ -44,12 +43,11 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao buscar usuários.");
         }
-
     }
     async getStatusByAccount(accountId: string) {
         try {
             const achievements = await accountAchievementRepository.getByAccountId(accountId);
-            
+
             const achievementMapped = achievements.map((item) => achievementMapper(item.achievement as unknown as IAchievement));
             return { achievements: achievementMapped };
         } catch (error) {
@@ -74,7 +72,6 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             if (!avatarId) throw ThrowError.badRequest("Erro ao atualizar avatar.");
 
             await accountRepository.updateAvatar(accoundId, avatarId);
-
 
             return { avatar: avatarId } as UpdateAvatarDTO;
         } catch (error) {
@@ -101,7 +98,6 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             throw ThrowError.internal("Não foi possível listar o usuário.");
         }
     }
-
     async create(data: CreateAccountDTO): Promise<AccountDTO> {
         try {
             const account = await authRepository.getByEmail(data.email);
@@ -116,7 +112,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
                 const accountByCnpj = await accountRepository.getByCnpj(data.cnpj);
                 if (accountByCnpj) throw ThrowError.conflict("CNPJ já cadastrado.");
             }
-            
+
             data.password = await cryptPassword(data.password);
 
             const newAccount = await accountRepository.create(data);
@@ -188,8 +184,8 @@ export default class AccountService implements IService<CreateAccountDTO, Update
     async getFeed(accountId: string, filter: Filter): Promise<PetDTO | null> {
         try {
             const interactions = await accountPetInteractionRepository.getByAccount(accountId);
-            
-            const seenPetIds = interactions.map(i => new Types.ObjectId(i.pet._id.toString() as string));
+            const seenPetIds = interactions.map(i => i.pet instanceof Types.ObjectId && i.pet?._id ? i.pet._id : new Types.ObjectId(i.pet as string));
+
             const nextPet = await petRepository.getNextAvailable(seenPetIds);
             if (!nextPet) {
                 return null;
@@ -198,7 +194,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             await accountPetInteractionRepository.create({
                 status: "viewed",
                 account: accountId as string,
-                pet: nextPet._id as string
+                pet: nextPet.id as string
             } as createPetInteractionDTO);
 
             return petMapper(nextPet);
