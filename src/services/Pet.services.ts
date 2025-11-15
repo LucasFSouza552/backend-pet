@@ -21,30 +21,20 @@ import { historyRepository, petRepository } from "@repositories/index";
 // Services
 import { accountPetInteractionService, accountService } from "./index";
 import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import { AccountPetInteraction } from "@models/AccountPetInteraction";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async requestedAdoption(institutionId: string, accountId: string) {
         try {
             const history = await historyRepository.getRequestedAdoption(institutionId, accountId);
-
             return history;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao solicitar adotação.");
         }
     }
-    async acceptAdoption(petId: string, accountId: string, institutionId: string) {
-        try {
-            const pet = await petRepository.getById(petId);
-            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-            if(!pet.account) throw ThrowError.forbidden("Conta não existente")
-            if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
-            return await petRepository.update(petId, { adopted: true, account: accountId });
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao aceitar adotação.");
-        }
-    }
+
+
     async getAdoptionsByAccount(accountId: string) {
         try {
             return await petRepository.getAdoptionsByAccount(accountId);
@@ -232,7 +222,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async rejectAdoption(petId: string, accountId: string) {
+    async dislikePet(petId: string, accountId: string) {
         try {
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
@@ -250,15 +240,13 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
 
             const interaction = await accountPetInteractionService.create(newInteraction);
             if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
-
-
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao rejeitar adotação.");
         }
     }
 
-    async requestAdoption(petId: string, accountId: string): Promise<HistoryDTO> {
+    async likePet(petId: string, accountId: string): Promise<HistoryDTO> {
         try {
 
             const account = await accountService.getById(accountId);
@@ -299,12 +287,62 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
+    async acceptRequestedAdoption(petId: string, accountId: string, institutionId: string) {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (!pet.account) throw ThrowError.forbidden("Conta não existente")
+            if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
+            if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
+            
+            const history = await historyRepository.getByAccountAndPet(accountId, petId);
+            if (!history) throw ThrowError.notFound("Histórico não encontrado.");
+            if (history.status !== "pending") throw ThrowError.conflict("Histórico já processado.");
+            
+            await historyRepository.update(history.id, { status: "completed" });
+            const updatedPet = await petRepository.update(petId, { adopted: true, account: accountId });
+
+            const histories = await historyRepository.getByPetId(petId);
+            for (const history of histories) {
+                if (history.status === "pending") {
+                    await historyRepository.update(history.id, { status: "cancelled" });
+                }
+            }
+
+            if (!updatedPet) throw ThrowError.internal("Erro ao aceitar adotação.");
+            return updatedPet;
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao aceitar adotação.");
+        }
+    }
+
+    async rejectRequestedAdoption(petId: string, accountId: string, institutionId: string) {
+        try {
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (!pet.account) throw ThrowError.forbidden("Conta não existente");
+            if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
+            if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode rejeitar adotação.");
+
+            const history = await historyRepository.getByAccountAndPet(accountId, petId);
+
+            if (!history) throw ThrowError.notFound("Histórico não encontrado.");
+            if (history.status !== "pending") throw ThrowError.conflict("Histórico já processado.");
+            await historyRepository.update(history.id, { status: "cancelled" });
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao rejeitar adotação.");
+        }
+    }
+
     async paymentReturn(paymentId: string, status: string, externalReference: string): Promise<HistoryDTO> {
         try {
             const payment = await historyRepository.getById(paymentId);
             if (!payment) throw ThrowError.notFound("Pagamento não encontrado.");
 
-            if (payment.status === "completed" || payment.status === "cancelled" || payment.status === "refunded") throw ThrowError.conflict("Pagamento já processado.");
+            if (payment.status !== "pending") throw ThrowError.conflict("Pagamento já processado.");
             if (payment.status !== status) throw ThrowError.conflict("Status do pagamento inválido.");
 
             if (payment.externalReference !== externalReference) throw ThrowError.conflict("External reference inválido.");

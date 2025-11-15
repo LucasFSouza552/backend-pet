@@ -1,7 +1,7 @@
+import defaultTransform from "@utils/transformModel";
 import { Document, Schema, Types, model } from "mongoose";
 
 export default interface IPet extends Document {
-  id?: string;
   name: string;
   type: "Cachorro" | "Gato" | "Pássaro" | "Outro";
   age?: number;
@@ -67,15 +67,20 @@ const petSchema = new Schema<IPet>(
   {
     timestamps: true,
     strict: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: defaultTransform,
+    },
+    toObject: {
+      virtuals: true,
+      transform: defaultTransform,
+    },
   }
 );
 
-
-
-petSchema.virtual("id").get(function (this: Document & { _id: Types.ObjectId }) {
-    return this._id.toString();
+petSchema.virtual('id').get(function (this: Document & { _id: Types.ObjectId }) {
+  return this._id.toString() as string;
 });
+
 
 export const Pet = model<IPet>("Pet", petSchema);

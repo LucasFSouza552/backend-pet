@@ -15,20 +15,32 @@ export default class AccountPetInteractionRepository {
     }
 
     async getByAccount(account: string) {
+        return await AccountPetInteraction.find({ account, status: { $ne: "viewed" } }).lean({ virtuals: true }).exec();
+    }
+
+    async getByAccountWithPets(account: string) {
         const accountpetInteraction = await AccountPetInteraction
             .find({ account, status: { $ne: "viewed" } })
             .populate({
                 path: "pet",
                 select: "name type account description age gender weight images adopted instituition",
+                options: {
+                    lean: {
+                        virtuals: true,
+                        getters: true
+                    }
+                },
                 populate: {
                     path: "account",
                 },
+
             })
             .lean({ virtuals: true })
             .exec();
 
         return accountpetInteraction;
     }
+ 
 
     async getInteraction(petId: string) {
         return await AccountPetInteraction.findOne({ pet: petId });

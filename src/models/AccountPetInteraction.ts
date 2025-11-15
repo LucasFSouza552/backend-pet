@@ -25,5 +25,7 @@ const accountPetInteractionSchema = new Schema<AccountPetInteraction>({
     },
 }, { timestamps: true, strict: true });
 
+
+
 export const AccountPetInteraction = model<AccountPetInteraction>("AccountPetInteraction", accountPetInteractionSchema);
 

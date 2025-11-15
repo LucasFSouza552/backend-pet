@@ -133,6 +133,10 @@ accountSchema.virtual("postCount", {
     match: {deletedAt: null}
 });
 
+accountSchema.set("toJSON", { virtuals: true });
+accountSchema.set("toObject", { virtuals: true });
+
+
 
 
 export const Account = model<IAccount>("Account", accountSchema);
