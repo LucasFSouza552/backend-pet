@@ -2,7 +2,7 @@ import { beforeEach, describe } from "node:test";
 import { afterEach, expect, it, jest } from "@jest/globals";
 import PostRepository from "@repositories/Post.repository";
 import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
-import PostService from "@services/Post.services";
+import PostService from "@services/post.services";
 import { Types } from "mongoose";
 
 jest.mock("../repositories/Post.repository");

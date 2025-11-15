@@ -1,6 +1,6 @@
 import { ThrowError } from "@errors/ThrowError";
 import { IAccount } from "@models/Account";
-import AccountService from "@services/Account.services";
+import AccountService from "@services/account.services";
 import { NextFunction, Response, Request } from "express";
 
 const accountService = new AccountService();
@@ -30,12 +30,7 @@ export default function authorizationMiddleware(allowedRoles: string[]) {
             next();
 
         } catch (error: any) {
-            if (error instanceof ThrowError) {
-                res.status(error.statusCode).json({ error: error.message });
-            } else {
-                console.error(error);
-                res.status(500).json({ error: 'Internal server error' });
-            }
+            next(error);
         }
     }
 }
