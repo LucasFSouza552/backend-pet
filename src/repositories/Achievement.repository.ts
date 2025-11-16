@@ -1,8 +1,8 @@
 import { FilterQuery } from "mongoose";
-import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/AchievementDTO";
+import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/achievementDTO";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
-import { IAchievement, Achievements } from "@models/Achievements";
+import { IAchievement, Achievements } from "@models/achievements";
 
 export default class AchievementRepository implements IRepository<CreateAchievementDTO, UpdateAchievementDTO, AchievementDTO> {
     async getByType(type: string) {

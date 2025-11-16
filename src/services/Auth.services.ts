@@ -1,5 +1,5 @@
 // DTOS
-import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import { AccountDTO, ChangePasswordDTO, CreateAccountDTO } from "@dtos/accountDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -8,7 +8,7 @@ import { ThrowError } from "@errors/ThrowError";
 import accountMapper from "@Mappers/accountMapper";
 
 // Models
-import { IAccount } from "@models/Account";
+import { IAccount } from "@models/account";
 
 // Utils
 import { cryptPassword, validatePassword } from "@utils/aes-crypto";

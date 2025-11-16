@@ -4,6 +4,9 @@ import { seedComments } from "@seeds/comments.seed";
 import { seedPets } from "@seeds/pets.seed";
 import { seedPosts } from "@seeds/posts.seed";
 import { seedAccounts } from "@seeds/accounts.seed";
+import { seedNotifications } from "@seeds/notification.seed";
+import { seedHistories } from "@seeds/history.seed";
+import { seedAccountAchievements } from "@seeds/accountAchievement.seed";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -18,6 +21,9 @@ async function runSeeds() {
         await seedPosts();
         await seedComments();
         await seedPets();
+        await seedNotifications();
+        await seedHistories();
+        await seedAccountAchievements();
         console.log("All seeds executed successfully ✅");
         process.exit(0);
     } catch (error) {

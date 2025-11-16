@@ -1,6 +1,6 @@
-import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import { AccountDTO, CreateAccountDTO } from "@dtos/accountDTO";
 import accountMapper from "@Mappers/accountMapper";
-import { Account, IAccount } from "@models/Account";
+import { Account, IAccount } from "@models/account";
 
 export default class AuthRepository {
     async updateVerificationToken(account: IAccount): Promise<IAccount | null> {

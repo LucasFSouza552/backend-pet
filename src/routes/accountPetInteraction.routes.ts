@@ -1,5 +1,5 @@
 import { Router } from "express";
-import AccountPetInteractionController from "@controller/AccountPetInteraction.controller";
+import AccountPetInteractionController from "@controller/accountPetInteraction.controller";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";
 import AuthMiddleware from "@middleware/authMiddleware";
 

@@ -1,13 +1,13 @@
-import AccountRepository from "./Account.repository";
-import AccountPetInteractionRepository from "./AccountPetInteraction.repository";
-import AchievementRepository from "./Achievement.repository";
-import AuthRepository from "./Auth.repository";
-import CommentRepository from "./Comment.repository";
-import HistoryRepository from "./History.repository";
-import PetRepository from "./Pet.repository";
-import PostRepository from "./Post.repository";
-import AccountAchievementRepository from "./AccountAchievement.repository";
-import NotificationRepository from "./Notification.repository";
+import AccountRepository from "./account.repository";
+import AccountPetInteractionRepository from "./accountPetInteraction.repository";
+import AchievementRepository from "./achievement.repository";
+import AuthRepository from "./auth.repository";
+import CommentRepository from "./comment.repository";
+import HistoryRepository from "./history.repository";
+import PetRepository from "./pet.repository";
+import PostRepository from "./post.repository";
+import AccountAchievementRepository from "./accountAchievement.repository";
+import NotificationRepository from "./notification.repository";
 
 
 export const accountRepository = new AccountRepository();

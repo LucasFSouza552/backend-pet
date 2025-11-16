@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 //DTO
-import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/petDTO";
 
 // Interfaces
 import Filter from "@interfaces/Filter";
@@ -91,37 +91,7 @@ export default class PetController implements IController {
         }
     }
 
-    async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const amount = req.body?.amount;
-            const accountId = req?.account?.id;
 
-            if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
-            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
-
-            const pet = await petService.donate(amount, accountId);
-            res.status(200).json(pet);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async sponsor(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const id = req.params.id;
-            const amount = req.body?.amount;
-            const accountId = req?.account?.id;
-
-            if (!id) throw ThrowError.badRequest("ID não foi informado.");
-            if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
-            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
-
-            const pet = await petService.sponsor(id, amount, accountId);
-            res.status(200).json(pet);
-        } catch (error) {
-            next(error);
-        }
-    }
     async likePet(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const petId = req.params?.id;

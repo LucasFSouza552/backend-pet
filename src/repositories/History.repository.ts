@@ -1,5 +1,5 @@
 import { FilterQuery, Types } from "mongoose";
-import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/historyDTO";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
 import IHistory, { History } from "@models/history";

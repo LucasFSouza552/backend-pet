@@ -1,5 +1,5 @@
-import { CreateNotificationDTO } from "@dtos/NotificationDTO";
-import { Notification } from "@models/Notification";
+import { CreateNotificationDTO } from "@dtos/notificationDTO";
+import { Notification } from "@models/notification";
 
 export default class NotificationRepository {
     async create(data: CreateNotificationDTO) {

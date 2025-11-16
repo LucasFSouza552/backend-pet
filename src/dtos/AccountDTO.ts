@@ -1,6 +1,6 @@
-import { IAccount } from "@models/Account";
-import { IAccountAchievement } from "@models/AccountAchievement";
-import { AchievementDTO } from "./AchievementDTO";
+import { IAccount } from "@models/account";
+import { IAccountAchievement } from "@models/accountAchievement";
+import { AchievementDTO } from "./achievementDTO";
 
 export type UpdateAccountDTO = Partial<
     Omit<IAccount, "createdAt" | "email" | "updatedAt" | "password" | "cpf" | "cnpj" | "verified" | "avatar">

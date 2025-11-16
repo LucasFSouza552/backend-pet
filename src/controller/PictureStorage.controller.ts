@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import { ThrowError } from "@errors/ThrowError";
 
-export class PictureStorangeController {
+export class PictureStorageController {
     async getPicture(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.params.id) {

@@ -1,4 +1,4 @@
-import IPost from "@models/Post";
+import IPost from "@models/post";
 import { mapToDTO } from "@utils/Mapper";
 
 const postDTOFields: (keyof IPost)[] = [

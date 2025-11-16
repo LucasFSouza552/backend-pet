@@ -1,8 +1,8 @@
 import { FilterQuery } from "mongoose";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
-import IComment, { Comment } from "@models/Comments";
-import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import IComment, { Comment } from "@models/comments";
+import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/commentDTO";
 
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getReplies(commentId: string, filter: Filter): Promise<IComment[] | null> {

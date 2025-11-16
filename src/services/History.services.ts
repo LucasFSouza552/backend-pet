@@ -2,7 +2,7 @@
 import { IHistoryStatus } from "@Itypes/IHistoryStatus";
 
 // DTOS
-import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/historyDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -11,9 +11,13 @@ import { ThrowError } from "@errors/ThrowError";
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
 
+// Config
+import { preference } from "@config/mergadopago";
+
 // Repositories
 import {
-    historyRepository
+    historyRepository,
+    petRepository
 } from "@repositories/index";
 
 // Services
@@ -119,6 +123,128 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             await historyRepository.delete(id);
         } catch (error) {
             throw ThrowError.internal("Erro ao deletar histórico.");
+        }
+    }
+
+    async donate(amount: string, accountId: string) {
+        try {
+            const { v4: uuidv4 } = await import('uuid');
+            const idempotencyKey = uuidv4();
+
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            const newHistory: CreateHistoryDTO = {
+                type: "donation",
+                amount: amount,
+                account: account.id as string,
+                status: "pending"
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
+
+            const externalReference = `petApp-${history.id}`;
+
+            const body = {
+                items: [
+                    {
+                        title: "Doação",
+                        quantity: 1,
+                        unit_price: parseFloat(amount),
+                        currency_id: "BRL"
+                    }
+                ],
+                payer: {
+                    email: account?.email as string
+                },
+                payment_methods: {
+                    excluded_payment_methods: [
+                        {
+                            id: "ticket"
+                        }
+                    ],
+                    installments: 1
+                },
+                external_reference: externalReference,
+            } as any;
+
+            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
+
+            if (!response) throw ThrowError.internal("Erro ao doar para petApp.");
+
+            return {
+                id: response.id as string,
+                url: response.init_point,
+            };
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao doar para petApp.");
+        }
+    }
+
+    async sponsor(petId: string, amount: string | number, accountId: string) {
+        try {
+            const { v4: uuidv4 } = await import('uuid');
+            const idempotencyKey = uuidv4();
+
+            const pet = await petRepository.getById(petId);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+
+            const account = await accountService.getById(accountId);
+            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+
+            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+
+            const newHistory: CreateHistoryDTO = {
+                type: "sponsorship",
+                amount: amount,
+                account: account.id as string,
+                pet: petId,
+                status: "pending"
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao patrocinar o pet.");
+
+            const externalReference = `${pet.account}-${uuidv4()}`;
+
+            const body = {
+                items: [
+                    {
+                        title: "Patrocínio para instituição",
+                        quantity: 1,
+                        unit_price: typeof amount === "string" ? parseFloat(amount) : amount,
+                        currency_id: "BRL"
+                    }
+                ],
+                payer: {
+                    email: account?.email as string
+                },
+                payment_methods: {
+                    excluded_payment_methods: [
+                        {
+                            id: "ticket"
+                        }
+                    ],
+                    installments: 1
+                },
+                external_reference: externalReference,
+            } as any;
+
+            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
+
+            if (!response) throw ThrowError.internal("Erro ao patrocinar o pet.");
+
+            return {
+                id: response.id as string,
+                url: response.init_point,
+            };
+
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao patrocinar o pet.");
         }
     }
 

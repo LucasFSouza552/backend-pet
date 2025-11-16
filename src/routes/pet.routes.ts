@@ -1,4 +1,4 @@
-import PetController from "@controller/Pet.controller";
+import PetController from "@controller/pet.controller";
 import AuthMiddleware from "@middleware/authMiddleware";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";
 import upload from "@config/multer.config";
@@ -40,12 +40,6 @@ router.post("/:id/accept", AuthMiddleware, authorizationMiddleware(["institution
 
 // Rota para rejeitar uma adoção
 router.post("/:id/reject", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.rejectRequestedAdoption);
-
-// Rota para apadrinhar um pet
-router.post("/:id/sponsor", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.sponsor);
-
-// Rota para doar para o aplicativo
-router.post("/:id/donate", AuthMiddleware, authorizationMiddleware(["user", "admin"]), petController.donate);
 
 // Rota para atualizar a imagem de um pet
 router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), upload.array("avatar", 6), petController.updatePetImages);

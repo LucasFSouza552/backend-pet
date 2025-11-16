@@ -1,7 +1,6 @@
-import IHistory from "@models/history";
 // DTOS
-import { CreateHistoryDTO, HistoryDTO } from "@dtos/HistoryDTO";
-import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+import { CreateHistoryDTO, HistoryDTO } from "@dtos/historyDTO";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/petDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -10,18 +9,16 @@ import { ThrowError } from "@errors/ThrowError";
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
 
-import IPet from "@models/Pet";
+import IPet from "@models/pet";
 import { ObjectId } from "mongodb";
-import { preference } from "@config/mergadopago";
 
 // Repositories
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import { historyRepository, petRepository } from "@repositories/index";
 
 // Services
 import { accountPetInteractionService, accountService } from "./index";
-import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
-import { AccountPetInteraction } from "@models/AccountPetInteraction";
+import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async requestedAdoption(institutionId: string, accountId: string) {
@@ -33,7 +30,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             throw ThrowError.internal("Erro ao solicitar adotação.");
         }
     }
-
 
     async getAdoptionsByAccount(accountId: string) {
         try {
@@ -48,7 +44,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (pet?.deletedAt) throw ThrowError.conflict("O Pet já foi deletado.");
-            console.log(pet);
             if (pet?.account?.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode deletar o pet.");
             return await petRepository.softDelete(petId);
         } catch (error) {
@@ -99,128 +94,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async donate(amount: string, accountId: string) {
-        try {
-            const { v4: uuidv4 } = await import('uuid');
-            const idempotencyKey = uuidv4();
 
-            const account = await accountService.getById(accountId);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
-            const newHistory: CreateHistoryDTO = {
-                type: "donation",
-                amount: amount,
-                account: account.id as string,
-                status: "pending"
-            } as CreateHistoryDTO;
-
-            const history = await historyRepository.create(newHistory);
-            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
-
-
-            const externalReference = `petApp-${newHistory.id}`;
-
-            const body = {
-                items: [
-                    {
-                        title: "Doação",
-                        quantity: 1,
-                        unit_price: parseFloat(amount),
-                        currency_id: "BRL"
-                    }
-                ],
-                payer: {
-                    email: account?.email as string
-                },
-                payment_methods: {
-                    excluded_payment_methods: [
-                        {
-                            id: "ticket"
-                        }
-                    ],
-                    installments: 1
-                },
-                external_reference: externalReference,
-            } as any;
-
-            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
-
-            if (!response) throw ThrowError.internal("Erro ao doar para petApp.");
-
-            return {
-                id: response.id as string,
-                url: response.init_point,
-            };
-
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao patrocinar o pet.");
-        }
-    }
-
-    async sponsor(petId: string, amount: string | number, accountId: string) {
-        try {
-
-            const { v4: uuidv4 } = await import('uuid');
-            const idempotencyKey = uuidv4();
-
-            const pet = await petRepository.getById(petId);
-            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-
-            const account = await accountService.getById(accountId);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-
-            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
-
-            const newHistory: CreateHistoryDTO = {
-                type: "sponsorship",
-                amount: amount,
-                account: account.id as string,
-                status: "pending"
-            } as CreateHistoryDTO;
-
-            const history = await historyRepository.create(newHistory);
-            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
-
-            const externalReference = `${pet.account}-${uuidv4()}`;
-
-            const body = {
-                items: [
-                    {
-                        title: "Patrocínio de Pet",
-                        quantity: 1,
-                        unit_price: typeof amount === "string" ? parseFloat(amount) : amount,
-                        currency_id: "BRL"
-                    }
-                ],
-                payer: {
-                    email: account?.email as string
-                },
-                payment_methods: {
-                    excluded_payment_methods: [
-                        {
-                            id: "ticket"
-                        }
-                    ],
-                    installments: 1
-                },
-                external_reference: externalReference,
-            } as any;
-
-            const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
-
-            if (!response) throw ThrowError.internal("Erro ao patrocinar o pet.");
-
-            return {
-                id: response.id as string,
-                url: response.init_point,
-            };
-
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao patrocinar o pet.");
-        }
-    }
 
     async dislikePet(petId: string, accountId: string) {
         try {

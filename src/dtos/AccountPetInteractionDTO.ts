@@ -1,4 +1,4 @@
-import { AccountPetInteraction } from "@models/AccountPetInteraction";
+import { AccountPetInteraction } from "@models/accountPetInteraction";
 
 export type createPetInteractionDTO = Omit<AccountPetInteraction, "createdAt" | "updatedAt">;
 

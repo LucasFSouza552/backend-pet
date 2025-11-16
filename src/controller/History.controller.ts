@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 // DTOS
-import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/historyDTO";
 
 // Interfaces
 import IController from "@interfaces/IController";
@@ -118,6 +118,38 @@ export default class HistoryController implements IController {
 
             const histories = await historyService.getByAccount(filters, accountId);
             res.status(200).json(histories);
+        } catch (error) {
+            next(error);
+        }
+    }
+    
+    async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const amount = req.body?.amount;
+            const accountId = req?.account?.id;
+
+            if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+
+            const donation = await historyService.donate(amount, accountId);
+            res.status(200).json(donation);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async sponsor(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const petId = req.params.id;
+            const amount = req.body?.amount;
+            const accountId = req?.account?.id;
+
+            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
+            if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+
+            const sponsorship = await historyService.sponsor(petId, amount, accountId);
+            res.status(200).json(sponsorship);
         } catch (error) {
             next(error);
         }

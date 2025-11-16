@@ -11,7 +11,6 @@ import helmet from 'helmet';
 import path from 'path';
 import { Request, Response, NextFunction } from "express";
 
-
 const publicPath = path.join(__dirname, '../public');
 
 const app = express();

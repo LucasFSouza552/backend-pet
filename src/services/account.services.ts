@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 // Models
-import { IAchievement } from "@models/Achievements";
+import { IAchievement } from "@models/achievements";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -18,9 +18,9 @@ import achievementMapper from "@Mappers/achievementMapper";
 import { cryptPassword } from "@utils/aes-crypto";
 
 // DTOS
-import { addAchievement } from "@dtos/AccountAchievementDTO";
-import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
-import { AccountDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "@dtos/AccountDTO";
+import { addAchievement } from "@dtos/accountAchievementDTO";
+import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
+import { AccountDTO, CreateAccountDTO, UpdateAccountDTO, UpdateAvatarDTO } from "@dtos/accountDTO";
 
 // Repositories
 import {
@@ -31,9 +31,9 @@ import {
     accountPetInteractionRepository,
     petRepository
 } from "@repositories/index";
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import petMapper from "@Mappers/petMapper";
-import { PetDTO } from "@dtos/PetDTO";
+import { PetDTO } from "@dtos/petDTO";
 
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async search(filters: Filter) {

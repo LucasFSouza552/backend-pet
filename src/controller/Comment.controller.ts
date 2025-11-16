@@ -12,7 +12,7 @@ import filterConfig from "@utils/filterConfig";
 import BuilderDTO from "@utils/builderDTO";
 
 // DTOS
-import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import { CreateCommentDTO, UpdateCommentDTO } from "@dtos/commentDTO";
 
 // Services
 import { commentService } from "@services/index";

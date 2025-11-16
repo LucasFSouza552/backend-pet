@@ -1,5 +1,5 @@
 // DTOS
-import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/AchievementDTO";
+import { AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO } from "@dtos/achievementDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";

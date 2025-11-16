@@ -1,14 +1,16 @@
 import { Router } from "express";
-import AccountController from "@controller/Account.controller";
+import AccountController from "@controller/account.controller";
 import AuthMiddleware from "@middleware/authMiddleware";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";
-import PostController from "@controller/Post.controller";
+import PostController from "@controller/post.controller";
+import HistoryController from "@controller/history.controller";
 import upload from "@config/multer.config";
 
 const router = Router();
 
 const accountController = new AccountController();
 const postController = new PostController();
+const historyController = new HistoryController();
 
 // Rota para retornar o feed dos pets de uma conta
 router.get("/feed", AuthMiddleware, accountController.getFeed);
@@ -46,5 +48,10 @@ router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
 // Rota para retornar o status de uma conta
 router.get("/:id/status", AuthMiddleware, accountController.getStatusByAccount);
 
+// Rota para doar para o aplicativo (doação geral, não vinculada a um pet)
+router.post("/donate", AuthMiddleware, authorizationMiddleware(["user", "admin"]), historyController.donate);
+
+// Rota para apadrinhar/patrocinar uma instituição
+router.post("/sponsor/:id", AuthMiddleware, authorizationMiddleware(["user", "admin"]), historyController.sponsor);
 
 export default router;

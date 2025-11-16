@@ -1,9 +1,9 @@
 import { FilterQuery, Types } from "mongoose";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
-import IPost, { Post } from "@models/Post";
-import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
-import { Account } from "@models/Account";
+import IPost, { Post } from "@models/post";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/postDTO";
+import { Account } from "@models/account";
 import { PostWithAccount } from "@Itypes/ITypePost";
 import postMapper from "@Mappers/postMapper";
 
@@ -52,7 +52,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             delete query.accountId;
         }
         const posts = await Post.find({ ...query } as FilterQuery<IPost>)
-            .sort({ [orderBy]: order, _id: 1 })
+            .sort({ [orderBy]: order, createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit)
             .populate({

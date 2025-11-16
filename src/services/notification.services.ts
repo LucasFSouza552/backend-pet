@@ -1,7 +1,7 @@
-import { CreateNotificationDTO } from "@dtos/NotificationDTO";
+import { CreateNotificationDTO } from "@dtos/notificationDTO";
 import { ThrowError } from "@errors/ThrowError";
 import { notificationRepository } from "@repositories/index";
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 
 export default class NotificationService {
     async getAll() {

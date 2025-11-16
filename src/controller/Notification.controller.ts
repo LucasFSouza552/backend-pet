@@ -1,5 +1,5 @@
-import { CreateAccountDTO } from "@dtos/AccountDTO";
-import { CreateNotificationDTO } from "@dtos/NotificationDTO";
+import { CreateAccountDTO } from "@dtos/accountDTO";
+import { CreateNotificationDTO } from "@dtos/notificationDTO";
 import { notificationService } from "@services/index";
 import BuilderDTO from "@utils/builderDTO";
 import { Request, Response, NextFunction } from "express";
