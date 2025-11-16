@@ -188,7 +188,9 @@ export default class AccountController implements IController {
         try {
             const accountId = req.account?.id as string;
             const file = req.file;
-
+            if(!accountId) {
+                throw ThrowError.badRequest("O usuário não está logado.");
+            }
             if (!file) {
                 throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
             }
