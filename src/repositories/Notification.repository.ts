@@ -6,6 +6,8 @@ export default class NotificationRepository {
         return await Notification.create(data);
     }
     async getAll() {
-        return await Notification.find();
+        return await Notification.find()
+            .sort({ createdAt: -1 })
+            .populate("sender", "name email phone_number avatar role");
     }
 }

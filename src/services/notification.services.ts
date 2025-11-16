@@ -22,7 +22,6 @@ export default class NotificationService {
             data.image = imageId;
             return await notificationRepository.create(data);
         } catch (error) {
-            console.log(error);
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao criar uma notificação.");
         }
