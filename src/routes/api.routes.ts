@@ -9,6 +9,7 @@ import historyRoute from "@routes/history.routes";
 import interactionRoute from "@routes/accountPetInteraction.routes";
 import pictureRoute from "@routes/picture.routes";
 import AuthMiddleware from "@middleware/authMiddleware";
+import notificationRoute from "@routes/notification.routes";
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use("/post", postRoute);
 router.use("/history", historyRoute);
 router.use("/picture", pictureRoute);
 router.use("/interaction", AuthMiddleware, interactionRoute);
+router.use("/notification", AuthMiddleware, notificationRoute);
 
 export default router;

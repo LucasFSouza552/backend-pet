@@ -7,6 +7,7 @@ import HistoryRepository from "./History.repository";
 import PetRepository from "./Pet.repository";
 import PostRepository from "./Post.repository";
 import AccountAchievementRepository from "./AccountAchievement.repository";
+import NotificationRepository from "./Notification.repository";
 
 
 export const accountRepository = new AccountRepository();
@@ -18,3 +19,4 @@ export const historyRepository = new HistoryRepository();
 export const petRepository = new PetRepository();
 export const postRepository = new PostRepository();
 export const accountAchievementRepository = new AccountAchievementRepository();
+export const notificationRepository = new NotificationRepository();
