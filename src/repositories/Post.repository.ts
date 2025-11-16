@@ -52,7 +52,7 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             delete query.accountId;
         }
         const posts = await Post.find({ ...query } as FilterQuery<IPost>)
-            .sort({ [orderBy]: order, _id: 1 })
+            .sort({ [orderBy]: order, createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit)
             .populate({
