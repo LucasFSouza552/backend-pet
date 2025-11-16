@@ -1,7 +1,6 @@
-import IHistory from "@models/history";
 // DTOS
-import { CreateHistoryDTO, HistoryDTO } from "@dtos/HistoryDTO";
-import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+import { CreateHistoryDTO, HistoryDTO } from "@dtos/historyDTO";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/petDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -10,18 +9,16 @@ import { ThrowError } from "@errors/ThrowError";
 import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
 
-import IPet from "@models/Pet";
+import IPet from "@models/pet";
 import { ObjectId } from "mongodb";
-import { preference } from "@config/mergadopago";
 
 // Repositories
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import { historyRepository, petRepository } from "@repositories/index";
 
 // Services
 import { accountPetInteractionService, accountService } from "./index";
-import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
-import { AccountPetInteraction } from "@models/AccountPetInteraction";
+import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async requestedAdoption(institutionId: string, accountId: string) {
@@ -33,7 +30,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             throw ThrowError.internal("Erro ao solicitar adotação.");
         }
     }
-
 
     async getAdoptionsByAccount(accountId: string) {
         try {
@@ -48,7 +44,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (pet?.deletedAt) throw ThrowError.conflict("O Pet já foi deletado.");
-            console.log(pet);
             if (pet?.account?.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode deletar o pet.");
             return await petRepository.softDelete(petId);
         } catch (error) {

@@ -1,6 +1,6 @@
-import { IAccount } from "@models/Account";
-import IComment from "@models/Comments";
-import { IAccountPopulated } from "./AccountDTO";
+import { IAccount } from "@models/account";
+import IComment from "@models/comments";
+import { IAccountPopulated } from "./accountDTO";
 
 export type CreateCommentDTO = Omit<IComment, "createdAt" | "updatedAt">;
 export type UpdateCommentDTO = Partial<Omit<IComment, "createdAt" | "updatedAt" | "post">>;

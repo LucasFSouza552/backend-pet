@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 // DTOS
-import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/postDTO";
 
 // Interfaces
 import Filter from "@interfaces/Filter";
@@ -15,7 +15,7 @@ import filterConfig from "@utils/filterConfig";
 import BuilderDTO from "@utils/builderDTO";
 
 // Models
-import IPost from "@models/Post";
+import IPost from "@models/post";
 
 // Services
 import { postService } from "@services/index";

@@ -2,7 +2,7 @@
 import { IHistoryStatus } from "@Itypes/IHistoryStatus";
 
 // DTOS
-import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { CreateHistoryDTO, HistoryDTO, UpdateHistoryDTO } from "@dtos/historyDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";

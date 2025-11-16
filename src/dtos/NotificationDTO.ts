@@ -1,3 +1,3 @@
-import INotification from "@models/Notification";
+import INotification from "@models/notification";
 
 export type CreateNotificationDTO = Omit<INotification, "createdAt" | "viewedAt">;

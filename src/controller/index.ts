@@ -1,12 +1,12 @@
-import AccountController from "./Account.controller";
-import AccountPetInteractionController from "./AccountPetInteraction.controller";
-import AchievementController from "./Achievement.controller";
-import AuthController from "./Auth.controller";
-import CommentController from "./Comment.controller";
-import HistoryController from "./History.controller";
-import NotificationController from "./Notification.controller";
-import PetController from "./Pet.controller";
-import PostController from "./Post.controller";
+import AccountController from "./account.controller";
+import AccountPetInteractionController from "./accountPetInteraction.controller";
+import AchievementController from "./achievement.controller";
+import AuthController from "./auth.controller";
+import CommentController from "./comment.controller";
+import HistoryController from "./history.controller";
+import NotificationController from "./notification.controller";
+import PetController from "./pet.controller";
+import PostController from "./post.controller";
 
 export const accountController = new AccountController();
 export const accountPetInteractionController = new AccountPetInteractionController();

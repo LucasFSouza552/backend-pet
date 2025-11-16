@@ -2,7 +2,7 @@ import { Router } from "express";
 
 const router = Router();
 
-import AchievementController from "@controller/Achievement.controller";
+import AchievementController from "@controller/achievement.controller";
 import AuthMiddleware from "@middleware/authMiddleware";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";
 const achievementController = new AchievementController();

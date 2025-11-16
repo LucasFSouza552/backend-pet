@@ -1,6 +1,5 @@
-import { Account } from "@models/Account";
-import { Pet } from "@models/Pet";
-
+import { Account } from "@models/account";
+import { Pet } from "@models/pet";
 export const seedPets = async () => {
     await Pet.deleteMany({});
 
@@ -60,6 +59,39 @@ export const seedPets = async () => {
                 weight: 25.3,
                 images: [],
                 description: "Cachorro dócil que adora carinho e passeios longos.",
+                adopted: false,
+                account: institution?.id
+            },
+            {
+                name: "Mel",
+                type: "Gato",
+                age: 2,
+                gender: "female",
+                weight: 4.2,
+                images: [],
+                description: "Gata independente e carinhosa, perfeita para quem busca companhia tranquila.",
+                adopted: false,
+                account: institution?.id
+            },
+            {
+                name: "Max",
+                type: "Cachorro",
+                age: 6,
+                gender: "male",
+                weight: 28.0,
+                images: [],
+                description: "Cão experiente e calmo, ideal para famílias com crianças.",
+                adopted: false,
+                account: institution?.id
+            },
+            {
+                name: "Bella",
+                type: "Gato",
+                age: 1,
+                gender: "female",
+                weight: 3.5,
+                images: [],
+                description: "Gatinha brincalhona e curiosa, adora explorar e brincar.",
                 adopted: false,
                 account: institution?.id
             },

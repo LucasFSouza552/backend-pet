@@ -1,4 +1,4 @@
-import IPost from "@models/Post";
+import IPost from "@models/post";
 
 export type CreatePostDTO = Omit<IPost, "data" | "likes">;
 

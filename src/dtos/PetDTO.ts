@@ -1,4 +1,4 @@
-import IPet from "@models/Pet";
+import IPet from "@models/pet";
 
 export type CreatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt" | "adopted">;
 

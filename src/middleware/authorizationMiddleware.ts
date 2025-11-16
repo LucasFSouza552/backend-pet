@@ -1,5 +1,5 @@
 import { ThrowError } from "@errors/ThrowError";
-import { IAccount } from "@models/Account";
+import { IAccount } from "@models/account";
 import AccountService from "@services/account.services";
 import { NextFunction, Response, Request } from "express";
 

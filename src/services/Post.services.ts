@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 
 // DTOS
-import { CreatePostDTO, UpdatePostDTO } from "@dtos/PostDTO";
+import { CreatePostDTO, UpdatePostDTO } from "@dtos/postDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -11,15 +11,15 @@ import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
 
 // Models
-import IPost from "@models/Post";
+import IPost from "@models/post";
 
 // Repositories
-import { PictureStorageRepository } from "@repositories/PictureStorage.repository";
+import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import { postRepository } from "@repositories/index";
 import postMapper from "@Mappers/postMapper";
-import { IAchievement } from "@models/Achievements";
-import { IAccount } from "@models/Account";
-import { IAccountAchievement } from "@models/AccountAchievement";
+import { IAchievement } from "@models/achievements";
+import { IAccount } from "@models/account";
+import { IAccountAchievement } from "@models/accountAchievement";
 import { PostWithAccount } from "@Itypes/ITypePost";
 import { mapPostWithAuthor } from "@Mappers/postWithAuthorMapper";
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import PostController from "@controller/Post.controller";
+import PostController from "@controller/post.controller";
 import AuthMiddleware from "@middleware/authMiddleware";
 import upload from "@config/multer.config";
 import authorizationMiddleware from "@middleware/authorizationMiddleware";

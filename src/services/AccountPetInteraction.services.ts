@@ -1,5 +1,5 @@
 // DTOS
-import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";

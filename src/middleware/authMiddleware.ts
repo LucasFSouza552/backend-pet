@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "@utils/JwtEncoder";
 import { ThrowError } from "@errors/ThrowError";
-import { AccountDTO } from "@dtos/AccountDTO";
+import { AccountDTO } from "@dtos/accountDTO";
 
 import { accountService } from "@services/index";
 

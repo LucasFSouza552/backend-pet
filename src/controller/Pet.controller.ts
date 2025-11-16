@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 //DTO
-import { CreatePetDTO, UpdatePetDTO } from "@dtos/PetDTO";
+import { CreatePetDTO, UpdatePetDTO } from "@dtos/petDTO";
 
 // Interfaces
 import Filter from "@interfaces/Filter";

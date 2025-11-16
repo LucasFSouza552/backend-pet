@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 // DTOS
-import { CreateAchievementDTO } from "@dtos/AchievementDTO";
+import { CreateAchievementDTO } from "@dtos/achievementDTO";
 
 // Interfaces
 import IController from "@interfaces/IController";

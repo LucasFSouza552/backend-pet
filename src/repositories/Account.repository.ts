@@ -1,8 +1,8 @@
 import { FilterQuery } from "mongoose";
 import Filter from "@interfaces/Filter";
 import IRepository from "@interfaces/IRepository";
-import { IAccount, Account } from "@models/Account";
-import { CreateAccountDTO, UpdateAccountDTO } from "@dtos/AccountDTO";
+import { IAccount, Account } from "@models/account";
+import { CreateAccountDTO, UpdateAccountDTO } from "@dtos/accountDTO";
 import { ObjectId } from "mongodb";
 
 export default class AccountRepository implements IRepository<CreateAccountDTO, UpdateAccountDTO, IAccount> {

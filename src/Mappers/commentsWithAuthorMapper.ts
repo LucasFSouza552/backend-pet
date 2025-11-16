@@ -1,4 +1,4 @@
-import { CommentsWithAuthors } from "@dtos/CommentDTO";
+import { CommentsWithAuthors } from "@dtos/commentDTO";
 
 export function mapCommentsWithAuthor(comment: CommentsWithAuthors) {
     try {

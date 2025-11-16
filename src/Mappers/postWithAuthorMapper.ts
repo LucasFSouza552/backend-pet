@@ -1,6 +1,6 @@
-import { IAccount } from "@models/Account";
-import { IAccountAchievement } from "@models/AccountAchievement";
-import { IAchievement } from "@models/Achievements";
+import { IAccount } from "@models/account";
+import { IAccountAchievement } from "@models/accountAchievement";
+import { IAchievement } from "@models/achievements";
 export interface PostWithAccount {
     id: string;
     title: string;

@@ -1,5 +1,5 @@
-import { PetDTO } from "@dtos/PetDTO";
-import IPet from "@models/Pet";
+import { PetDTO } from "@dtos/petDTO";
+import IPet from "@models/pet";
 import { mapToDTO } from "@utils/Mapper";
 
 const petDTOFields: (keyof PetDTO)[] = [

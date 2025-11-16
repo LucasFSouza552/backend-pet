@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { ThrowError } from "@errors/ThrowError";
 
 // DTOS
-import { createPetInteractionDTO } from "@dtos/AccountPetInteractionDTO";
+import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 // Utils
 import BuilderDTO from "@utils/builderDTO";

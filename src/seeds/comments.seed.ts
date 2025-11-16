@@ -1,6 +1,6 @@
-import { Account } from "@models/Account";
-import { Comment } from "@models/Comments"
-import { Post } from "@models/Post";
+import { Account } from "@models/account";
+import { Comment } from "@models/comments"
+import { Post } from "@models/post";
 
 
 export const seedComments = async () => {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 // DTOS
-import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/HistoryDTO";
+import { CreateHistoryDTO, UpdateHistoryDTO } from "@dtos/historyDTO";
 
 // Interfaces
 import IController from "@interfaces/IController";

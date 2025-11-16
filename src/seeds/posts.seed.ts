@@ -1,5 +1,5 @@
-import { Account } from "@models/Account";
-import { Post } from "@models/Post";
+import { Account } from "@models/account";
+import { Post } from "@models/post";
 
 export const seedPosts = async () => {
     try {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 // DTOS
-import { AccountDTO, CreateAccountDTO } from "@dtos/AccountDTO";
+import { AccountDTO, CreateAccountDTO } from "@dtos/accountDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";

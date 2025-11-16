@@ -1,5 +1,5 @@
 // DTOS
-import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/CommentDTO";
+import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/commentDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
@@ -9,7 +9,7 @@ import Filter from "@interfaces/Filter";
 import IService from "@interfaces/IService";
 
 // Models
-import IComment from "@models/Comments";
+import IComment from "@models/comments";
 
 // Repositories
 import { postRepository, commentRepository } from "@repositories/index";
