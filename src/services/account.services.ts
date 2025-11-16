@@ -181,7 +181,7 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-    async getFeed(accountId: string, filter: Filter): Promise<PetDTO | null> {
+    async getFeed(accountId: string): Promise<PetDTO | null> {
         try {
             const interactions = await accountPetInteractionRepository.getByAccount(accountId);
             const seenPetIds = interactions.map(i => i.pet instanceof Types.ObjectId && i.pet?._id ? i.pet._id : new Types.ObjectId(i.pet as string));

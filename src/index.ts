@@ -53,26 +53,9 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(publicPath, 'view/index.html'));
 });
 
-const routerViewer = (req: Request, res: Response, next: NextFunction) => {
-    console.log({
-        method: req.method,
-        route: req.originalUrl,
-    });
-
-    next();
-}
-
 app.use('/api', limiter, routes);
 
-
-
 app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log({
-        success: false,
-        message: "Rota não encontrada",
-        method: req.method,
-        route: req.originalUrl,
-    });
     res.status(404).json({
         success: false,
         message: "Rota não encontrada",

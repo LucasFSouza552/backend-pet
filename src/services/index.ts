@@ -1,11 +1,11 @@
-import AccountService from "./Account.services";
-import AccountPetInteractionService from "./AccountPetInteraction.services";
-import AchievementService from "./Achievement.services";
-import AuthService from "./Auth.services";
-import CommentService from "./Comment.services";
-import HistoryService from "./History.services";
-import PetService from "./Pet.services";
-import PostService from "./Post.services";
+import AccountService from "./account.services";
+import AccountPetInteractionService from "./accountPetInteraction.services";
+import AchievementService from "./achievement.services";
+import AuthService from "./auth.services";
+import CommentService from "./comment.services";
+import HistoryService from "./history.services";
+import PetService from "./pet.services";
+import PostService from "./post.services";
 
 export const accountService = new AccountService();
 export const accountPetInteractionService = new AccountPetInteractionService();
