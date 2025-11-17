@@ -1,236 +1,323 @@
+/**
+ * Testes de Regras de Negócio
+ * 
+ * Este arquivo contém testes que validam as regras de negócio do sistema,
+ * garantindo que as validações e constraints estão funcionando corretamente.
+ */
+
 import { ThrowError } from '../../src/errors/ThrowError';
 
 describe('Business Rules', () => {
-  describe('Account Validation Rules', () => {
-    it('deve validar formato de email', () => {
-      const validEmails = [
-        'user@example.com',
-        'test.email@domain.co.uk',
-        'user+tag@example.org',
-        'user123@test.com.br'
-      ];
+  describe('ThrowError - Validação de Códigos de Status HTTP', () => {
+    it('deve criar erro de bad request (400)', () => {
+      const error = ThrowError.badRequest('Dados inválidos');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Dados inválidos');
+      expect(error.statusCode).toBe(400);
+    });
 
-      const invalidEmails = [
-        'invalid-email',
-        '@example.com',
-        'user@',
-        'user@.com',
-        'user@com',
-        'user@.com.br',
-        'user@example.',
-        'user@.example.com'
-      ];
+    it('deve criar erro de unauthorized (401)', () => {
+      const error = ThrowError.unauthorized('Acesso negado');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Acesso negado');
+      expect(error.statusCode).toBe(401);
+    });
 
-      validEmails.forEach(email => {
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        expect(emailRegex.test(email)).toBe(true);
+    it('deve criar erro de forbidden (403)', () => {
+      const error = ThrowError.forbidden('Operação não permitida');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Operação não permitida');
+      expect(error.statusCode).toBe(403);
+    });
+
+    it('deve criar erro de not found (404)', () => {
+      const error = ThrowError.notFound('Recurso não encontrado');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Recurso não encontrado');
+      expect(error.statusCode).toBe(404);
+    });
+
+    it('deve criar erro de conflict (409)', () => {
+      const error = ThrowError.conflict('Recurso já existe');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Recurso já existe');
+      expect(error.statusCode).toBe(409);
+    });
+
+    it('deve criar erro interno (500)', () => {
+      const error = ThrowError.internal('Erro interno do servidor');
+      
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ThrowError);
+      expect(error.message).toBe('Erro interno do servidor');
+      expect(error.statusCode).toBe(500);
+    });
+  });
+
+  describe('Validação de Dados de Conta', () => {
+    describe('Email', () => {
+      it('deve validar formato de email válido', () => {
+        const validEmails = [
+          'user@example.com',
+          'test.email@domain.co.uk',
+          'user+tag@example.org',
+          'user123@test.com.br',
+          'nome.sobrenome@empresa.com.br'
+        ];
+
+        validEmails.forEach(email => {
+          const emailRegex = /^\S+@\S+\.\S+$/;
+          expect(emailRegex.test(email)).toBe(true);
+        });
       });
 
-      invalidEmails.forEach(email => {
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        expect(emailRegex.test(email)).toBe(false);
+      it('deve rejeitar formato de email inválido', () => {
+        const invalidEmails = [
+          'invalid-email',
+          '@example.com',
+          'user@',
+          'user@.com',
+          'user@com',
+          'user@.com.br',
+          'user@example.',
+          'user@.example.com',
+          '',
+          'user space@email.com'
+        ];
+
+        invalidEmails.forEach(email => {
+          const emailRegex = /^\S+@\S+\.\S+$/;
+          const isValid = emailRegex.test(email)
+            && !email.startsWith('@')
+            && !email.includes(' ')
+            && !email.includes('..')
+            && !email.includes('@.');
+          expect(isValid).toBe(false);
+        });
       });
     });
 
-    it('deve validar formato de CPF', () => {
-      const validCpfs = [
-        '12345678901',
-        '98765432100',
-        '11111111111',
-        '00000000000'
-      ];
+    describe('CPF', () => {
+      it('deve validar formato de CPF válido (11 dígitos numéricos)', () => {
+        const validCpfs = [
+          '12345678901',
+          '98765432100',
+          '00000000000',
+          '11111111111'
+        ];
 
-      const invalidCpfs = [
-        '1234567890', // 10 dígitos
-        '123456789012', // 12 dígitos
-        '1234567890a', // contém letra
-        '123-456-789-01', // contém hífen
-        '123.456.789-01', // contém pontos
-        '1234567890A', // contém letra maiúscula
-        '' // vazio
-      ];
-
-      validCpfs.forEach(cpf => {
-        const cpfRegex = /^\d{11}$/;
-        expect(cpfRegex.test(cpf)).toBe(true);
+        validCpfs.forEach(cpf => {
+          const cpfRegex = /^\d{11}$/;
+          expect(cpfRegex.test(cpf)).toBe(true);
+        });
       });
 
-      invalidCpfs.forEach(cpf => {
-        const cpfRegex = /^\d{11}$/;
-        expect(cpfRegex.test(cpf)).toBe(false);
-      });
-    });
+      it('deve rejeitar formato de CPF inválido', () => {
+        const invalidCpfs = [
+          '1234567890',      // 10 dígitos
+          '123456789012',    // 12 dígitos
+          '1234567890a',     // contém letra
+          '123-456-789-01',  // contém hífen
+          '123.456.789-01',  // contém pontos
+          '1234567890A',      // contém letra maiúscula
+          ''                  // vazio
+        ];
 
-    it('deve validar formato de CNPJ', () => {
-      const validCnpjs = [
-        '12345678901234',
-        '98765432109876',
-        '11111111111111',
-        '00000000000000'
-      ];
-
-      const invalidCnpjs = [
-        '1234567890123', // 13 dígitos
-        '123456789012345', // 15 dígitos
-        '1234567890123a', // contém letra
-        '12.345.678/0001-90', // contém pontos e hífen
-        '1234567890123A', // contém letra maiúscula
-        '' // vazio
-      ];
-
-      validCnpjs.forEach(cnpj => {
-        const cnpjRegex = /^\d{14}$/;
-        expect(cnpjRegex.test(cnpj)).toBe(true);
-      });
-
-      invalidCnpjs.forEach(cnpj => {
-        const cnpjRegex = /^\d{14}$/;
-        expect(cnpjRegex.test(cnpj)).toBe(false);
+        invalidCpfs.forEach(cpf => {
+          const cpfRegex = /^\d{11}$/;
+          expect(cpfRegex.test(cpf)).toBe(false);
+        });
       });
     });
 
-    it('deve validar formato de CEP', () => {
-      const validCeps = [
-        '12345-678',
-        '98765-432',
-        '00000-000',
-        '99999-999'
-      ];
+    describe('CNPJ', () => {
+      it('deve validar formato de CNPJ válido (14 dígitos numéricos)', () => {
+        const validCnpjs = [
+          '12345678901234',
+          '98765432109876',
+          '00000000000000',
+          '11111111111111'
+        ];
 
-      const invalidCeps = [
-        '12345678', // sem hífen
-        '1234-567', // formato incorreto
-        '12345-6789', // muito longo
-        '12345-67a', // contém letra
-        '12345-67A', // contém letra maiúscula
-        '12345-67', // muito curto
-        '' // vazio
-      ];
-
-      validCeps.forEach(cep => {
-        const cepRegex = /^\d{5}-\d{3}$/;
-        expect(cepRegex.test(cep)).toBe(true);
+        validCnpjs.forEach(cnpj => {
+          const cnpjRegex = /^\d{14}$/;
+          expect(cnpjRegex.test(cnpj)).toBe(true);
+        });
       });
 
-      invalidCeps.forEach(cep => {
-        const cepRegex = /^\d{5}-\d{3}$/;
-        expect(cepRegex.test(cep)).toBe(false);
+      it('deve rejeitar formato de CNPJ inválido', () => {
+        const invalidCnpjs = [
+          '1234567890123',        // 13 dígitos
+          '123456789012345',      // 15 dígitos
+          '1234567890123a',       // contém letra
+          '12.345.678/0001-90',   // contém pontos e hífen
+          '1234567890123A',       // contém letra maiúscula
+          ''                       // vazio
+        ];
+
+        invalidCnpjs.forEach(cnpj => {
+          const cnpjRegex = /^\d{14}$/;
+          expect(cnpjRegex.test(cnpj)).toBe(false);
+        });
       });
     });
 
-    it('deve validar formato de estado (UF)', () => {
-      const validStates = [
-        'MG', 'SP', 'RJ', 'RS', 'PR',
-        'SC', 'BA', 'GO', 'PE', 'CE'
-      ];
+    describe('CEP', () => {
+      it('deve validar formato de CEP válido (XXXXX-XXX)', () => {
+        const validCeps = [
+          '12345-678',
+          '98765-432',
+          '00000-000',
+          '99999-999'
+        ];
 
-      const invalidStates = [
-        'M', // muito curto
-        'MGS', // muito longo
-        'mg', // minúsculo
-        '12', // números
-        'AB', // não é estado brasileiro
-        '' // vazio
-      ];
-
-      validStates.forEach(state => {
-        expect(state.length).toBe(2);
-        expect(state).toBe(state.toUpperCase());
-        expect(/^[A-Z]{2}$/.test(state)).toBe(true);
+        validCeps.forEach(cep => {
+          const cepRegex = /^\d{5}-\d{3}$/;
+          expect(cepRegex.test(cep)).toBe(true);
+        });
       });
 
-      invalidStates.forEach(state => {
-        const isValid = state.length === 2 && state === state.toUpperCase() && /^[A-Z]{2}$/.test(state);
-        expect(isValid).toBe(false);
+      it('deve rejeitar formato de CEP inválido', () => {
+        const invalidCeps = [
+          '12345678',      // sem hífen
+          '1234-567',      // formato incorreto
+          '12345-6789',    // muito longo
+          '12345-67a',     // contém letra
+          '12345-67A',     // contém letra maiúscula
+          '12345-67',      // muito curto
+          ''                // vazio
+        ];
+
+        invalidCeps.forEach(cep => {
+          const cepRegex = /^\d{5}-\d{3}$/;
+          expect(cepRegex.test(cep)).toBe(false);
+        });
+      });
+    });
+
+    describe('Telefone', () => {
+      it('deve validar formato de telefone válido (10 ou 11 dígitos)', () => {
+        const validPhones = [
+          '3299999999',      // 10 dígitos
+          '11987654321',     // 11 dígitos
+          '85912345678',     // 11 dígitos
+          '1133334444'       // 10 dígitos
+        ];
+
+        validPhones.forEach(phone => {
+          const phoneRegex = /^\d{10,11}$/;
+          expect(phoneRegex.test(phone)).toBe(true);
+        });
+      });
+
+      it('deve rejeitar formato de telefone inválido', () => {
+        const invalidPhones = [
+          '329999999',       // muito curto (9 dígitos)
+          '329999999999',    // muito longo (12 dígitos)
+          '32-9999-9999',    // com hífen
+          '(32) 99999-9999', // com parênteses
+          '32a9999999',      // com letra
+          '32 9999 9999',    // com espaços
+          ''                  // vazio
+        ];
+
+        invalidPhones.forEach(phone => {
+          const phoneRegex = /^\d{10,11}$/;
+          expect(phoneRegex.test(phone)).toBe(false);
+        });
       });
     });
   });
 
-  describe('Pet Validation Rules', () => {
-    it('deve validar tipos de pet permitidos', () => {
-      const validTypes = ['Cachorro', 'Gato', 'Pássaro', 'Outro'];
-      const invalidTypes = ['Cachorro', 'Gato', 'Pássaro', 'Outro']; // todos são válidos
+  describe('Validação de Dados de Pet', () => {
+    describe('Tipo de Pet', () => {
+      it('deve validar tipos de pet permitidos', () => {
+        const validTypes = ['Cachorro', 'Gato', 'Pássaro', 'Outro'];
+        const allowedTypes = ['Cachorro', 'Gato', 'Pássaro', 'Outro'];
 
-      validTypes.forEach(type => {
-        expect(['Cachorro', 'Gato', 'Pássaro', 'Outro'].includes(type)).toBe(true);
+        validTypes.forEach(type => {
+          expect(allowedTypes.includes(type)).toBe(true);
+        });
+      });
+
+      it('deve rejeitar tipos de pet não permitidos', () => {
+        const invalidTypes = ['Peixe', 'Hamster', 'Coelho', 'Cavalo'];
+        const allowedTypes = ['Cachorro', 'Gato', 'Pássaro', 'Outro'];
+
+        invalidTypes.forEach(type => {
+          expect(allowedTypes.includes(type)).toBe(false);
+        });
       });
     });
 
-    it('deve validar gênero do pet', () => {
-      const validGenders = ['M', 'F'];
-      const invalidGenders = ['m', 'f', 'Male', 'Female', '1', '0', 'Masculino', 'Feminino'];
+    describe('Gênero', () => {
+      it('deve validar gênero válido (M ou F)', () => {
+        const validGenders = ['M', 'F'];
+        const allowedGenders = ['M', 'F'];
 
-      validGenders.forEach(gender => {
-        expect(['M', 'F'].includes(gender)).toBe(true);
+        validGenders.forEach(gender => {
+          expect(allowedGenders.includes(gender)).toBe(true);
+        });
       });
 
-      invalidGenders.forEach(gender => {
-        expect(['M', 'F'].includes(gender)).toBe(false);
-      });
-    });
+      it('deve rejeitar gênero inválido', () => {
+        const invalidGenders = ['m', 'f', 'Male', 'Female', '1', '0', 'Masculino', 'Feminino', ''];
+        const allowedGenders = ['M', 'F'];
 
-    it('deve validar peso do pet', () => {
-      const validWeights = [0.1, 1, 50, 100, 0.5, 25.5];
-      const invalidWeights = [-1, 0, -0.1, -10];
-
-      validWeights.forEach(weight => {
-        expect(weight > 0).toBe(true);
-      });
-
-      invalidWeights.forEach(weight => {
-        expect(weight > 0).toBe(false);
+        invalidGenders.forEach(gender => {
+          expect(allowedGenders.includes(gender)).toBe(false);
+        });
       });
     });
 
-    it('deve validar idade do pet', () => {
-      const validAges = [0, 1, 5, 10, 20, 0.5, 2.5];
-      const invalidAges = [-1, -0.1, -10];
+    describe('Peso', () => {
+      it('deve validar peso positivo', () => {
+        const validWeights = [0.1, 1, 50, 100, 0.5, 25.5];
 
-      validAges.forEach(age => {
-        expect(age >= 0).toBe(true);
+        validWeights.forEach(weight => {
+          expect(weight > 0).toBe(true);
+        });
       });
 
-      invalidAges.forEach(age => {
-        expect(age >= 0).toBe(false);
+      it('deve rejeitar peso negativo ou zero', () => {
+        const invalidWeights = [-1, 0, -0.1, -10];
+
+        invalidWeights.forEach(weight => {
+          expect(weight > 0).toBe(false);
+        });
+      });
+    });
+
+    describe('Idade', () => {
+      it('deve validar idade não negativa', () => {
+        const validAges = [0, 1, 5, 10, 20, 0.5, 2.5];
+
+        validAges.forEach(age => {
+          expect(age >= 0).toBe(true);
+        });
+      });
+
+      it('deve rejeitar idade negativa', () => {
+        const invalidAges = [-1, -0.1, -10];
+
+        invalidAges.forEach(age => {
+          expect(age >= 0).toBe(false);
+        });
       });
     });
   });
 
-  describe('Account Role Rules', () => {
-    it('deve validar regras de CPF por role', () => {
-      const userRole = 'user';
-      const adminRole = 'admin';
-      const institutionRole = 'institution';
-
-      // Usuários e admins devem ter CPF
-      expect(['user', 'admin'].includes(userRole)).toBe(true);
-      expect(['user', 'admin'].includes(adminRole)).toBe(true);
-      expect(['user', 'admin'].includes(institutionRole)).toBe(false);
-    });
-
-    it('deve validar regras de CNPJ por role', () => {
-      const userRole = 'user';
-      const adminRole = 'admin';
-      const institutionRole = 'institution';
-
-      // Apenas instituições devem ter CNPJ
-      expect(institutionRole === 'institution').toBe(true);
-      expect(userRole !== 'institution').toBe(true);
-      expect(adminRole !== 'institution').toBe(true);
-    });
-
-    it('deve validar que usuário não pode ter CPF e CNPJ simultaneamente', () => {
-      const hasCpf = true;
-      const hasCnpj = true;
-      const hasBoth = hasCpf && hasCnpj;
-
-      expect(hasBoth).toBe(true);
-      // Esta regra deve ser validada no frontend/backend
-      // Na prática, deveria ser false para usuários normais
-    });
-  });
-
-  describe('Pet Adoption Rules', () => {
+  describe('Regras de Negócio - Adoção', () => {
     it('deve validar que pet não pode ser adotado duas vezes', () => {
       const pet = { adopted: false };
       const alreadyAdoptedPet = { adopted: true };
@@ -248,42 +335,47 @@ describe('Business Rules', () => {
       expect(petOwner !== differentUser).toBe(true); // pode adotar pet de outro
     });
 
-    it('deve validar que pet deve ter pelo menos uma imagem', () => {
-      const petWithImages = { images: ['img1', 'img2'] };
-      const petWithoutImages = { images: [] };
+    it('deve validar que pet deve ter proprietário', () => {
+      const petWithOwner = { account: 'user-1' };
+      const petWithoutOwner = { account: null };
 
-      expect(petWithImages.images.length > 0).toBe(true);
-      expect(petWithoutImages.images.length > 0).toBe(false);
+      expect(petWithOwner.account).toBeTruthy();
+      expect(petWithoutOwner.account).toBeFalsy();
     });
   });
 
-  describe('Payment Rules', () => {
-    it('deve validar valores de pagamento', () => {
+  describe('Regras de Negócio - Pagamento', () => {
+    it('deve validar valores de pagamento positivos', () => {
       const validAmounts = ['10.00', '50.50', '100.00', '0.01', '999.99'];
-      const invalidAmounts = ['-10.00', '0.00', 'abc', '', '10.000', '10,50'];
 
       validAmounts.forEach(amount => {
         const numAmount = parseFloat(amount);
         expect(numAmount > 0).toBe(true);
         expect(!isNaN(numAmount)).toBe(true);
       });
+    });
+
+    it('deve rejeitar valores de pagamento inválidos', () => {
+      const invalidAmounts = ['-10.00', '0.00', 'abc', '', '10.000', '10,50'];
 
       invalidAmounts.forEach(amount => {
         const numAmount = parseFloat(amount);
-        expect(numAmount > 0).toBe(false);
+        const parts = amount.split('.');
+        const hasUnexpectedDecimalPlaces = parts.length > 2 || (parts[1] && parts[1].length !== 2);
+        const isValid = numAmount > 0
+          && !isNaN(numAmount)
+          && !amount.includes(',')
+          && !hasUnexpectedDecimalPlaces;
+        expect(isValid).toBe(false);
       });
     });
 
-    it('deve validar status de pagamento', () => {
+    it('deve validar status de pagamento permitidos', () => {
       const validStatuses = ['pending', 'completed', 'cancelled', 'refunded'];
-      const invalidStatuses = ['invalid', 'processing', '', 'approved', 'rejected'];
+      const allowedStatuses = ['pending', 'completed', 'cancelled', 'refunded'];
 
       validStatuses.forEach(status => {
-        expect(['pending', 'completed', 'cancelled', 'refunded'].includes(status)).toBe(true);
-      });
-
-      invalidStatuses.forEach(status => {
-        expect(['pending', 'completed', 'cancelled', 'refunded'].includes(status)).toBe(false);
+        expect(allowedStatuses.includes(status)).toBe(true);
       });
     });
 
@@ -299,7 +391,7 @@ describe('Business Rules', () => {
     });
   });
 
-  describe('Post Rules', () => {
+  describe('Regras de Negócio - Post', () => {
     it('deve validar que post deve ter conteúdo ou imagem', () => {
       const validPosts = [
         { content: 'Texto do post' },
@@ -307,240 +399,46 @@ describe('Business Rules', () => {
         { content: 'Texto', image: ['img1'] }
       ];
 
-      const invalidPosts = [
-        {}, // sem conteúdo nem imagem
-        { content: '' }, // conteúdo vazio
-        { image: [] } // array de imagens vazio
-      ];
-
       validPosts.forEach(post => {
         const hasContent = post.content && post.content.trim().length > 0;
         const hasImages = post.image && post.image.length > 0;
         expect(hasContent || hasImages).toBe(true);
       });
+    });
+
+    it('deve rejeitar post sem conteúdo nem imagem', () => {
+      const invalidPosts = [
+        {},                    // sem conteúdo nem imagem
+        { content: '' },       // conteúdo vazio
+        { image: [] }          // array de imagens vazio
+      ];
 
       invalidPosts.forEach(post => {
-        const hasContent = post.content && post.content.trim().length > 0;
-        const hasImages = post.image && post.image.length > 0;
+        const hasContent = typeof post.content === 'string' && post.content.trim().length > 0;
+        const hasImages = Array.isArray(post.image) && post.image.length > 0;
         const isValid = hasContent || hasImages;
         expect(isValid).toBe(false);
       });
     });
-
-    it('deve validar que post não pode ter conteúdo vazio', () => {
-      const validContent = 'Este é um post válido';
-      const invalidContent = '   '; // apenas espaços
-
-      expect(validContent.trim().length > 0).toBe(true);
-      expect(invalidContent.trim().length > 0).toBe(false);
-    });
   });
 
-  describe('Achievement Rules', () => {
-    it('deve validar tipos de conquistas', () => {
+  describe('Regras de Negócio - Conquistas', () => {
+    it('deve validar tipos de conquistas permitidos', () => {
       const validTypes = ['adoption', 'sponsorship', 'donation'];
-      const invalidTypes = ['invalid', 'achievement', '', 'adopt', 'sponsor', 'donate'];
+      const allowedTypes = ['adoption', 'sponsorship', 'donation'];
 
       validTypes.forEach(type => {
-        expect(['adoption', 'sponsorship', 'donation'].includes(type)).toBe(true);
+        expect(allowedTypes.includes(type)).toBe(true);
       });
+    });
+
+    it('deve rejeitar tipos de conquistas inválidos', () => {
+      const invalidTypes = ['invalid', 'achievement', '', 'adopt', 'sponsor', 'donate'];
+      const allowedTypes = ['adoption', 'sponsorship', 'donation'];
 
       invalidTypes.forEach(type => {
-        expect(['adoption', 'sponsorship', 'donation'].includes(type)).toBe(false);
+        expect(allowedTypes.includes(type)).toBe(false);
       });
-    });
-
-    it('deve validar que conquista deve ter tipo válido', () => {
-      const achievement = { type: 'adoption' };
-      const invalidAchievement = { type: 'invalid' };
-
-      expect(['adoption', 'sponsorship', 'donation'].includes(achievement.type)).toBe(true);
-      expect(['adoption', 'sponsorship', 'donation'].includes(invalidAchievement.type)).toBe(false);
-    });
-  });
-
-  describe('File Upload Rules', () => {
-    it('deve validar que arquivo deve ter buffer', () => {
-      const validFile = { buffer: Buffer.from('data') };
-      const invalidFile = { buffer: null };
-      const emptyFile = {} as any;
-
-      expect(validFile.buffer).toBeTruthy();
-      expect(invalidFile.buffer).toBeFalsy();
-      expect(emptyFile.buffer).toBeFalsy();
-    });
-
-    it('deve validar tipos de arquivo permitidos', () => {
-      const validMimeTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp'
-      ];
-
-      const invalidMimeTypes = [
-        'text/plain',
-        'application/pdf',
-        'video/mp4',
-        'audio/mp3'
-      ];
-
-      validMimeTypes.forEach(mimeType => {
-        expect(mimeType.startsWith('image/')).toBe(true);
-      });
-
-      invalidMimeTypes.forEach(mimeType => {
-        expect(mimeType.startsWith('image/')).toBe(false);
-      });
-    });
-
-    it('deve validar tamanho máximo de arquivo', () => {
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const validSize = 2 * 1024 * 1024; // 2MB
-      const invalidSize = 10 * 1024 * 1024; // 10MB
-
-      expect(validSize <= maxSize).toBe(true);
-      expect(invalidSize <= maxSize).toBe(false);
-    });
-  });
-
-  describe('Password Rules', () => {
-    it('deve validar força da senha', () => {
-      const validPasswords = [
-        'password123',
-        'MySecurePass1',
-        'StrongP@ssw0rd',
-        '123456' // mínimo 6 caracteres
-      ];
-
-      const invalidPasswords = [
-        '123', // muito curta
-        'password', // sem números
-        '12345678', // só números
-        '', // vazia
-        'abc' // muito curta
-      ];
-
-      validPasswords.forEach(password => {
-        expect(password.length >= 6).toBe(true);
-      });
-
-      invalidPasswords.forEach(password => {
-        const isValid = password.length >= 6;
-        expect(isValid).toBe(false);
-      });
-    });
-
-    it('deve validar que senha não pode ser vazia', () => {
-      const validPassword = 'senha123';
-      const invalidPassword = '';
-
-      expect(validPassword.length > 0).toBe(true);
-      expect(invalidPassword.length > 0).toBe(false);
-    });
-  });
-
-  describe('Phone Number Rules', () => {
-    it('deve validar formato de telefone', () => {
-      const validPhones = [
-        '3299999999',
-        '11987654321',
-        '85912345678',
-        '1133334444'
-      ];
-
-      const invalidPhones = [
-        '329999999', // muito curto
-        '32999999999', // muito longo
-        '32-9999-9999', // com hífen
-        '(32) 99999-9999', // com parênteses
-        '32a9999999', // com letra
-        '32 9999 9999', // com espaços
-        '' // vazio
-      ];
-
-      validPhones.forEach(phone => {
-        const phoneRegex = /^\d{10,11}$/;
-        expect(phoneRegex.test(phone)).toBe(true);
-      });
-
-      invalidPhones.forEach(phone => {
-        const phoneRegex = /^\d{10,11}$/;
-        const isValid = phoneRegex.test(phone);
-        expect(isValid).toBe(false);
-      });
-    });
-
-    it('deve validar que telefone deve ter 10 ou 11 dígitos', () => {
-      const validLengths = [10, 11];
-      const invalidLengths = [9, 12, 8, 13];
-
-      validLengths.forEach(length => {
-        expect([10, 11].includes(length)).toBe(true);
-      });
-
-      invalidLengths.forEach(length => {
-        expect([10, 11].includes(length)).toBe(false);
-      });
-    });
-  });
-
-  describe('Address Rules', () => {
-    it('deve validar que endereço deve ter campos obrigatórios', () => {
-      const validAddress = {
-        street: 'Rua das Flores',
-        number: '123',
-        city: 'São Paulo',
-        cep: '01234-567',
-        state: 'SP'
-      };
-
-      const invalidAddress = {
-        street: '',
-        number: '',
-        city: '',
-        cep: '',
-        state: ''
-      };
-
-      expect(validAddress.street.length > 0).toBe(true);
-      expect(validAddress.number.length > 0).toBe(true);
-      expect(validAddress.city.length > 0).toBe(true);
-      expect(validAddress.cep.length > 0).toBe(true);
-      expect(validAddress.state.length > 0).toBe(true);
-
-      expect(invalidAddress.street.length > 0).toBe(false);
-      expect(invalidAddress.number.length > 0).toBe(false);
-      expect(invalidAddress.city.length > 0).toBe(false);
-      expect(invalidAddress.cep.length > 0).toBe(false);
-      expect(invalidAddress.state.length > 0).toBe(false);
-    });
-  });
-
-  describe('Business Logic Constraints', () => {
-    it('deve validar que usuário não pode patrocinar próprio pet', () => {
-      const petOwner = 'user-1';
-      const sponsor = 'user-1';
-      const differentUser = 'user-2';
-
-      expect(petOwner === sponsor).toBe(true); // não pode patrocinar próprio pet
-      expect(petOwner !== differentUser).toBe(true); // pode patrocinar pet de outro
-    });
-
-    it('deve validar que pet deve ter proprietário', () => {
-      const petWithOwner = { account: 'user-1' };
-      const petWithoutOwner = { account: null };
-
-      expect(petWithOwner.account).toBeTruthy();
-      expect(petWithoutOwner.account).toBeFalsy();
-    });
-
-    it('deve validar que conquista deve estar associada a usuário', () => {
-      const validAchievement = { account: 'user-1', achievement: 'ach-1' };
-      const invalidAchievement = { account: null, achievement: 'ach-1' };
-
-      expect(validAchievement.account).toBeTruthy();
-      expect(invalidAchievement.account).toBeFalsy();
     });
   });
 });

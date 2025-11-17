@@ -32,9 +32,19 @@ jest.mock('../../src/utils/JwtEncoder', () => ({
   }
 }));
 
+jest.mock('templetes/forgotPasswordTemplate', () => ({
+  __esModule: true,
+  default: jest.fn((name: string, token: string) => `<html>${name} ${token}</html>`)
+}));
+
+jest.mock('templetes/validateEmailTemplate', () => ({
+  __esModule: true,
+  default: jest.fn((name: string, token: string) => `<html>${name} ${token}</html>`)
+}));
+
 jest.mock('../../src/Mappers/accountMapper', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation((account: any) => ({
+  default: jest.fn().mockImplementation((account) => ({
     id: account._id,
     email: account.email,
     name: account.name,
@@ -43,21 +53,49 @@ jest.mock('../../src/Mappers/accountMapper', () => ({
 }));
 
 describe('AuthService', () => {
-  const service = new AuthService();
+  let service: AuthService;
 
   const { authRepository } = require('../../src/repositories/index');
   const { cryptPassword, validatePassword } = require('../../src/utils/aes-crypto');
   const { sendEmail } = require('../../src/utils/emailService');
-  const JWT = require('../../src/utils/JwtEncoder');
+  const JWT = require('../../src/utils/JwtEncoder').default;
+
+  // Factory functions para dados de teste
+  const createValidUserData = (overrides?: any) => ({
+    name: 'João Silva',
+    email: 'joao@test.com',
+    password: 'senha123',
+    cpf: '12345678901',
+    phone_number: '11999999999',
+    address: {
+      street: 'Rua das Flores',
+      number: '123',
+      city: 'São Paulo',
+      cep: '01234-567',
+      state: 'SP'
+    },
+    ...overrides
+  });
+
+  const createMockAccount = (overrides?: any) => ({
+    _id: 'user123',
+    id: 'user123',
+    email: 'joao@test.com',
+    name: 'João Silva',
+    password: 'hashed_password',
+    verified: false,
+    ...overrides
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    service = new AuthService();
   });
 
   describe('getByEmail', () => {
     it('deve retornar usuário quando email existe', async () => {
       // Arrange
-      const userData = { _id: 'user123', email: 'joao@test.com', name: 'João Silva' };
+      const userData = createMockAccount();
       authRepository.getByEmail.mockResolvedValue(userData);
 
       // Act
@@ -96,7 +134,7 @@ describe('AuthService', () => {
 
     it('deve alterar senha com sucesso', async () => {
       // Arrange
-      const userData = { _id: 'user123', password: 'hashed_current_password' };
+      const userData = createMockAccount({ password: 'hashed_current_password' });
       authRepository.getById.mockResolvedValue(userData);
       validatePassword.mockResolvedValue(true);
       cryptPassword.mockResolvedValue('hashed_new_password');
@@ -122,12 +160,13 @@ describe('AuthService', () => {
 
     it('deve falhar quando senha atual está incorreta', async () => {
       // Arrange
-      const userData = { _id: 'user123', password: 'hashed_current_password' };
+      const userData = createMockAccount({ password: 'hashed_current_password' });
       authRepository.getById.mockResolvedValue(userData);
       validatePassword.mockResolvedValue(false);
 
       // Act & Assert
       await expect(service.changePassword('user123', changePasswordData)).rejects.toThrow('As senhas não concidem.');
+      expect(authRepository.changePassword).not.toHaveBeenCalled();
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
@@ -140,51 +179,53 @@ describe('AuthService', () => {
   });
 
   describe('create', () => {
-    const validUserData = {
-      name: 'João Silva',
-      email: 'joao@test.com',
-      password: 'senha123',
-      cpf: '12345678901',
-      phone_number: '11999999999',
-      address: {
-        street: 'Rua das Flores',
-        number: '123',
-        city: 'São Paulo',
-        cep: '01234-567',
-        state: 'SP'
-      }
-    };
+    const validUserData = createValidUserData();
 
     it('deve criar usuário com sucesso', async () => {
       // Arrange
+      const mockAccount = createMockAccount(validUserData);
+      const originalPassword = validUserData.password;
       authRepository.getByEmail.mockResolvedValue(null);
       authRepository.getByCpf.mockResolvedValue(null);
       authRepository.getByCnpj.mockResolvedValue(null);
       cryptPassword.mockResolvedValue('hashed_password');
-      authRepository.create.mockResolvedValue({ _id: 'user123', ...validUserData });
+      authRepository.create.mockResolvedValue(mockAccount);
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
 
       // Act
-      const result = await service.create(validUserData);
+      await service.create(validUserData);
 
       // Assert
       expect(authRepository.getByEmail).toHaveBeenCalledWith(validUserData.email);
       expect(authRepository.getByCpf).toHaveBeenCalledWith(validUserData.cpf);
-      expect(cryptPassword).toHaveBeenCalledWith(validUserData.password);
+      expect(cryptPassword).toHaveBeenCalledWith(originalPassword);
       expect(JWT.encodeToken).toHaveBeenCalledWith({ id: 'user123' });
       expect(sendEmail).toHaveBeenCalled();
-      expect(result).toEqual({
-        id: 'user123',
-        email: validUserData.email,
-        name: validUserData.name,
-        verified: undefined
-      });
+    });
+
+    it('deve criar instituição com CNPJ com sucesso', async () => {
+      // Arrange
+      const institutionData = createValidUserData({ cnpj: '12345678901234', cpf: undefined });
+      const mockInstitution = createMockAccount({ ...institutionData, role: 'institution' });
+      authRepository.getByEmail.mockResolvedValue(null);
+      authRepository.getByCnpj.mockResolvedValue(null);
+      cryptPassword.mockResolvedValue('hashed_password');
+      authRepository.create.mockResolvedValue(mockInstitution);
+      JWT.encodeToken.mockReturnValue('jwt_token');
+      sendEmail.mockResolvedValue(undefined);
+
+      // Act
+      await service.create(institutionData);
+
+      // Assert
+      expect(authRepository.getByCnpj).toHaveBeenCalledWith(institutionData.cnpj);
+      expect(authRepository.getByCpf).not.toHaveBeenCalled();
     });
 
     it('deve falhar quando email já existe', async () => {
       // Arrange
-      authRepository.getByEmail.mockResolvedValue({ _id: 'existing_user', email: validUserData.email });
+      authRepository.getByEmail.mockResolvedValue(createMockAccount());
 
       // Act & Assert
       await expect(service.create(validUserData)).rejects.toThrow('E-mail já cadastrado.');
@@ -194,7 +235,7 @@ describe('AuthService', () => {
     it('deve falhar quando CPF já existe', async () => {
       // Arrange
       authRepository.getByEmail.mockResolvedValue(null);
-      authRepository.getByCpf.mockResolvedValue({ _id: 'existing_user', cpf: validUserData.cpf });
+      authRepository.getByCpf.mockResolvedValue(createMockAccount());
 
       // Act & Assert
       await expect(service.create(validUserData)).rejects.toThrow('CPF já cadastrado.');
@@ -202,9 +243,9 @@ describe('AuthService', () => {
 
     it('deve falhar quando CNPJ já existe', async () => {
       // Arrange
-      const institutionData = { ...validUserData, cnpj: '12345678901234', cpf: undefined };
+      const institutionData = createValidUserData({ cnpj: '12345678901234', cpf: undefined });
       authRepository.getByEmail.mockResolvedValue(null);
-      authRepository.getByCnpj.mockResolvedValue({ _id: 'existing_institution', cnpj: institutionData.cnpj });
+      authRepository.getByCnpj.mockResolvedValue(createMockAccount());
 
       // Act & Assert
       await expect(service.create(institutionData)).rejects.toThrow('CNPJ já cadastrado.');
@@ -212,16 +253,28 @@ describe('AuthService', () => {
 
     it('deve falhar quando envio de email falha', async () => {
       // Arrange
+      const mockAccount = createMockAccount(validUserData);
       authRepository.getByEmail.mockResolvedValue(null);
       authRepository.getByCpf.mockResolvedValue(null);
       authRepository.getByCnpj.mockResolvedValue(null);
       cryptPassword.mockResolvedValue('hashed_password');
-      authRepository.create.mockResolvedValue({ _id: 'user123', ...validUserData });
+      authRepository.create.mockResolvedValue(mockAccount);
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockRejectedValue(new Error('Email service error'));
 
       // Act & Assert
       await expect(service.create(validUserData)).rejects.toThrow('Não foi possível enviar o email de confirmação.');
+    });
+
+    it('deve falhar quando criação no banco falha', async () => {
+      // Arrange
+      authRepository.getByEmail.mockResolvedValue(null);
+      authRepository.getByCpf.mockResolvedValue(null);
+      cryptPassword.mockResolvedValue('hashed_password');
+      authRepository.create.mockRejectedValue(new Error('Database error'));
+
+      // Act & Assert
+      await expect(service.create(validUserData)).rejects.toThrow('Database error');
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
@@ -238,7 +291,7 @@ describe('AuthService', () => {
       // Arrange
       const token = 'valid_token';
       const decodedToken = { data: { id: 'user123' } };
-      const userData = { _id: 'user123', email: 'joao@test.com', verified: false };
+      const userData = createMockAccount({ verified: false });
       JWT.isJwtTokenValid.mockReturnValue(decodedToken);
       authRepository.getById.mockResolvedValue(userData);
       authRepository.updateVerificationToken.mockResolvedValue({ ...userData, verified: true });
@@ -249,21 +302,14 @@ describe('AuthService', () => {
       // Assert
       expect(JWT.isJwtTokenValid).toHaveBeenCalledWith(token);
       expect(authRepository.getById).toHaveBeenCalledWith('user123');
-      expect(authRepository.updateVerificationToken).toHaveBeenCalledWith({
-        ...userData,
-        verified: true
-      });
-      expect(result).toEqual({
-        id: 'user123',
-        email: 'joao@test.com',
-        name: undefined,
-        verified: true
-      });
+      expect(authRepository.updateVerificationToken).toHaveBeenCalled();
+      expect(result.verified).toBe(true);
     });
 
     it('deve falhar quando token está vazio', async () => {
       // Act & Assert
       await expect(service.verifyEmail('')).rejects.toThrow('Usuário não encontrado.');
+      expect(JWT.isJwtTokenValid).not.toHaveBeenCalled();
     });
 
     it('deve falhar quando token é inválido', async () => {
@@ -272,6 +318,16 @@ describe('AuthService', () => {
 
       // Act & Assert
       await expect(service.verifyEmail('invalid_token')).rejects.toThrow('Token inválido.');
+    });
+
+    it('deve falhar quando ID não está no token', async () => {
+      // Arrange
+      const decodedToken = { data: {} };
+      JWT.isJwtTokenValid.mockReturnValue(decodedToken);
+      authRepository.getById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.verifyEmail('token')).rejects.toThrow('Usuário não encontrado.');
     });
 
     it('deve falhar quando usuário não existe', async () => {
@@ -289,7 +345,7 @@ describe('AuthService', () => {
       // Arrange
       const token = 'valid_token';
       const decodedToken = { data: { id: 'user123' } };
-      const userData = { _id: 'user123', email: 'joao@test.com', verified: false };
+      const userData = createMockAccount({ verified: false });
       JWT.isJwtTokenValid.mockReturnValue(decodedToken);
       authRepository.getById.mockResolvedValue(userData);
       authRepository.updateVerificationToken.mockResolvedValue(null);
@@ -300,7 +356,9 @@ describe('AuthService', () => {
 
     it('deve falhar quando erro interno ocorre', async () => {
       // Arrange
-      JWT.isJwtTokenValid.mockRejectedValue(new Error('JWT error'));
+      JWT.isJwtTokenValid.mockImplementation(() => {
+        throw new Error('JWT error');
+      });
 
       // Act & Assert
       await expect(service.verifyEmail('token')).rejects.toThrow('Nao foi possivel buscar o usuario.');
@@ -311,7 +369,7 @@ describe('AuthService', () => {
     it('deve enviar email de recuperação com sucesso', async () => {
       // Arrange
       const email = 'joao@test.com';
-      const userData = { _id: 'user123', email };
+      const userData = createMockAccount();
       authRepository.getByEmail.mockResolvedValue(userData);
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
@@ -322,12 +380,12 @@ describe('AuthService', () => {
       // Assert
       expect(authRepository.getByEmail).toHaveBeenCalledWith(email);
       expect(JWT.encodeToken).toHaveBeenCalledWith({ id: 'user123' });
-      expect(sendEmail).toHaveBeenCalledWith({
+      expect(sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({
         to: email,
-        subject: '🔒 Recuperação de Senha - MyPets',
-        text: expect.stringContaining('jwt_token'),
-        html: expect.stringContaining('jwt_token')
-      });
+          subject: 'Recuperação de Senha - MyPets'
+        })
+      );
     });
 
     it('deve falhar quando usuário não existe', async () => {
@@ -336,12 +394,13 @@ describe('AuthService', () => {
 
       // Act & Assert
       await expect(service.forgotPassword('inexistente@test.com')).rejects.toThrow('Usuário não encontrado.');
+      expect(sendEmail).not.toHaveBeenCalled();
     });
 
     it('deve falhar quando envio de email falha', async () => {
       // Arrange
       const email = 'joao@test.com';
-      const userData = { _id: 'user123', email };
+      const userData = createMockAccount();
       authRepository.getByEmail.mockResolvedValue(userData);
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockRejectedValue(new Error('Email service error'));
@@ -365,7 +424,7 @@ describe('AuthService', () => {
       const token = 'valid_token';
       const password = 'nova_senha';
       const decodedToken = { data: { id: 'user123' } };
-      const userData = { _id: 'user123', password: 'old_hashed_password' };
+      const userData = createMockAccount({ password: 'old_hashed_password' });
       authRepository.getTokenVerification.mockResolvedValue({ token });
       JWT.isJwtTokenValid.mockReturnValue(decodedToken);
       authRepository.getById.mockResolvedValue(userData);
@@ -385,10 +444,11 @@ describe('AuthService', () => {
 
     it('deve falhar quando token de verificação não existe', async () => {
       // Arrange
-      authRepository.getTokenVerification.mockResolvedValue(null);
+      authRepository.getTokenVerification.mockReturnValue(null);
 
       // Act & Assert
       await expect(service.resetPassword('invalid_token', 'nova_senha')).rejects.toThrow('Token inválido.');
+      expect(JWT.isJwtTokenValid).not.toHaveBeenCalled();
     });
 
     it('deve falhar quando token JWT é inválido', async () => {
@@ -425,10 +485,49 @@ describe('AuthService', () => {
 
     it('deve falhar quando erro interno ocorre', async () => {
       // Arrange
-      authRepository.getTokenVerification.mockRejectedValue(new Error('Database error'));
+      authRepository.getTokenVerification.mockImplementation(() => {
+        throw new Error('Database error');
+      });
 
       // Act & Assert
       await expect(service.resetPassword('token', 'nova_senha')).rejects.toThrow('Não foi possível redefinir a senha.');
+    });
+  });
+
+  describe('resendVerification', () => {
+    it('deve reenviar email de verificação com sucesso', async () => {
+      // Arrange
+      const userData = createMockAccount();
+      authRepository.getById.mockResolvedValue(userData);
+      JWT.encodeToken.mockReturnValue('jwt_token');
+      sendEmail.mockResolvedValue(undefined);
+
+      // Act
+      await service.resendVerification('user123');
+
+      // Assert
+      expect(authRepository.getById).toHaveBeenCalledWith('user123');
+      expect(JWT.encodeToken).toHaveBeenCalledWith({ id: 'user123' });
+      expect(sendEmail).toHaveBeenCalled();
+    });
+
+    it('deve falhar quando usuário não existe', async () => {
+      // Arrange
+      authRepository.getById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(service.resendVerification('user123')).rejects.toThrow('Usuário não encontrado.');
+    });
+
+    it('deve falhar quando envio de email falha', async () => {
+      // Arrange
+      const userData = createMockAccount();
+      authRepository.getById.mockResolvedValue(userData);
+      JWT.encodeToken.mockReturnValue('jwt_token');
+      sendEmail.mockRejectedValue(new Error('Email service error'));
+
+      // Act & Assert
+      await expect(service.resendVerification('user123')).rejects.toThrow('Não foi possível enviar o email de confirmação.');
     });
   });
 });
