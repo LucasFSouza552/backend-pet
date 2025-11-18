@@ -89,7 +89,6 @@ export default class PostService implements IService<CreatePostDTO, UpdatePostDT
                     account: { ...account, id: account._id, achievements: achievements }
                 };
             }) as unknown as PostWithAccount[];
-
             return postMapped;
         } catch (error) {
             if (error instanceof ThrowError) throw error;

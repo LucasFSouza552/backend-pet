@@ -41,7 +41,7 @@ router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), account
 
 // (ADMIN) Rota para deletar uma conta
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
-
+    
 // Rota para retornar os posts de uma conta
 router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
 
