@@ -30,6 +30,7 @@ export default class AuthController {
             if (!passwordEncoded) {
                 throw ThrowError.unauthorized("Email ou senha inválidos");
             }
+
             const token = JWT.encodeToken({ id: account._id });
 
             res.status(200).json({ token });

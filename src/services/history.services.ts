@@ -184,31 +184,31 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
         }
     }
 
-    async sponsor(petId: string, amount: string | number, accountId: string) {
+    async sponsor(institutionId: string, amount: string | number, accountId: string) {
         try {
             const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
 
-            const pet = await petRepository.getById(petId);
-            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            const institution = await accountService.getById(institutionId);
+            if (!institution) throw ThrowError.notFound("Instituição não encontrada.");
 
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
-            if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
+            if (institution.id === accountId) throw ThrowError.conflict("Usuário proprietário.");
 
             const newHistory: CreateHistoryDTO = {
                 type: "sponsorship",
                 amount: amount,
                 account: account.id as string,
-                pet: petId,
+                institution: institution.id as string,
                 status: "pending"
             } as CreateHistoryDTO;
 
             const history = await historyRepository.create(newHistory);
-            if (!history) throw ThrowError.internal("Erro ao patrocinar o pet.");
+            if (!history) throw ThrowError.internal("Erro ao patrocinar a instituição.");
 
-            const externalReference = `${pet.account}-${uuidv4()}`;
+            const externalReference = `${institution.id}-${uuidv4()}`;
 
             const body = {
                 items: [
@@ -235,7 +235,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
 
-            if (!response) throw ThrowError.internal("Erro ao patrocinar o pet.");
+            if (!response) throw ThrowError.internal("Erro ao patrocinar a instituição.");
 
             return {
                 id: response.id as string,
@@ -244,7 +244,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao patrocinar o pet.");
+            throw ThrowError.internal("Erro ao patrocinar a instituição.");
         }
     }
 

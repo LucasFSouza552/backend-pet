@@ -140,15 +140,14 @@ export default class HistoryController implements IController {
 
     async sponsor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const petId = req.params.id;
+            const institutionId = req.params.id;
             const amount = req.body?.amount;
             const accountId = req?.account?.id;
-
-            if (!petId) throw ThrowError.badRequest("ID não foi informado.");
             if (!amount) throw ThrowError.badRequest("Quantidade não foi informada.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            if (!institutionId) throw ThrowError.badRequest("ID da instituição não foi informado.");
 
-            const sponsorship = await historyService.sponsor(petId, amount, accountId);
+            const sponsorship = await historyService.sponsor(institutionId as string, amount, accountId as string);
             res.status(200).json(sponsorship);
         } catch (error) {
             next(error);

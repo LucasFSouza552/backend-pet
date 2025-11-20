@@ -93,6 +93,7 @@ export default class AccountPetInteractionController {
 
     async getInteractionByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            console.log("getInteractionByAccount");
             const accountId = req.params.id as string;
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
             const interactions = await accountPetInteractionService.getByAccount(accountId);
