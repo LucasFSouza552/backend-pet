@@ -15,7 +15,7 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     async getAll(filter: Filter): Promise<IPet[]> {
         const { page, limit, orderBy, order, query } = filter;
 
-        const pets = await Pet.find(query as FilterQuery<IPet>)
+        const pets = await Pet.find({...query, adopted: false} as FilterQuery<IPet>)
             .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
@@ -52,6 +52,6 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
         ]);
 
 
-        return await Pet.findById(nextPet?._id).populate("account", "name address");
+        return await Pet.findById(nextPet?._id).sort({ createdAt: -1 }).populate("account", "name address");
     }
 }

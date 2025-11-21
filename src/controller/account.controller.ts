@@ -24,10 +24,6 @@ export default class AccountController implements IController {
             const accountId = req?.account?.id as string;
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
             const feed = await accountService.getFeed(accountId);
-            if (feed === null) {
-                res.status(204).json();
-                return;
-            }
             res.status(200).json(feed);
 
         } catch (error) {

@@ -78,13 +78,15 @@ export default class PetController implements IController {
 
     async deletePetImage(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            const accountId = req.account?.id as string;
             const petId = req.params.id;
-            const imageId = req.params.imageId;
+            const imageId = req.body.imageId;
 
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
             if (!petId) throw ThrowError.badRequest("ID não foi informado.");
             if (!imageId) throw ThrowError.badRequest("ID da imagem nao foi informado.");
 
-            await petService.deletePetImage(petId, imageId);
+            await petService.deletePetImage(petId, imageId, accountId);
             res.status(204).json();
         } catch (error) {
             next(error);
@@ -122,7 +124,7 @@ export default class PetController implements IController {
         }
     }
 
-      async requestedAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async requestedAdoption(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const institutionId = req.params?.id;
             const accountId = req.account?.id;
@@ -202,7 +204,6 @@ export default class PetController implements IController {
             if (!req.account?.role || req.account?.role === "user") throw ThrowError.forbidden("Apenas instituições podem criar pets.");
 
             req.body.account = accountId;
-
             const newPetDTO: CreatePetDTO = new BuilderDTO<CreatePetDTO>(req.body)
                 .add({ key: "account" })
                 .add({ key: "type" })
@@ -210,6 +211,7 @@ export default class PetController implements IController {
                 .add({ key: "age", type: "number" })
                 .add({ key: "gender", enum: ["male", "female"] })
                 .add({ key: "description", required: false })
+                .add({ key: "weight", type: "number" })
                 .build();
 
             const pet = await petService.create(newPetDTO);
@@ -266,6 +268,18 @@ export default class PetController implements IController {
 
             const payment = await petService.paymentReturn(paymentId, status as "completed" | "cancelled" | "refunded", externalReference);
             res.status(200).json(payment);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async updatePet(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const accountId = req.account?.id;
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
+            if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
+            const pet = await petService.updatePet(id, req.body, accountId);
+            res.status(200).json(pet);
         } catch (error) {
             next(error);
         }

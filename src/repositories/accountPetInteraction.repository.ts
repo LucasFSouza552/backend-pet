@@ -32,6 +32,7 @@ export default class AccountPetInteractionRepository {
                 },
                 populate: {
                     path: "account",
+                    select: "-password",
                 },
 
             })

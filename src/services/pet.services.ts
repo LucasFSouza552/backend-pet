@@ -45,6 +45,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             const pet = await petRepository.getById(petId);
             if (pet?.deletedAt) throw ThrowError.conflict("O Pet já foi deletado.");
             if (pet?.account?.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode deletar o pet.");
+            if (pet?.adopted) throw ThrowError.conflict("O Pet já foi adotado.");
             return await petRepository.softDelete(petId);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -79,11 +80,13 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async deletePetImage(petId: string, imageId: string | ObjectId) {
+    async deletePetImage(petId: string, imageId: string | ObjectId, accountId: string) {
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
             if (!pet?.images) throw ThrowError.notFound("Imagem não encontrada.");
+            if (pet.adopted) throw ThrowError.conflict("O Pet já foi adotado.");
+            if (pet.account.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode deletar a imagem.");
             await PictureStorageRepository.deleteImage(imageId);
 
             await petRepository.update(petId, { images: pet.images.filter(image => image !== imageId) });
@@ -290,6 +293,18 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao deletar o pet.");
+        }
+    } 
+
+    async updatePet(id: string, data: UpdatePetDTO, accountId: string): Promise<IPet | null> {
+        try {
+            const pet = await petRepository.getById(id);
+            if (!pet) throw ThrowError.notFound("Pet não encontrado.");
+            if (pet.account.toString() !== accountId) throw ThrowError.conflict("Somente o proprietário pode atualizar o pet.");
+            return await petRepository.update(id, data);
+        } catch (error: any) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao atualizar o pet.");
         }
     }
 }

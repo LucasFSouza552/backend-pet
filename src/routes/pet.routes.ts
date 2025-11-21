@@ -15,7 +15,7 @@ router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), petControlle
 router.get("/institutions/:id/pets", AuthMiddleware, petController.getAllByInstitution);
 
 // (ADMIN | INSTITUTION) Rota para criar um pet
-router.post("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.create);
+router.post("/", AuthMiddleware, authorizationMiddleware(["institution", "admin"]),  petController.create);
 
 // (ADMIN) Rota para atualizar um pet
 router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), petController.update);
@@ -42,10 +42,10 @@ router.post("/:id/accept", AuthMiddleware, authorizationMiddleware(["institution
 router.post("/:id/reject", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.rejectRequestedAdoption);
 
 // Rota para atualizar a imagem de um pet
-router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), upload.array("avatar", 6), petController.updatePetImages);
+router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), upload.array("images", 6), petController.updatePetImages);
 
 // Rota para deletar uma imagem de um pet
-router.delete("/:id/avatar/:imageId", AuthMiddleware, authorizationMiddleware(["institution"]), petController.deletePetImage);
+router.post("/:id/image", AuthMiddleware, authorizationMiddleware(["institution"]), petController.deletePetImage);
 
 // Rota para retorno de pagamento
 router.post("/payment-return", petController.paymentReturn);
@@ -59,4 +59,6 @@ router.get("/adopted/:id", AuthMiddleware, petController.getAdoptionsByAccount);
 // Rota para retornar os pets de uma instituição que alguem deseja adotar
 router.get("/institutions/:id/pets/requested", AuthMiddleware, petController.requestedAdoption);
 
+// Rota para instituição atualizar o pet
+router.patch("/:id/update", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.updatePet);
 export default router;

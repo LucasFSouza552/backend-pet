@@ -1,6 +1,6 @@
 import IPet from "@models/pet";
 
-export type CreatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt" | "adopted">;
+export type CreatePetDTO = Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt" | "adopted" | "images">;
 
 export type UpdatePetDTO = Partial<Omit<IPet, "createdAt" | "updatedAt" | "adoptedAt">>;
 
