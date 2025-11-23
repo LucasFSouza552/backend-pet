@@ -23,20 +23,12 @@ export default class AccountPetInteractionRepository {
             .find({ account, status: { $ne: "viewed" } })
             .populate({
                 path: "pet",
-                select: "name type account description age gender weight images adopted instituition",
-                options: {
-                    lean: {
-                        virtuals: true,
-                        getters: true
-                    }
-                },
                 populate: {
                     path: "account",
                     select: "-password",
                 },
 
             })
-            .lean({ virtuals: true })
             .exec();
 
         return accountpetInteraction;

@@ -1,6 +1,8 @@
 import { Document, Schema, Types, model } from "mongoose";
+import defaultTransform from "@utils/transformModel";
 
 export interface AccountPetInteraction extends Document {
+    id: string;
     account: Types.ObjectId | string;
     pet: Types.ObjectId | string;
     status: "liked" | "disliked" | "viewed";
@@ -23,9 +25,18 @@ const accountPetInteractionSchema = new Schema<AccountPetInteraction>({
         enum: ["liked", "disliked", "viewed"],
         required: true,
     },
-}, { timestamps: true, strict: true });
-
-
+}, {
+    timestamps: true,
+    strict: true,
+    toJSON: {
+        virtuals: true,
+        transform: defaultTransform,
+    },
+    toObject: {
+        virtuals: true,
+        transform: defaultTransform,
+    },
+});
 
 export const AccountPetInteraction = model<AccountPetInteraction>("AccountPetInteraction", accountPetInteractionSchema);
 

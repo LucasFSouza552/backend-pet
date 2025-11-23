@@ -28,7 +28,7 @@ router.get("/:id", AuthMiddleware, accountController.getById);
 router.get("/profile/me", AuthMiddleware, accountController.getProfile);
 
 // Rota para atualizar avatar
-router.put("/avatar", upload.single("avatar"), AuthMiddleware, accountController.updateAvatar);
+router.put("/avatar", AuthMiddleware, upload.single("avatar"), accountController.updateAvatar);
 
 // (ADMIN) Rota para retornar todas as contas
 router.get("/", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.getAll);
@@ -41,7 +41,7 @@ router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), account
 
 // (ADMIN) Rota para deletar uma conta
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), accountController.delete);
-    
+
 // Rota para retornar os posts de uma conta
 router.get("/profile/posts", AuthMiddleware, postController.getPostsByAccount);
 

@@ -5,7 +5,7 @@ import IRepository from "@interfaces/IRepository";
 import IHistory, { History } from "@models/history";
 
 export default class HistoryRepository implements IRepository<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
-    async getRequestedAdoption(institutionId: string, accountId: string) {
+    async getRequestedAdoption(institutionId: string) {
         return await History.find({
             institution: institutionId,
             type: "adoption",

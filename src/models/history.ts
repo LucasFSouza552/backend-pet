@@ -1,5 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 import { IHistoryStatus } from "@Itypes/IHistoryStatus";
+import defaultTransform from "@utils/transformModel";
 
 export default interface IHistory extends Document {
     type: "adoption" | "sponsorship" | "donation";
@@ -11,6 +12,7 @@ export default interface IHistory extends Document {
     externalReference?: string | null;
     createdAt: Date;
     updatedAt: Date;
+    urlPayment?: string | null;
 }
 
 const historySchema = new Schema<IHistory>({
@@ -46,7 +48,24 @@ const historySchema = new Schema<IHistory>({
     },
     amount: {
         type: String
+    },
+    urlPayment: {
+        type: String,
+        required: false,
+        default: null
     }
-}, { timestamps: true, strict: true });
+}, {
+    timestamps: true, strict: true,
+    toJSON: {
+        virtuals: true,
+        transform: defaultTransform,
+    },
+    toObject: {
+        virtuals: true,
+        transform: defaultTransform,
+    },
+});
+
+
 
 export const History = model<IHistory>('History', historySchema);

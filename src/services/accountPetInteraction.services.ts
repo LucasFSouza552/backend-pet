@@ -39,7 +39,6 @@ export default class AccountPetInteractionService {
     async getByAccount(accountId: string) {
         try {
             const interactions = await accountPetInteractionRepository.getByAccountWithPets(accountId);
-            console.log(interactions);
             return interactions;
         } catch (error) {
             if (error instanceof ThrowError) throw error;

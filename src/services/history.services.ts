@@ -134,17 +134,8 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
-            const newHistory: CreateHistoryDTO = {
-                type: "donation",
-                amount: amount,
-                account: account.id as string,
-                status: "pending"
-            } as CreateHistoryDTO;
 
-            const history = await historyRepository.create(newHistory);
-            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
-
-            const externalReference = `petApp-${history.id}`;
+            const externalReference = `donation-${account.id}-${uuidv4()}`;
 
             const body = {
                 items: [
@@ -173,6 +164,17 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             if (!response) throw ThrowError.internal("Erro ao doar para petApp.");
 
+            const newHistory: CreateHistoryDTO = {
+                type: "donation",
+                amount: amount,
+                account: account.id as string,
+                status: "pending",
+                urlPayment: response.init_point as string
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao doar para petApp.");
+
             return {
                 id: response.id as string,
                 url: response.init_point,
@@ -197,18 +199,9 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             if (institution.id === accountId) throw ThrowError.conflict("Usuário proprietário.");
 
-            const newHistory: CreateHistoryDTO = {
-                type: "sponsorship",
-                amount: amount,
-                account: account.id as string,
-                institution: institution.id as string,
-                status: "pending"
-            } as CreateHistoryDTO;
+            
 
-            const history = await historyRepository.create(newHistory);
-            if (!history) throw ThrowError.internal("Erro ao patrocinar a instituição.");
-
-            const externalReference = `${institution.id}-${uuidv4()}`;
+            const externalReference = `${institution.id}-${account.id}-${uuidv4()}`;
 
             const body = {
                 items: [
@@ -236,6 +229,18 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
 
             if (!response) throw ThrowError.internal("Erro ao patrocinar a instituição.");
+
+            const newHistory: CreateHistoryDTO = {
+                type: "sponsorship",
+                amount: amount,
+                account: account.id as string,
+                institution: institution.id as string,
+                status: "pending",
+                urlPayment: response.init_point as string
+            } as CreateHistoryDTO;
+
+            const history = await historyRepository.create(newHistory);
+            if (!history) throw ThrowError.internal("Erro ao patrocinar a instituição.");
 
             return {
                 id: response.id as string,

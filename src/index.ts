@@ -25,7 +25,7 @@ app.use(cors({
     origin: "*",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', "Access-Control-Allow-Origin"]
+    allowedHeaders: ['Content-Type', 'Authorization', "Access-Control-Allow-Origin", "multipart/form-data"]
 }));
 
 app.set("trust proxy", 2);
@@ -48,11 +48,18 @@ connectDB();
 
 const port = process.env.PORT;
 
+
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(publicPath, 'view/index.html'));
 });
 
-app.use('/api', limiter, routes);
+const routerViewer = (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.originalUrl);
+    next();
+}
+
+app.use('/api', limiter, routerViewer, routes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json({
