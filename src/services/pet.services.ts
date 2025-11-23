@@ -21,9 +21,9 @@ import { accountPetInteractionService, accountService } from "./index";
 import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
-    async requestedAdoption(institutionId: string, accountId: string) {
+    async requestedAdoption(institutionId: string) {
         try {
-            const history = await historyRepository.getRequestedAdoption(institutionId, accountId);
+            const history = await historyRepository.getRequestedAdoption(institutionId);
             return history;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -57,12 +57,14 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         try {
             const pet = await petRepository.getById(petId);
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
-
             const petImages = pet.images || [];
 
-            if (petImages.length + files?.length > 5 || petImages.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
+            if (files?.length > 5) throw ThrowError.conflict("Limite de imagens atingido.");
+            for (const imageId of petImages) {
+                await PictureStorageRepository.deleteImage(imageId);
+            }
 
-            const uploadedImages: ObjectId[] = petImages;
+            const uploadedImages: ObjectId[] = [];
             for (const file of files) {
                 if (!file.buffer) continue;
 

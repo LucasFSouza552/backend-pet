@@ -67,7 +67,7 @@ export default class PetController implements IController {
             const petId = req.params.id;
 
             if (!petId) throw ThrowError.badRequest("ID não foi informado.");
-            if (!files || files.length === 0) throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
+            if (!files) throw ThrowError.badRequest("Nenhum arquivo foi enviado.");
 
             const pet = await petService.updatePetImages(petId, files);
             res.status(200).json(pet);
@@ -132,7 +132,7 @@ export default class PetController implements IController {
             if (!institutionId) throw ThrowError.badRequest("ID não foi informado.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const history = await petService.requestedAdoption(institutionId, accountId);
+            const history = await petService.requestedAdoption(institutionId);
 
             res.status(200).json(history);
         } catch (error) {
