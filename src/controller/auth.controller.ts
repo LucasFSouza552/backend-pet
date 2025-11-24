@@ -144,9 +144,10 @@ export default class AuthController {
     }
 
     async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+        console.log("resetPassword called");
         try {
-            const token = req?.query.token as string;
-            const { password } = req.body;
+            const token = req.body?.token;
+            const password = req.body?.password;
             if (!token || !password) {
                 throw ThrowError.badRequest("É necesario preencher todos os campos.");
             }
