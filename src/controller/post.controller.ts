@@ -25,7 +25,7 @@ export default class PostController implements IController {
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
+            const allowedQueryFields: string[] = ["account", "createdAt", "likes", "image", "content"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
 
             const posts = await postService.getAll(filters);
@@ -95,7 +95,6 @@ export default class PostController implements IController {
             data.account = req.account?.id;
 
             const updateData = new BuilderDTO<UpdatePostDTO>(req.body)
-                .add({ key: "title", required: false })
                 .add({ key: "content", required: false })
                 .add({ key: "account" })
                 .build();
@@ -113,7 +112,6 @@ export default class PostController implements IController {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
             const updateData = new BuilderDTO<UpdatePostDTO>(req.body)
-                .add({ key: "title", required: false })
                 .add({ key: "content", required: false })
                 .add({ key: "image", required: false })
                 .build();
@@ -155,7 +153,7 @@ export default class PostController implements IController {
 
     async getPostsWithAuthor(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allowedQueryFields: string[] = ["title", "account", "createdAt", "likes", "image"];
+            const allowedQueryFields: string[] = ["account", "createdAt", "likes", "image", "content"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             const posts = await postService.getPostsWithAuthor(filters);
 
@@ -182,7 +180,6 @@ export default class PostController implements IController {
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
             console.log(filters);
             const posts = await postService.search(filters);
-            console.log(posts);
             res.status(200).json(posts);
         } catch (error) {
             next(error);

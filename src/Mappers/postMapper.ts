@@ -3,7 +3,6 @@ import { mapToDTO } from "@utils/Mapper";
 
 const postDTOFields: (keyof IPost)[] = [
     "id",
-    "title",
     "image",
     "likes",
     "commentsCount",

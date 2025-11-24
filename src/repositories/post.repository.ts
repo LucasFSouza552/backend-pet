@@ -140,9 +140,9 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
 
     async search(filter: Filter): Promise<IPost[]> {
         const { page, limit, orderBy, order, query } = filter;
-        const words = filter?.query?.title ? filter.query.title.trim().split(/\s+/) : [];
+        const words = filter?.query?.content ? filter.query.content.trim().split(/\s+/) : [];
         const regexConditions = words.map((word: string) => ({
-            title: { $regex: word, $options: "i" }
+            content: { $regex: word, $options: "i" }
         }));
 
         return await Post.find({ $and: regexConditions })

@@ -1,7 +1,6 @@
 import { Document, Schema, Types, model } from "mongoose";
 
 export default interface IPost extends Document {
-    title: string;
     comments?: Types.ObjectId[];
     commentsCount?: number;
     content: string;
@@ -14,10 +13,6 @@ export default interface IPost extends Document {
 }
 
 const postSchema = new Schema<IPost>({
-    title: {
-        type: String,
-        required: false
-    },
     content: {
         type: String,
         required: true,

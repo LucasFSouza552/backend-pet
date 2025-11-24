@@ -3,7 +3,6 @@ import { IAccountAchievement } from "@models/accountAchievement";
 import { IAchievement } from "@models/achievements";
 export interface PostWithAccount {
     id: string;
-    title: string;
     content: string;
     createdAt: Date;
     updatedAt: Date;
