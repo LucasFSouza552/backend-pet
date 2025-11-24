@@ -59,7 +59,7 @@ export default class AuthService {
         try {
             const account = await authRepository.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
-            
+
             const token = JWT.encodeToken({ id: account.id });
 
             const html = validateEmailTemplate(account.name, token);
@@ -78,6 +78,23 @@ export default class AuthService {
         }
     }
 
+    async sendEmailVerification(email: string): Promise<void> {
+        try {
+            const token = JWT.encodeToken({ id: "FakeAccountId" });
+            const html = validateEmailTemplate("FakeAccount", token);
+            await sendEmail({
+                to: email,
+                subject: "Confirmação de Email - MyPets",
+                text: `Olá!\n\nObrigado por se cadastrar no MyPets.\nPor favor, confirme seu endereço de email clicando no link abaixo:\nhttp://localhost:3000/verify-email?token=${token}\n\nSe você não se cadastrou, ignore este email.`,
+                html
+            }).catch(err => {
+                throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
+            });
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Não foi possível enviar o email de confirmação.");
+        }
+    }
 
     async create(data: CreateAccountDTO): Promise<void> {
         try {
@@ -105,7 +122,7 @@ export default class AuthService {
             const html = validateEmailTemplate(newAccount.name, token);
             await sendEmail({
                 to: newAccount.email,
-                subject: "✅ Confirmação de Email - MyPets",
+                subject: "Confirmação de Email - MyPets",
                 text: `Olá!\n\nObrigado por se cadastrar no MyPets.\nPor favor, confirme seu endereço de email clicando no link abaixo:\nhttp://localhost:3000/verify-email?token=${token}\n\nSe você não se cadastrou, ignore este email.`,
                 html
             }).catch(err => {
@@ -118,7 +135,7 @@ export default class AuthService {
         }
     }
 
-    async verifyEmail(token: string): Promise<AccountDTO> {
+    async verifyEmail(token: string): Promise<boolean> {
         try {
 
             if (!token) throw ThrowError.notFound("Usuário não encontrado.");
@@ -133,7 +150,7 @@ export default class AuthService {
             const updatedAccount = await authRepository.updateVerificationToken(accountFound);
             if (!updatedAccount) throw ThrowError.notFound("Usuário não encontrado.");
 
-            return accountMapper(accountFound);
+            return true;
         } catch (error: any) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Nao foi possivel buscar o usuario.");

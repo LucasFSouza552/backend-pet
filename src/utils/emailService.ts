@@ -11,14 +11,14 @@ export async function sendEmail({ to, subject, text, html }: EmailOptions) {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, // STARTTLS
+            secure: true,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
             },
         });
 
-        const info = await transporter.sendMail({
+        await transporter.sendMail({
             from: '"Pet Backend 🐾" <noreply@pet.com>',
             to,
             subject,

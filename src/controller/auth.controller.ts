@@ -87,6 +87,19 @@ export default class AuthController {
         }
     }
 
+    async sendEmailVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const email = req.body?.email;
+            if (!email) {
+                throw ThrowError.badRequest("Email não foi informado.");
+            }
+            await authService.sendEmailVerification(email);
+            res.status(200).json({ message: "Email de verificação enviado com sucesso." });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async resendVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id as string;
@@ -108,8 +121,9 @@ export default class AuthController {
                 throw ThrowError.badRequest("Verificação inválida.");
             }
 
-            const account = await authService.verifyEmail(token);
-            res.status(200).json(account);
+            await authService.verifyEmail(token);
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+            res.redirect(`${frontendUrl}/login`);
         } catch (error) {
             next(error);
         }

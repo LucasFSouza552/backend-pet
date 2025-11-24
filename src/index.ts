@@ -59,6 +59,12 @@ const routerViewer = (req: Request, res: Response, next: NextFunction) => {
     next();
 }
 
+app.get("/post/:id", (req: Request, res: Response) => {
+    const postId = req.params.id;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${frontendUrl}/post/${postId}`);
+});
+
 app.use('/api', limiter, routerViewer, routes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {

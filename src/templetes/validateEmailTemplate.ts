@@ -1,4 +1,9 @@
+import { getLogoBase64 } from "@utils/imageToBase64";
+
 export default function validateEmailTemplate(name: string, token: string): string {
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const logoBase64 = getLogoBase64();
+    
     return `
     <div style="
         font-family: Arial, sans-serif;
@@ -15,8 +20,8 @@ export default function validateEmailTemplate(name: string, token: string): stri
             border: 1px solid #ddd;">
             
             <div style="text-align: center; padding: 30px 20px; background-color: #B648A0;">
-                <img src="https://via.placeholder.com/80x40?text=MyPets" alt="MyPets Logo"
-                    style="display:block; margin:auto;">
+                <img src="${logoBase64}" alt="MyPets Logo"
+                    style="display:block; margin:auto; max-width: 200px; height: auto;">
             </div>
 
             <div style="padding: 30px 25px; text-align: center; color: #332630;">
@@ -27,7 +32,7 @@ export default function validateEmailTemplate(name: string, token: string): stri
                 </p>
                 <p>Para ativar sua conta, clique no botão abaixo:</p>
 
-                <a href="http://localhost:3000/validate-email?token=${token}" style="
+                <a href="${frontendUrl}/validate-email?token=${token}" style="
                         display: inline-block;
                         padding: 14px 25px;
                         font-size: 16px;

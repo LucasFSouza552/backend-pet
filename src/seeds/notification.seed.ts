@@ -13,7 +13,6 @@ export const seedNotifications = async () => {
         return;
     }
 
-    // Criar uma imagem mock ObjectId para as notificações
     const mockImageId = new Types.ObjectId();
 
     const notifications = [
