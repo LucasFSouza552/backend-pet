@@ -6,7 +6,7 @@ import { CommentsWithAuthors, CreateCommentDTO, UpdateCommentDTO } from "@dtos/c
 
 export default class CommentRepository implements IRepository<CreateCommentDTO, UpdateCommentDTO, IComment> {
     async getReplies(commentId: string, filter: Filter): Promise<IComment[] | null> {
-        const replies = await Comment.find({ parent: commentId }).sort({ createdAt: 1 });
+        const replies = await Comment.find({ parent: commentId, deletedAt: null }).sort({ createdAt: 1 });
         return replies;
     }
 
@@ -41,21 +41,21 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
     async softDelete(accountId: string, id: string): Promise<IComment | null> {
         return await Comment.findByIdAndUpdate(
             id,
-            { isDeleted: true },
+            { deletedAt: new Date() },
             { new: true }
         );
     }
     async getAll(filter: Filter): Promise<IComment[]> {
         const { page, limit, orderBy, order, query } = filter;
 
-        return await Comment.find(query as FilterQuery<IComment>)
+        return await Comment.find({ ...query, deletedAt: null } as FilterQuery<IComment>)
             .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit);
     }
     async getById(id: string): Promise<IComment | null> {
         console.log(id);
-        return await Comment.findById(id);
+        return await Comment.findOne({ _id: id, deletedAt: null });
     }
 
     async create(data: CreateCommentDTO): Promise<IComment> {
@@ -94,9 +94,9 @@ export default class CommentRepository implements IRepository<CreateCommentDTO, 
         return updatedComment;
     }
     async getAccountComments(accountId: string, postId: string): Promise<IComment[]> {
-        return await Comment.find({ account: accountId, post: postId });
+        return await Comment.find({ account: accountId, post: postId, deletedAt: null });
     }
     async delete(id: string): Promise<void> {
-        await Comment.findByIdAndDelete(id);
+        await Comment.findByIdAndUpdate(id, { deletedAt: new Date() });
     }
 }

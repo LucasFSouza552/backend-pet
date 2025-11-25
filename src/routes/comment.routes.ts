@@ -24,9 +24,12 @@ router.post("/:id", AuthMiddleware, commentController.create);
 router.patch("/:id", AuthMiddleware, commentController.update);
 
 // Rota para ocultar/apagar um comentário
-router.patch("/own/:id", AuthMiddleware, commentController.deleteOwnComment);
+router.patch("/own/:id", AuthMiddleware, commentController.softDelete);
 
 // Rota para retornar todas as respostas de um comentário
 router.get("/:id/replies", commentController.getReplies);
+
+// Rota para ocultar/apagar um comentário
+router.post("/:id/delete", AuthMiddleware, commentController.softDelete);
 
 export default router;

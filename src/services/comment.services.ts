@@ -23,10 +23,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             const replies = await commentRepository.getReplies(commentId, filter);
             
             if (!replies) return [];
-            return replies.map(reply => reply.deletedAt
-                ? { ...reply, content: "Comentário removido" }
-                : { ...reply, account: reply.account ?? null }
-            ) as unknown as IComment[];
+            return replies.map(reply => ({ ...reply, account: reply.account ?? null })) as unknown as IComment[];
 
         } catch (error) {
             if (error instanceof Error) throw error;
@@ -44,7 +41,7 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             throw ThrowError.internal("Não foi possivel obter os comentários.");
         }
     }
-    async deleteOwnComment(accountId: string, commentId: string): Promise<IComment | null> {
+    async softDelete(accountId: string, commentId: string): Promise<IComment | null> {
         try {
             const comment = await commentRepository.getById(commentId);
             if (!comment) {
@@ -82,7 +79,6 @@ export default class CommentService implements IService<CreateCommentDTO, Update
                 throw ThrowError.badRequest("Post associado ao comentário não existe.");
             };
             data.post = post.id;
-            console.log("NOVO COMENTÁRIO:",data);
             return await commentRepository.create(data);
         } catch (error: any) {
             if (error instanceof Error) throw error;

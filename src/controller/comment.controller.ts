@@ -147,14 +147,14 @@ export default class CommentController implements IController {
         }
     }
 
-    async deleteOwnComment(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async softDelete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.account?.id;
             const id = req.params.id;
             if (!id || !accountId) {
                 throw ThrowError.badRequest("ID não foi informado.");
             }
-            const deletedComment = await commentService.deleteOwnComment(accountId, id);
+            const deletedComment = await commentService.softDelete(accountId, id);
             res.status(200).json({ comment: deletedComment });
         } catch (error) {
             next(error);

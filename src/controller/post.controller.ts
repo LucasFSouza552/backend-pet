@@ -188,6 +188,7 @@ export default class PostController implements IController {
 
     async softDelete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            
             const id = req.params.id;
             const accountId = req.account?.id as string;
 
