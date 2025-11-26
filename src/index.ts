@@ -48,14 +48,11 @@ connectDB();
 
 const port = process.env.PORT;
 
-
-
 app.get("/", (req, res) => {
     res.sendFile(path.join(publicPath, 'view/index.html'));
 });
 
 const routerViewer = (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.originalUrl);
     next();
 }
 

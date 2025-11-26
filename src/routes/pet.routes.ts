@@ -47,9 +47,6 @@ router.post("/:id/avatar", AuthMiddleware, authorizationMiddleware(["institution
 // Rota para deletar uma imagem de um pet
 router.post("/:id/image", AuthMiddleware, authorizationMiddleware(["institution"]), petController.deletePetImage);
 
-// Rota para retorno de pagamento
-router.post("/payment-return", petController.paymentReturn);
-
 // SoftDelete do pet
 router.post("/:id/delete", AuthMiddleware,authorizationMiddleware(["institution", "admin"]), petController.softDelete);
 
@@ -61,4 +58,5 @@ router.get("/institutions/:id/pets/requested", AuthMiddleware, petController.req
 
 // Rota para instituição atualizar o pet
 router.patch("/:id/update", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.updatePet);
+
 export default router;

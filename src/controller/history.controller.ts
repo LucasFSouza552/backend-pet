@@ -13,9 +13,11 @@ import { ThrowError } from "@errors/ThrowError";
 import filterConfig from "@utils/filterConfig";
 import BuilderDTO from "@utils/builderDTO";
 
+// Types
+import { IHistoryStatus } from "@Itypes/IHistoryStatus";
+
 // Services
 import { accountService, historyService } from "@services/index";
-import { error } from "console";
 
 export default class HistoryController implements IController {
     async updateHistoryStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -111,8 +113,8 @@ export default class HistoryController implements IController {
             const filters = filterConfig(req.query, allowedQueryFields);
 
             const accountId = req.account?.id as string;
-            
-            if(!accountId) {
+
+            if (!accountId) {
                 throw ThrowError.badRequest("ID é inválido");
             }
 
@@ -122,7 +124,7 @@ export default class HistoryController implements IController {
             next(error);
         }
     }
-    
+
     async donate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const amount = req.body?.amount;
@@ -149,6 +151,23 @@ export default class HistoryController implements IController {
 
             const sponsorship = await historyService.sponsor(institutionId as string, amount, accountId as string);
             res.status(200).json(sponsorship);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async paymentReturn(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const paymentId = req.body.id;
+            const status = req.body.status;
+            const externalReference = req.body.externalReference;
+
+            if (!paymentId) throw ThrowError.badRequest("ID do pagamento não foi informado.");
+            if (!status || !["completed", "cancelled", "refunded"].includes(status)) throw ThrowError.badRequest("Status do pagamento inválido.");
+            if (!externalReference) throw ThrowError.badRequest("External reference não foi informado.");
+
+            const payment = await historyService.paymentReturn(paymentId, status as IHistoryStatus, externalReference);
+            res.status(200).json(payment);
         } catch (error) {
             next(error);
         }

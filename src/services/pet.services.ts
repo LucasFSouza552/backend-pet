@@ -216,26 +216,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
-    async paymentReturn(paymentId: string, status: string, externalReference: string): Promise<HistoryDTO> {
-        try {
-            const payment = await historyRepository.getById(paymentId);
-            if (!payment) throw ThrowError.notFound("Pagamento não encontrado.");
-
-            if (payment.status !== "pending") throw ThrowError.conflict("Pagamento já processado.");
-            if (payment.status !== status) throw ThrowError.conflict("Status do pagamento inválido.");
-
-            if (payment.externalReference !== externalReference) throw ThrowError.conflict("External reference inválido.");
-
-            await historyRepository.update(payment.id, { status: "completed" });
-
-            return payment as HistoryDTO;
-        } catch (error) {
-            if (error instanceof ThrowError) throw error;
-            throw ThrowError.internal("Erro ao processar o retorno do pagamento.");
-        }
-    }
-
-
     async getAll(filter: Filter): Promise<IPet[]> {
         try {
             return await petRepository.getAll(filter);

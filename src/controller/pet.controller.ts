@@ -256,22 +256,7 @@ export default class PetController implements IController {
         }
     }
 
-    async paymentReturn(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const paymentId = req.body.id;
-            const status = req.body.status;
-            const externalReference = req.body.externalReference;
-
-            if (!paymentId) throw ThrowError.badRequest("ID do pagamento não foi informado.");
-            if (!status || !["completed", "cancelled", "refunded"].includes(status)) throw ThrowError.badRequest("Status do pagamento inválido.");
-            if (!externalReference) throw ThrowError.badRequest("External reference não foi informado.");
-
-            const payment = await petService.paymentReturn(paymentId, status as "completed" | "cancelled" | "refunded", externalReference);
-            res.status(200).json(payment);
-        } catch (error) {
-            next(error);
-        }
-    }
+    
     async updatePet(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const id = req.params.id;
