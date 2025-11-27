@@ -59,4 +59,7 @@ router.get("/institutions/:id/pets/requested", AuthMiddleware, petController.req
 // Rota para instituição atualizar o pet
 router.patch("/:id/update", AuthMiddleware, authorizationMiddleware(["institution", "admin"]), petController.updatePet);
 
+// rota para retornar o pet e a instituição que ele pertence
+router.get("/:id/institution", AuthMiddleware, petController.getPetAndInstitution);
+
 export default router;

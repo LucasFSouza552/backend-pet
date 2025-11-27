@@ -6,6 +6,9 @@ import { CreatePetDTO, UpdatePetDTO } from "@dtos/petDTO";
 import { FilterQuery, Types } from "mongoose";
 
 export default class PetRepository implements IRepository<CreatePetDTO, UpdatePetDTO, IPet> {
+    async getPetAndInstitution(petId: string) {
+        return await Pet.findById(petId).populate("account");
+    }
     async getAdoptionsByAccount(accountId: string) {
         return await Pet.find({ adopted: true, account: accountId });
     }

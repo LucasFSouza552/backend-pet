@@ -25,15 +25,14 @@ export default class AccountPetInteractionRepository {
                 path: "pet",
                 populate: {
                     path: "account",
-                    select: "-password",
-                },
-
+                    select: "-password"
+                }
             })
             .exec();
 
         return accountpetInteraction;
     }
- 
+
 
     async getInteraction(petId: string) {
         return await AccountPetInteraction.findOne({ pet: petId });

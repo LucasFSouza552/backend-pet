@@ -40,6 +40,15 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
         }
     }
 
+    async getPetAndInstitution(petId: string) {
+        try {
+            return await petRepository.getPetAndInstitution(petId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar pet e instituição.");
+        }
+    }
+
     async softDelete(petId: string, accountId: string) {
         try {
             const pet = await petRepository.getById(petId);
@@ -173,11 +182,11 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             if (!pet.account) throw ThrowError.forbidden("Conta não existente")
             if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
             if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
-            
+
             const history = await historyRepository.getByAccountAndPet(accountId, petId);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");
             if (history.status !== "pending") throw ThrowError.conflict("Histórico já processado.");
-            
+
             await historyRepository.update(history.id, { status: "completed" });
             const updatedPet = await petRepository.update(petId, { adopted: true, account: accountId });
 
@@ -276,7 +285,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao deletar o pet.");
         }
-    } 
+    }
 
     async updatePet(id: string, data: UpdatePetDTO, accountId: string): Promise<IPet | null> {
         try {

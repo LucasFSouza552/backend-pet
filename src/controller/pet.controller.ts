@@ -18,6 +18,16 @@ import { petService } from "@services/index";
 import BuilderDTO from "@utils/builderDTO";
 
 export default class PetController implements IController {
+    async getPetAndInstitution(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            if (!id) throw ThrowError.badRequest("ID não foi informado.");
+            const pet = await petService.getPetAndInstitution(id);
+            res.status(200).json(pet);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getAdoptionsByAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const accountId = req.params.id as string;

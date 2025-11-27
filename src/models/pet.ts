@@ -11,6 +11,16 @@ export default interface IPet extends Document {
   description?: string;
   adopted: boolean;
   account: Schema.Types.ObjectId | string;
+  accountName?: string;
+  accountEmail?: string;
+  accountPhoneNumber?: string;
+  accountStreet?: string;
+  accountNumber?: string;
+  accountComplement?: string;
+  accountNeighborhood?: string;
+  accountCity?: string;
+  accountState?: string;
+  accountCep?: string;
   adoptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -56,6 +66,46 @@ const petSchema = new Schema<IPet>(
       type: Schema.Types.ObjectId,
       ref: "Account",
       required: true,
+    },
+    accountName: {
+      type: String,
+      required: false,
+    },
+    accountEmail: {
+      type: String,
+      required: false,
+    },
+    accountPhoneNumber: {
+      type: String,
+      required: false,
+    },
+    accountStreet: {
+      type: String,
+      required: false,
+    },
+    accountNumber: {
+      type: String,
+      required: false,
+    },
+    accountComplement: {
+      type: String,
+      required: false,
+    },
+    accountNeighborhood: {
+      type: String,
+      required: false,
+    },
+    accountCity: {
+      type: String,
+      required: false,
+    },
+    accountState: {
+      type: String,
+      required: false,
+    },
+    accountCep: {
+      type: String,
+      required: false,
     },
     adoptedAt: {
       type: Date,
