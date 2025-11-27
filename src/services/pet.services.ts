@@ -119,15 +119,21 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             if (!pet) throw ThrowError.notFound("Pet não encontrado.");
 
             if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
-
+            const hasInteraction = await accountPetInteractionService.getPetInteractionByAccount(account.id as string, pet.id as string);
+            console.log("hasInteraction", hasInteraction);
             const newInteraction: createPetInteractionDTO = {
                 account: account.id as string,
                 pet: pet.id as string,
                 status: "disliked",
             } as createPetInteractionDTO;
 
-            const interaction = await accountPetInteractionService.create(newInteraction);
-            if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
+            if (hasInteraction) {
+                await accountPetInteractionService.updateStatus(newInteraction);
+            } else {
+                const interaction = await accountPetInteractionService.create(newInteraction);
+                if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
+            }
+
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao rejeitar adotação.");
@@ -158,14 +164,19 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             const history = await historyRepository.create(newHistory as CreateHistoryDTO);
             if (!history) throw ThrowError.internal("Erro ao solicitar adotação.");
 
+            const hasInteraction = await accountPetInteractionService.getPetInteractionByAccount(account.id as string, pet.id as string);
             const newInteraction: createPetInteractionDTO = {
                 account: account.id as string,
                 pet: pet.id as string,
                 status: "liked",
             } as createPetInteractionDTO;
 
-            const interaction = await accountPetInteractionService.create(newInteraction);
-            if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
+            if (hasInteraction) {
+                await accountPetInteractionService.updateStatus(newInteraction);
+            } else {
+                const interaction = await accountPetInteractionService.create(newInteraction);
+                if (!interaction) throw ThrowError.internal("Erro ao solicitar adotação.");
+            }
 
             return history;
 

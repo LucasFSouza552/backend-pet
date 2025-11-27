@@ -14,8 +14,14 @@ export default class AccountPetInteractionRepository {
         );
     }
 
+    async deleteInteraction(accountId: string, petId: string) {
+        return await AccountPetInteraction.findOneAndDelete({ account: accountId, pet: petId });
+    }
+
     async getByAccount(account: string) {
-        return await AccountPetInteraction.find({ account, status: { $ne: "viewed" } }).lean({ virtuals: true }).exec();
+        return await AccountPetInteraction.find({ account, status: { $ne: "viewed" } }).populate({
+            path: "pet",
+        }).exec();
     }
 
     async getByAccountWithPets(account: string) {
@@ -40,5 +46,9 @@ export default class AccountPetInteractionRepository {
 
     async getViewedPets(accountId: string) {
         return await AccountPetInteraction.find({ account: accountId, status: "viewed" });
+    }
+
+    async getPetInteractionByAccount(accountId: string, petId: string) {
+        return await AccountPetInteraction.findOne({ account: accountId, pet: petId });
     }
 }
