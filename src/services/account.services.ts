@@ -185,7 +185,6 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         try {
             const interactions = await accountPetInteractionRepository.getByAccount(accountId);
             const seenPetIds = interactions.map(i => i.pet instanceof Types.ObjectId && i.pet?._id ? i.pet._id : new Types.ObjectId(i.pet as string));
-
             const nextPet = await petRepository.getNextAvailable(seenPetIds);
             if (!nextPet) {
                 return null;

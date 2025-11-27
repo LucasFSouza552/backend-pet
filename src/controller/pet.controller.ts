@@ -99,13 +99,10 @@ export default class PetController implements IController {
             const petId = req.params?.id;
             const accountId = req.account?.id;
 
-            console.log(petId, accountId);
-
             if (!petId) throw ThrowError.badRequest("ID não foi informado.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
             const history = await petService.likePet(petId, accountId);
-            console.log(history);
             res.status(200).json(history);
         } catch (error) {
             next(error);

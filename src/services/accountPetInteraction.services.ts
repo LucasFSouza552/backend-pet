@@ -1,13 +1,23 @@
 // DTOS
 import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
+import { UpdateHistoryDTO } from "@dtos/historyDTO";
 
 // Errors
 import { ThrowError } from "@errors/ThrowError";
 
 // Repositories
-import { accountPetInteractionRepository } from "@repositories/index";
+import { accountPetInteractionRepository, historyRepository } from "@repositories/index";
 
 export default class AccountPetInteractionService {
+
+    async getPetInteractionByAccount(accountId: string, petId: string) {
+        try {
+            return await accountPetInteractionRepository.getPetInteractionByAccount(accountId, petId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao buscar interação com pet.");
+        }
+    }
 
     async getPetInteraction(petId: string) {
         try {
@@ -29,10 +39,27 @@ export default class AccountPetInteractionService {
 
     async updateStatus(updateData: createPetInteractionDTO) {
         try {
-            return await accountPetInteractionRepository.updateStatus(updateData);
+            const history = await historyRepository.getByAccountAndPet(updateData.account.toString(), updateData.pet.toString());
+            if (history) {
+                await historyRepository.update(history?.id, {
+                    status: "cancelled",
+                } as UpdateHistoryDTO);
+            }
+            const updated = await accountPetInteractionRepository.updateStatus(updateData);
+            
+            return updated;
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao atualizar a interação com pet.")
+        }
+    }
+
+    async deleteInteraction(accountId: string, petId: string) {
+        try {
+            return await accountPetInteractionRepository.deleteInteraction(accountId, petId);
+        } catch (error) {
+            if (error instanceof ThrowError) throw error;
+            throw ThrowError.internal("Erro ao deletar a interação com pet.")
         }
     }
 

@@ -12,6 +12,11 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     async softDelete(petId: string) {
         await Pet.findByIdAndUpdate(petId, { deletedAt: new Date() });
     }
+
+    async getALL() {
+        return await Pet.find({ adopted: false });
+    }
+
     async getAll(filter: Filter): Promise<IPet[]> {
         const { page, limit, orderBy, order, query } = filter;
 
