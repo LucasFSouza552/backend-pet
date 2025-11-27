@@ -74,7 +74,6 @@ export default class CommentService implements IService<CreateCommentDTO, Update
             }
 
             const post = await postRepository.getById(commentParent.post.toString());
-            console.log("POST: ",post);
             if (!post) {
                 throw ThrowError.badRequest("Post associado ao comentário não existe.");
             };

@@ -44,7 +44,6 @@ export default class CommentController implements IController {
             }
 
             const comments = await commentService.getAllByPost(postId, filters);
-                console.log(comments.length);
             res.status(200).json(comments);
         } catch (error) {
             next(error);

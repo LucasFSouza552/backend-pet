@@ -46,7 +46,6 @@ export default class AccountPetInteractionService {
                 } as UpdateHistoryDTO);
             }
             const updated = await accountPetInteractionRepository.updateStatus(updateData);
-            console.log(updated);
             
             return updated;
         } catch (error) {

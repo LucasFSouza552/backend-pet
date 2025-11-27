@@ -73,7 +73,6 @@ export default class AuthService {
             });
         } catch (error) {
             if (error instanceof ThrowError) throw error;
-            console.log(error);
             throw ThrowError.internal("Não foi possível reenviar o email de confirmação.");
         }
     }

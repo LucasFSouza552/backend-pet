@@ -120,7 +120,6 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
 
             if (pet.account === accountId) throw ThrowError.conflict("Usuário proprietário.");
             const hasInteraction = await accountPetInteractionService.getPetInteractionByAccount(account.id as string, pet.id as string);
-            console.log("hasInteraction", hasInteraction);
             const newInteraction: createPetInteractionDTO = {
                 account: account.id as string,
                 pet: pet.id as string,

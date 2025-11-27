@@ -147,7 +147,6 @@ export default class AuthController {
     }
 
     async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-        console.log("resetPassword called");
         try {
             const token = req.body?.token;
             const password = req.body?.password;

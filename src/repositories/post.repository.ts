@@ -41,7 +41,6 @@ export default class PostRepository implements IRepository<CreatePostDTO, Update
             })
             .lean({ virtuals: true })
             .exec();
-        console.log(post);
         return post as unknown as PostWithAccount;
     }
 

@@ -178,7 +178,6 @@ export default class PostController implements IController {
         try {
             const allowedQueryFields: string[] = ["content"];
             const filters: Filter = filterConfig<IPost>(req.query, allowedQueryFields);
-            console.log(filters);
             const posts = await postService.search(filters);
             res.status(200).json(posts);
         } catch (error) {
