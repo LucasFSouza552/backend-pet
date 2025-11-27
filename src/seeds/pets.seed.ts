@@ -15,7 +15,7 @@ export const seedPets = async () => {
                 weight: 22.5,
                 images: [],
                 description: "Brincalhão, adora correr e se dá bem com crianças.",
-                adopted: true,
+                adopted: false,
                 account: institution?.id,
             },
             {

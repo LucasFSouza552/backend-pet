@@ -1,6 +1,5 @@
 import { IAccount } from "../../src/models/Account";
 import AccountService from '../../src/services/account.services';
-import { ThrowError } from '../../src/errors/ThrowError';
 import { ObjectId } from "mongodb";
 
 // Mock dos repositórios e dependências

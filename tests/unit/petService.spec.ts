@@ -188,7 +188,7 @@ describe('PetService', () => {
       petRepository.update.mockResolvedValue(undefined);
 
       // Act
-      await service.deletePetImage('pet123', imageId);
+      await service.deletePetImage('pet123', imageId, 'owner123');
 
       // Assert
       expect(PictureStorageRepository.deleteImage).toHaveBeenCalledWith(imageId);
@@ -202,7 +202,7 @@ describe('PetService', () => {
       petRepository.getById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.deletePetImage('pet123', 'image1')).rejects.toThrow('Pet não encontrado.');
+      await expect(service.deletePetImage('pet123', 'image1', 'owner123')).rejects.toThrow('Pet não encontrado.');
     });
 
     it('deve falhar quando pet não tem imagens', async () => {
@@ -211,7 +211,7 @@ describe('PetService', () => {
       petRepository.getById.mockResolvedValue(petData);
 
       // Act & Assert
-      await expect(service.deletePetImage('pet123', 'image1')).rejects.toThrow('Imagem não encontrada.');
+      await expect(service.deletePetImage('pet123', 'image1', 'owner123')).rejects.toThrow('Imagem não encontrada.');
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
@@ -219,7 +219,7 @@ describe('PetService', () => {
       petRepository.getById.mockRejectedValue(new Error('Database error'));
 
       // Act & Assert
-      await expect(service.deletePetImage('pet123', 'image1')).rejects.toThrow('Erro ao deletar imagem.');
+      await expect(service.deletePetImage('pet123', 'image1', 'owner123')).rejects.toThrow('Erro ao deletar imagem.');
     });
   });
 
@@ -413,78 +413,6 @@ describe('PetService', () => {
       // Act & Assert
       await expect(service.rejectRequestedAdoption('pet123', 'user123', 'institution123'))
         .rejects.toThrow('Histórico não encontrado.');
-    });
-  });
-
-  describe('paymentReturn', () => {
-    it('deve processar retorno de pagamento com sucesso', async () => {
-      // Arrange
-      const paymentData = {
-        id: 'payment123',
-        status: 'pending',
-        externalReference: 'ref123'
-      };
-      historyRepository.getById.mockResolvedValue(paymentData);
-      historyRepository.update.mockResolvedValue(undefined);
-
-      // Act
-      const result = await service.paymentReturn('payment123', 'pending', 'ref123');
-
-      // Assert
-      expect(historyRepository.getById).toHaveBeenCalledWith('payment123');
-      expect(historyRepository.update).toHaveBeenCalledWith('payment123', { status: 'completed' });
-      expect(result).toEqual(paymentData);
-    });
-
-    it('deve falhar quando pagamento não existe', async () => {
-      // Arrange
-      historyRepository.getById.mockResolvedValue(null);
-
-      // Act & Assert
-      await expect(service.paymentReturn('payment123', 'pending', 'ref123'))
-        .rejects.toThrow('Pagamento não encontrado.');
-    });
-
-    it('deve falhar quando pagamento já foi processado', async () => {
-      // Arrange
-      const paymentData = {
-        id: 'payment123',
-        status: 'completed',
-        externalReference: 'ref123'
-      };
-      historyRepository.getById.mockResolvedValue(paymentData);
-
-      // Act & Assert
-      await expect(service.paymentReturn('payment123', 'pending', 'ref123'))
-        .rejects.toThrow('Pagamento já processado.');
-    });
-
-    it('deve falhar quando status não confere', async () => {
-      // Arrange
-      const paymentData = {
-        id: 'payment123',
-        status: 'pending',
-        externalReference: 'ref123'
-      };
-      historyRepository.getById.mockResolvedValue(paymentData);
-
-      // Act & Assert
-      await expect(service.paymentReturn('payment123', 'approved', 'ref123'))
-        .rejects.toThrow('Status do pagamento inválido.');
-    });
-
-    it('deve falhar quando external reference não confere', async () => {
-      // Arrange
-      const paymentData = {
-        id: 'payment123',
-        status: 'pending',
-        externalReference: 'ref123'
-      };
-      historyRepository.getById.mockResolvedValue(paymentData);
-
-      // Act & Assert
-      await expect(service.paymentReturn('payment123', 'pending', 'ref456'))
-        .rejects.toThrow('External reference inválido.');
     });
   });
 

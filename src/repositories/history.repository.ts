@@ -66,7 +66,11 @@ export default class HistoryRepository implements IRepository<CreateHistoryDTO, 
     }
 
     async getByAccountAndPet(account: string, pet: string): Promise<IHistory | null> {
-        return await History.findOne({ account: new Types.ObjectId(account), pet: new Types.ObjectId(pet) });
+        return await History.findOne({ account: new Types.ObjectId(account), pet: new Types.ObjectId(pet)});
+    }
+
+    async getPendingByAccountAndPet(account: string, pet: string): Promise<IHistory | null> {
+        return await History.findOne({ account: new Types.ObjectId(account), pet: new Types.ObjectId(pet), status: "pending" });
     }
 
 }

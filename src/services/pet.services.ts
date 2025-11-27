@@ -193,8 +193,9 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
             if (pet.adopted) throw ThrowError.conflict("Pet já foi adotado.");
             if (pet.account.toString() !== institutionId) throw ThrowError.conflict("Somente a instituição pode aceitar adotação.");
 
-            const history = await historyRepository.getByAccountAndPet(accountId, petId);
+            const history = await historyRepository.getPendingByAccountAndPet(accountId, petId);
             if (!history) throw ThrowError.notFound("Histórico não encontrado.");
+             
             if (history.status !== "pending") throw ThrowError.conflict("Histórico já processado.");
 
             await historyRepository.update(history.id, { status: "completed" });
@@ -206,6 +207,9 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
                     await historyRepository.update(history.id, { status: "cancelled" });
                 }
             }
+
+            // Achievement
+            await accountService.addAdoptionAchievement(accountId);
 
             if (!updatedPet) throw ThrowError.internal("Erro ao aceitar adotação.");
             return updatedPet;

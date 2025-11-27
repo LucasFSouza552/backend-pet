@@ -143,24 +143,24 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-    async addAdoptionAchievement(id: string): Promise<void> {
+    async addAdoptionAchievement(account: string): Promise<void> {
         try {
-            const account = await accountRepository.getById(id);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+            const accountData = await accountRepository.getById(account);
+            if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("adoption");
-            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
+            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
         } catch (error) {
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
         }
     }
 
-    async addSponsorshipsAchievement(id: string): Promise<void> {
+    async addSponsorshipsAchievement(account: string): Promise<void> {
         try {
-            const account = await accountRepository.getById(id);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+            const accountData = await accountRepository.getById(account);
+            if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("sponsorship");
-            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
+            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -168,12 +168,12 @@ export default class AccountService implements IService<CreateAccountDTO, Update
         }
     }
 
-    async addDonationsAchievement(id: string): Promise<void> {
+    async addDonationsAchievement(account: string): Promise<void> {
         try {
-            const account = await accountRepository.getById(id);
-            if (!account) throw ThrowError.notFound("Usuário não encontrado.");
+            const accountData = await accountRepository.getById(account);
+            if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("donation");
-            await accountAchievementRepository.addAchievement({ account: id, achievement: achievements?.id } as addAchievement);
+            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
