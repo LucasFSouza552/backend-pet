@@ -10,4 +10,9 @@ export default class AccountAchievementRepository {
         return await AccountAchievement.create(achievements);
     }
 
+    async existsByAccountAndAchievement(account: string, achievement: string): Promise<boolean> {
+        const existing = await AccountAchievement.findOne({ account, achievement });
+        return !!existing;
+    }
+
 }

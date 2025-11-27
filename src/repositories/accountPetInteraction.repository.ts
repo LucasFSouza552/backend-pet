@@ -29,6 +29,10 @@ export default class AccountPetInteractionRepository {
             .find({ account, status: { $ne: "viewed" } })
             .populate({
                 path: "pet",
+                match: { 
+                    adopted: false,
+                    deletedAt: null
+                },
                 populate: {
                     path: "account",
                     select: "-password"
@@ -36,7 +40,7 @@ export default class AccountPetInteractionRepository {
             })
             .exec();
 
-        return accountpetInteraction;
+        return accountpetInteraction.filter(interaction => interaction.pet !== null);
     }
 
 

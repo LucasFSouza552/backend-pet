@@ -19,6 +19,8 @@ import { historyRepository, petRepository } from "@repositories/index";
 // Services
 import { accountPetInteractionService, accountService, notificationService } from "./index";
 import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
+import IHistory from "@models/history";
+import { IAccount } from "@models/account";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {
     async requestedAdoption(institutionId: string) {
@@ -208,8 +210,7 @@ export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, 
                 }
             }
 
-            // Achievement
-            await accountService.addAdoptionAchievement(accountId);
+            await accountService.addAdoptionAchievement(accountId as string);
 
             if (!updatedPet) throw ThrowError.internal("Erro ao aceitar adotação.");
             return updatedPet;

@@ -34,6 +34,7 @@ import {
 import { PictureStorageRepository } from "@repositories/pictureStorage.repository";
 import petMapper from "@Mappers/petMapper";
 import { PetDTO } from "@dtos/petDTO";
+import { IAccount } from "@models/account";
 
 export default class AccountService implements IService<CreateAccountDTO, UpdateAccountDTO, AccountDTO> {
     async search(filters: Filter) {
@@ -148,8 +149,23 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const accountData = await accountRepository.getById(account);
             if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("adoption");
-            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
+            if (!achievements) throw ThrowError.notFound("Conquista não encontrada.");
+            
+            const alreadyHasAchievement = await accountAchievementRepository.existsByAccountAndAchievement(
+                account, 
+                achievements.id as string
+            );
+            
+            if (alreadyHasAchievement) {
+                return;
+            }
+            
+            await accountAchievementRepository.addAchievement({ 
+                account: account,
+                achievement: achievements.id as string 
+            } as addAchievement);
         } catch (error) {
+            console.log(error);
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
         }
@@ -160,7 +176,21 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const accountData = await accountRepository.getById(account);
             if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("sponsorship");
-            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
+            if (!achievements) throw ThrowError.notFound("Conquista não encontrada.");
+            
+            const alreadyHasAchievement = await accountAchievementRepository.existsByAccountAndAchievement(
+                account, 
+                achievements.id as string
+            );
+            
+            if (alreadyHasAchievement) {
+                return;
+            }
+            
+            await accountAchievementRepository.addAchievement({ 
+                account: account,
+                achievement: achievements.id as string 
+            } as addAchievement);
 
         } catch (error) {
             if (error instanceof ThrowError) throw error;
@@ -173,9 +203,24 @@ export default class AccountService implements IService<CreateAccountDTO, Update
             const accountData = await accountRepository.getById(account);
             if (!accountData) throw ThrowError.notFound("Usuário não encontrado.");
             const achievements = await achievementRepository.getByType("donation");
-            await accountAchievementRepository.addAchievement({ account: accountData.id as string, achievement: achievements?.id } as addAchievement);
+            if (!achievements) throw ThrowError.notFound("Conquista não encontrada.");
+            
+            const alreadyHasAchievement = await accountAchievementRepository.existsByAccountAndAchievement(
+                account, 
+                achievements.id as string
+            );
+            
+            if (alreadyHasAchievement) {
+                return;
+            }
+            
+            await accountAchievementRepository.addAchievement({ 
+                account: account,
+                achievement: achievements.id as string 
+            } as addAchievement);
 
         } catch (error) {
+            console.log(error);
             if (error instanceof ThrowError) throw error;
             throw ThrowError.internal("Erro ao adicionar conquista.");
         }
