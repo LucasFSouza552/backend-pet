@@ -23,7 +23,7 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     async getAll(filter: Filter): Promise<IPet[]> {
         const { page, limit, orderBy, order, query } = filter;
 
-        const pets = await Pet.find({...query, adopted: false} as FilterQuery<IPet>)
+        const pets = await Pet.find({ ...query, adopted: false } as FilterQuery<IPet>)
             .sort({ [orderBy]: order, _id: 1 })
             .skip((page - 1) * limit)
             .limit(limit)
@@ -51,17 +51,12 @@ export default class PetRepository implements IRepository<CreatePetDTO, UpdatePe
     }
 
     async getNextAvailable(seenPetIds: Types.ObjectId[]): Promise<IPet | null> {
-        const [nextPet] = await Pet.aggregate([
-            {
-                $match: {
-                    _id: { $nin: seenPetIds },
-                    adopted: false,
-                },
-            },
-            { $sample: { size: 1 } },
-        ]);
-
-
-        return await Pet.findById(nextPet?._id).sort({ createdAt: -1 }).populate("account", "name address");
+        return await Pet.findOne({
+            _id: { $nin: seenPetIds },
+            adopted: false,
+        })
+            .sort({ createdAt: 1 })
+            .populate("account", "name address")
+            .exec();
     }
 }
