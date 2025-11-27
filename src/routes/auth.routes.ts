@@ -14,7 +14,7 @@ router.post("/register", authController.register);
 router.post("/send-email-verification", AuthMiddleware, authorizationMiddleware(["admin"]), authController.sendEmailVerification);
 
 // Rota para verificar o email
-router.get("/verify-email", authController.verifyEmail);
+router.post("/verify-email", authController.verifyEmail);
 
 // Rota para reenviar o email de verificação
 router.post("/forgot-password", authController.forgotPassword);

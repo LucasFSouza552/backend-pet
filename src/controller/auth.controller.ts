@@ -122,8 +122,11 @@ export default class AuthController {
             }
 
             await authService.verifyEmail(token);
-            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-            res.redirect(`${frontendUrl}/login`);
+
+            res.json({
+                success: true,
+                message: "Email verificado com sucesso"
+            });
         } catch (error) {
             next(error);
         }
