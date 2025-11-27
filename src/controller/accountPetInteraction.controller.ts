@@ -58,11 +58,11 @@ export default class AccountPetInteractionController {
         try {
             const accountId = req.account?.id as string;
             const petId = req.params.id as string;
-            
+
             if (!petId) throw ThrowError.badRequest("Pet não foi informado.");
             if (!accountId) throw ThrowError.badRequest("Conta não foi informada.");
 
-            const PetInteraction: createPetInteractionDTO = {pet: petId, status: "viewed", account: accountId} as createPetInteractionDTO;
+            const PetInteraction: createPetInteractionDTO = { pet: petId, status: "viewed", account: accountId } as createPetInteractionDTO;
 
             const updatePetDTO: createPetInteractionDTO = new BuilderDTO<createPetInteractionDTO>(PetInteraction as any)
                 .add({ key: "account" })

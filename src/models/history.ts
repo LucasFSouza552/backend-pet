@@ -13,6 +13,7 @@ export default interface IHistory extends Document {
     createdAt: Date;
     updatedAt: Date;
     urlPayment?: string | null;
+    expiresAt?: Date | null;
 }
 
 const historySchema = new Schema<IHistory>({
@@ -51,6 +52,11 @@ const historySchema = new Schema<IHistory>({
     },
     urlPayment: {
         type: String,
+        required: false,
+        default: null
+    },
+    expiresAt: {
+        type: Date,
         required: false,
         default: null
     }

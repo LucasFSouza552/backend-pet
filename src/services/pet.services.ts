@@ -17,7 +17,7 @@ import { PictureStorageRepository } from "@repositories/pictureStorage.repositor
 import { historyRepository, petRepository } from "@repositories/index";
 
 // Services
-import { accountPetInteractionService, accountService } from "./index";
+import { accountPetInteractionService, accountService, notificationService } from "./index";
 import { createPetInteractionDTO } from "@dtos/accountPetInteractionDTO";
 
 export default class PetService implements IService<CreatePetDTO, UpdatePetDTO, IPet> {

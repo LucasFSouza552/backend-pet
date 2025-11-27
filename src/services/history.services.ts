@@ -164,12 +164,15 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             if (!response) throw ThrowError.internal("Erro ao doar para petApp.");
 
+            const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
             const newHistory: CreateHistoryDTO = {
                 type: "donation",
                 amount: amount,
                 account: account.id as string,
                 status: "pending",
-                urlPayment: response.init_point as string
+                urlPayment: response.init_point as string,
+                expiresAt
             } as CreateHistoryDTO;
 
             const history = await historyRepository.create(newHistory);
@@ -230,13 +233,16 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
             if (!response) throw ThrowError.internal("Erro ao patrocinar a instituição.");
 
+            const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
             const newHistory: CreateHistoryDTO = {
                 type: "sponsorship",
                 amount: amount,
                 account: account.id as string,
                 institution: institution.id as string,
                 status: "pending",
-                urlPayment: response.init_point as string
+                urlPayment: response.init_point as string,
+                expiresAt
             } as CreateHistoryDTO;
 
             const history = await historyRepository.create(newHistory);
@@ -257,6 +263,11 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
         try {
             const payment = await historyRepository.getById(paymentId);
             if (!payment) throw ThrowError.notFound("Pagamento não encontrado.");
+
+            if (payment.expiresAt && payment.expiresAt < new Date()) {
+                await historyRepository.update(payment.id as string, { status: "cancelled" });
+                throw ThrowError.conflict("Pagamento expirado.");
+            }
 
             if (payment.status !== "pending") throw ThrowError.conflict("Pagamento já processado.");
             if (payment.status !== status) throw ThrowError.conflict("Status do pagamento inválido.");
