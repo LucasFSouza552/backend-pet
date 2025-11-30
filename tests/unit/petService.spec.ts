@@ -1,4 +1,4 @@
-import PetService from '../../src/services/Pet.services';
+import PetService from '../../src/services/pet.services';
 import { ThrowError } from '../../src/errors/ThrowError';
 import { ObjectId } from 'mongodb';
 
@@ -10,6 +10,7 @@ jest.mock('../../src/repositories/index', () => ({
     update: jest.fn(),
     getRequestedAdoption: jest.fn(),
     getByAccountAndPet: jest.fn(),
+    getPendingByAccountAndPet: jest.fn(),
     getByPetId: jest.fn()
   },
   petRepository: {
@@ -36,10 +37,13 @@ jest.mock('../../src/repositories/pictureStorage.repository', () => ({
 
 jest.mock('../../src/services/index', () => ({
   accountService: {
-    getById: jest.fn()
+    getById: jest.fn(),
+    addAdoptionAchievement: jest.fn()
   },
   accountPetInteractionService: {
-    create: jest.fn()
+    create: jest.fn(),
+    getPetInteractionByAccount: jest.fn(),
+    updateStatus: jest.fn()
   }
 }));
 
@@ -112,13 +116,14 @@ describe('PetService', () => {
       expect(result).toHaveLength(2);
     }, 10000);
 
-    it('deve adicionar novas imagens às existentes', async () => {
+    it('deve substituir imagens existentes pelas novas', async () => {
       // Arrange
       const existingImageId = new ObjectId();
       const petData = createMockPet({ images: [existingImageId] });
       const files = [createMockFile()];
       const newImageId = new ObjectId();
       petRepository.getById.mockResolvedValue(petData);
+      PictureStorageRepository.deleteImage.mockResolvedValue(undefined);
       PictureStorageRepository.uploadImage.mockResolvedValue(newImageId);
       petRepository.update.mockResolvedValue(undefined);
 
@@ -126,14 +131,17 @@ describe('PetService', () => {
       const result = await service.updatePetImages('pet123', files);
 
       // Assert
-      expect(result).toContainEqual(existingImageId);
-      expect(result).toContainEqual(newImageId);
+      // O serviço deleta todas as imagens existentes e adiciona apenas as novas
+      expect(PictureStorageRepository.deleteImage).toHaveBeenCalledWith(existingImageId);
+      expect(result).toEqual([newImageId]);
+      expect(result).not.toContainEqual(existingImageId);
     }, 10000);
 
     it('deve falhar quando limite de imagens é atingido', async () => {
       // Arrange
-      const petData = createMockPet({ images: Array(5).fill(new ObjectId()) });
-      const files = [createMockFile()];
+      const petData = createMockPet({ images: [] });
+      // O serviço verifica se files.length > 5, não o total de imagens
+      const files = Array(6).fill(null).map(() => createMockFile());
       petRepository.getById.mockResolvedValue(petData);
 
       // Act & Assert
@@ -180,15 +188,19 @@ describe('PetService', () => {
   describe('deletePetImage', () => {
     it('deve deletar imagem do pet com sucesso', async () => {
       // Arrange
+      const ownerId = 'owner123';
       const imageId = new ObjectId().toHexString();
       const imageId2 = new ObjectId().toHexString();
-      const petData = createMockPet({ images: [imageId, imageId2] });
+      const petData = createMockPet({ 
+        images: [imageId, imageId2],
+        account: ownerId
+      });
       petRepository.getById.mockResolvedValue(petData);
       PictureStorageRepository.deleteImage.mockResolvedValue(undefined);
       petRepository.update.mockResolvedValue(undefined);
 
       // Act
-      await service.deletePetImage('pet123', imageId, 'owner123');
+      await service.deletePetImage('pet123', imageId, ownerId);
 
       // Assert
       expect(PictureStorageRepository.deleteImage).toHaveBeenCalledWith(imageId);
@@ -232,6 +244,7 @@ describe('PetService', () => {
       accountService.getById.mockResolvedValue(accountData);
       petRepository.getById.mockResolvedValue(petData);
       historyRepository.create.mockResolvedValue(historyData);
+      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null); // Não existe interação
       accountPetInteractionService.create.mockResolvedValue({});
 
       // Act
@@ -247,6 +260,7 @@ describe('PetService', () => {
         institution: petData.account,
         status: 'pending'
       });
+      expect(accountPetInteractionService.getPetInteractionByAccount).toHaveBeenCalledWith(accountData.id, petData.id);
       expect(accountPetInteractionService.create).toHaveBeenCalled();
       expect(result).toEqual(historyData);
     });
@@ -311,12 +325,16 @@ describe('PetService', () => {
       const petData = createMockPet({ account: 'owner123' });
       accountService.getById.mockResolvedValue(accountData);
       petRepository.getById.mockResolvedValue(petData);
+      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null); // Não existe interação
       accountPetInteractionService.create.mockResolvedValue({});
 
       // Act
       await service.dislikePet('pet123', 'user123');
 
       // Assert
+      expect(accountService.getById).toHaveBeenCalledWith('user123');
+      expect(petRepository.getById).toHaveBeenCalledWith('pet123');
+      expect(accountPetInteractionService.getPetInteractionByAccount).toHaveBeenCalledWith(accountData.id, petData.id);
       expect(accountPetInteractionService.create).toHaveBeenCalledWith({
         account: accountData.id,
         pet: petData.id,
@@ -343,18 +361,21 @@ describe('PetService', () => {
       const historyData = { id: 'history123', status: 'pending' };
       const otherHistory = { id: 'history456', status: 'pending' };
       petRepository.getById.mockResolvedValue(petData);
-      historyRepository.getByAccountAndPet.mockResolvedValue(historyData);
+      historyRepository.getPendingByAccountAndPet.mockResolvedValue(historyData);
       historyRepository.getByPetId.mockResolvedValue([historyData, otherHistory]);
       historyRepository.update.mockResolvedValue(undefined);
       petRepository.update.mockResolvedValue(petData);
+      accountService.addAdoptionAchievement.mockResolvedValue(undefined);
 
       // Act
       const result = await service.acceptRequestedAdoption('pet123', 'user123', 'institution123');
 
       // Assert
+      expect(historyRepository.getPendingByAccountAndPet).toHaveBeenCalledWith('user123', 'pet123');
       expect(historyRepository.update).toHaveBeenCalledWith(historyData.id, { status: 'completed' });
       expect(historyRepository.update).toHaveBeenCalledWith(otherHistory.id, { status: 'cancelled' });
       expect(petRepository.update).toHaveBeenCalledWith('pet123', { adopted: true, account: 'user123' });
+      expect(accountService.addAdoptionAchievement).toHaveBeenCalledWith('user123');
       expect(result).toEqual(petData);
     });
 

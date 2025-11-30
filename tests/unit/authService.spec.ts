@@ -1,5 +1,4 @@
 import AuthService from '../../src/services/Auth.services';
-import { ThrowError } from '../../src/errors/ThrowError';
 
 // Mock dos repositórios e dependências
 jest.mock('../../src/repositories/index', () => ({
@@ -303,7 +302,7 @@ describe('AuthService', () => {
       expect(JWT.isJwtTokenValid).toHaveBeenCalledWith(token);
       expect(authRepository.getById).toHaveBeenCalledWith('user123');
       expect(authRepository.updateVerificationToken).toHaveBeenCalled();
-      expect(result.verified).toBe(true);
+      expect(result).toBe(true);
     });
 
     it('deve falhar quando token está vazio', async () => {

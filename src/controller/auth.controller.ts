@@ -161,4 +161,22 @@ export default class AuthController {
             next(error);
         }
     }
+
+    async validateToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+
+            res.status(200).json({ 
+                valid: true,
+                message: "Token válido",
+                account: {
+                    id: req.account?.id,
+                    email: req.account?.email,
+                    name: req.account?.name,
+                    role: req.account?.role
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

@@ -28,4 +28,7 @@ router.put("/change-password", AuthMiddleware, authController.changePassword);
 // Rota para re-enviar o email de verificação
 router.post("/resend-verify-email", AuthMiddleware, authController.resendVerification);
 
+// Rota para validar se o token é válido
+router.get("/validate-token", AuthMiddleware, authController.validateToken);
+
 export default router;

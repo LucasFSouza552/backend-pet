@@ -27,7 +27,8 @@ jest.mock('../../src/repositories/index', () => ({
   },
   accountAchievementRepository: {
     getByAccountId: jest.fn(),
-    addAchievement: jest.fn()
+    addAchievement: jest.fn(),
+    existsByAccountAndAchievement: jest.fn()
   },
   achievementRepository: {
     getByType: jest.fn()
@@ -554,13 +555,18 @@ describe('AccountService', () => {
       // Arrange
       const userData = createMockAccount();
       const achievement = { id: 'ach1', type: 'donation' };
+    
       accountRepository.getById.mockResolvedValue(userData);
       achievementRepository.getByType.mockResolvedValue(achievement);
+    
+      // Mock que faltava
+      accountAchievementRepository.existsByAccountAndAchievement.mockResolvedValue(false);
+    
       accountAchievementRepository.addAchievement.mockResolvedValue(undefined);
-
+    
       // Act
       await service.addDonationsAchievement('user123');
-
+    
       // Assert
       expect(accountRepository.getById).toHaveBeenCalledWith('user123');
       expect(achievementRepository.getByType).toHaveBeenCalledWith('donation');
@@ -569,6 +575,7 @@ describe('AccountService', () => {
         achievement: 'ach1'
       });
     });
+    
 
     it('deve falhar quando usuário não existe', async () => {
       // Arrange
