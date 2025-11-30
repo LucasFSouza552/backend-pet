@@ -17,7 +17,6 @@ import { preference } from "@config/mergadopago";
 // Repositories
 import {
     historyRepository,
-    petRepository
 } from "@repositories/index";
 
 // Services
@@ -25,8 +24,6 @@ import {
     petService,
     accountService
 } from "./index";
-
-import { v4 as uuidv4 } from "uuid";
 
 
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
@@ -131,13 +128,13 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
     async donate(amount: string, accountId: string) {
         try {
-            const idempotencyKey = uuidv4();
+            const idempotencyKey = crypto.randomUUID();
 
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
 
-            const externalReference = `donation-${account.id}-${uuidv4()}`;
+            const externalReference = `donation-${account.id}-${idempotencyKey}`;
 
             const body = {
                 items: [
@@ -193,7 +190,7 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
     async sponsor(institutionId: string, amount: string | number, accountId: string) {
         try {
-            const idempotencyKey = uuidv4();
+            const idempotencyKey = crypto.randomUUID();
             const institution = await accountService.getById(institutionId);
             if (!institution) throw ThrowError.notFound("Instituição não encontrada.");
             const account = await accountService.getById(accountId);
