@@ -1,8 +1,6 @@
-import PostService from '../../src/services/Post.services';
-import { ThrowError } from '../../src/errors/ThrowError';
+import PostService from '../../src/services/post.services';
 import { ObjectId } from 'mongodb';
 
-// Mock dos repositórios e dependências
 jest.mock('../../src/repositories/index', () => ({
   postRepository: {
     getPostsByAccount: jest.fn(),
@@ -55,7 +53,6 @@ describe('PostService', () => {
   const { postRepository } = require('../../src/repositories/index');
   const { PictureStorageRepository } = require('../../src/repositories/pictureStorage.repository');
 
-  // Factory functions para dados de teste
   const createMockPost = (overrides?: any) => ({
     _id: new ObjectId(),
     id: new ObjectId().toString(),
@@ -80,18 +77,15 @@ describe('PostService', () => {
   });
 
   beforeEach(() => {
-    // Suprimir console.log e console.error durante os testes para evitar ruído
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.clearAllMocks();
-    // Resetar mocks do PictureStorageRepository
     PictureStorageRepository.uploadImage.mockResolvedValue(new ObjectId());
     PictureStorageRepository.deleteImage.mockResolvedValue(undefined);
     service = new PostService();
   });
 
   afterEach(() => {
-    // Restaurar console.log e console.error após os testes
     jest.restoreAllMocks();
   });
 
@@ -104,10 +98,8 @@ describe('PostService', () => {
       ];
       postRepository.getPostsByAccount.mockResolvedValue(posts);
 
-      // Act
       const result = await service.getPostsByAccount('user123');
 
-      // Assert
       expect(postRepository.getPostsByAccount).toHaveBeenCalledWith('user123');
       expect(result).toEqual(posts);
     });
@@ -116,10 +108,8 @@ describe('PostService', () => {
       // Arrange
       postRepository.getPostsByAccount.mockResolvedValue([]);
 
-      // Act
       const result = await service.getPostsByAccount('user123');
 
-      // Assert
       expect(result).toEqual([]);
     });
 
@@ -127,7 +117,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getPostsByAccount.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getPostsByAccount('user123')).rejects.toThrow('Não foi possível buscar os posts.');
     });
   });
@@ -157,10 +146,8 @@ describe('PostService', () => {
       ];
       postRepository.getPostsWithAuthor.mockResolvedValue(posts);
 
-      // Act
       const result = await service.getPostsWithAuthor({});
 
-      // Assert
       expect(postRepository.getPostsWithAuthor).toHaveBeenCalledWith({});
       expect(result).toHaveLength(2);
       expect(result[0]).toHaveProperty('id', 'post1');
@@ -171,7 +158,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getPostsWithAuthor.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getPostsWithAuthor({})).rejects.toThrow('Não foi possível buscar os posts.');
     });
   });
@@ -186,10 +172,8 @@ describe('PostService', () => {
       };
       postRepository.getPostWithAuthor.mockResolvedValue(post);
 
-      // Act
       const result = await service.getPostWithAuthor('post1');
 
-      // Assert
       expect(postRepository.getPostWithAuthor).toHaveBeenCalledWith('post1');
       expect(result).toHaveProperty('id', 'post1');
     });
@@ -198,7 +182,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getPostWithAuthor.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getPostWithAuthor('post1')).rejects.toThrow('Não foi possível buscar o post');
     });
   });
@@ -209,10 +192,8 @@ describe('PostService', () => {
       const posts = [createMockPost(), createMockPost()];
       postRepository.getTopPosts.mockResolvedValue(posts);
 
-      // Act
       const result = await service.getTopPosts();
 
-      // Assert
       expect(postRepository.getTopPosts).toHaveBeenCalled();
       expect(result).toEqual(posts);
     });
@@ -221,7 +202,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getTopPosts.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getTopPosts()).rejects.toThrow('Não foi possível buscar os posts.');
     });
   });
@@ -239,10 +219,8 @@ describe('PostService', () => {
       postRepository.getById.mockResolvedValue(post);
       postRepository.addLike.mockResolvedValue(updatedPost);
 
-      // Act
       const result = await service.toggleLike('post123', accountId.toString());
 
-      // Assert
       expect(postRepository.getById).toHaveBeenCalledWith('post123');
       expect(postRepository.addLike).toHaveBeenCalledWith('post123', accountId.toString());
       expect(result).toHaveProperty('id');
@@ -261,29 +239,23 @@ describe('PostService', () => {
       postRepository.getById.mockResolvedValue(post);
       postRepository.removeLike.mockResolvedValue(updatedPost);
 
-      // Act
       const result = await service.toggleLike('post123', accountId.toString());
 
-      // Assert
       expect(postRepository.getById).toHaveBeenCalledWith('post123');
       expect(postRepository.removeLike).toHaveBeenCalledWith('post123', accountId.toString());
       expect(result).toHaveProperty('id');
     });
 
     it('deve retornar null quando postId é inválido', async () => {
-      // Act
       const result = await service.toggleLike('', 'user123');
 
-      // Assert
       expect(result).toBeNull();
       expect(postRepository.getById).not.toHaveBeenCalled();
     });
 
     it('deve retornar null quando accountId é inválido', async () => {
-      // Act
       const result = await service.toggleLike('post123', '');
 
-      // Assert
       expect(result).toBeNull();
       expect(postRepository.getById).not.toHaveBeenCalled();
     });
@@ -292,10 +264,8 @@ describe('PostService', () => {
       // Arrange
       postRepository.getById.mockResolvedValue(null);
 
-      // Act
       const result = await service.toggleLike('post123', 'user123');
 
-      // Assert
       expect(result).toBeNull();
     });
 
@@ -305,7 +275,6 @@ describe('PostService', () => {
       postRepository.getById.mockResolvedValue(post);
       postRepository.addLike.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.toggleLike('post123', 'user123')).rejects.toThrow('Não foi possível curtir o post.');
     });
   });
@@ -317,10 +286,8 @@ describe('PostService', () => {
       const updatedPost = createMockPost(updateData);
       postRepository.update.mockResolvedValue(updatedPost);
 
-      // Act
       const result = await service.updateComment('post123', updateData);
 
-      // Assert
       expect(postRepository.update).toHaveBeenCalledWith('post123', updateData);
       expect(result).toEqual(updatedPost);
     });
@@ -331,7 +298,6 @@ describe('PostService', () => {
         throw new Error('Database error');
       });
 
-      // Act & Assert
       expect(() => service.updateComment('post123', { content: 'Novo comentário' }))
         .toThrow('Não foi possível atualizar o comentário.');
     });
@@ -343,10 +309,8 @@ describe('PostService', () => {
       const posts = [createMockPost(), createMockPost()];
       postRepository.getAll.mockResolvedValue(posts);
 
-      // Act
       const result = await service.getAll({});
 
-      // Assert
       expect(postRepository.getAll).toHaveBeenCalledWith({});
       expect(result).toEqual(posts);
     });
@@ -355,10 +319,8 @@ describe('PostService', () => {
       // Arrange
       postRepository.getAll.mockResolvedValue([]);
 
-      // Act
       const result = await service.getAll({});
 
-      // Assert
       expect(result).toEqual([]);
     });
 
@@ -366,7 +328,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getAll.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getAll({})).rejects.toThrow('Não foi possível buscar os posts.');
     });
   });
@@ -377,10 +338,8 @@ describe('PostService', () => {
       const post = createMockPost();
       postRepository.getById.mockResolvedValue(post);
 
-      // Act
       const result = await service.getById('post123');
 
-      // Assert
       expect(postRepository.getById).toHaveBeenCalledWith('post123');
       expect(result).toHaveProperty('id');
     });
@@ -389,10 +348,8 @@ describe('PostService', () => {
       // Arrange
       postRepository.getById.mockResolvedValue(null);
 
-      // Act
       const result = await service.getById('post123');
 
-      // Assert
       expect(result).toBeNull();
     });
 
@@ -400,7 +357,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getById.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.getById('post123')).rejects.toThrow('Não foi possível buscar o post.');
     });
   });
@@ -415,10 +371,8 @@ describe('PostService', () => {
       const createdPost = createMockPost({ ...postData, image: [] });
       postRepository.create.mockResolvedValue(createdPost);
 
-      // Act
       const result = await service.create(postData);
 
-      // Assert
       expect(postRepository.create).toHaveBeenCalledWith({
         ...postData,
         image: []
@@ -442,10 +396,8 @@ describe('PostService', () => {
         .mockResolvedValueOnce(imageId2);
       postRepository.create.mockResolvedValue(createdPost);
 
-      // Act
       const result = await service.create(postData, files);
 
-      // Assert
       expect(PictureStorageRepository.uploadImage).toHaveBeenCalledTimes(2);
       expect(postRepository.create).toHaveBeenCalledWith({
         ...postData,
@@ -469,10 +421,8 @@ describe('PostService', () => {
         .mockResolvedValueOnce(null);
       postRepository.create.mockResolvedValue(createdPost);
 
-      // Act
       const result = await service.create(postData, files);
 
-      // Assert
       expect(PictureStorageRepository.uploadImage).toHaveBeenCalledTimes(2);
       expect(postRepository.create).toHaveBeenCalledWith({
         ...postData,
@@ -490,10 +440,8 @@ describe('PostService', () => {
       const createdPost = createMockPost({ ...postData, image: [] });
       postRepository.create.mockResolvedValue(createdPost);
 
-      // Act
       const result = await service.create(postData, []);
 
-      // Assert
       expect(PictureStorageRepository.uploadImage).not.toHaveBeenCalled();
       expect(postRepository.create).toHaveBeenCalledWith({
         ...postData,
@@ -510,7 +458,6 @@ describe('PostService', () => {
       };
       postRepository.create.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.create(postData)).rejects.toThrow('Não foi possível criar o post.');
     });
   });
@@ -522,10 +469,8 @@ describe('PostService', () => {
       const updatedPost = createMockPost(updateData);
       postRepository.update.mockResolvedValue(updatedPost);
 
-      // Act
       const result = await service.update('post123', updateData);
 
-      // Assert
       expect(postRepository.update).toHaveBeenCalledWith('post123', updateData);
       expect(result).toEqual(updatedPost);
     });
@@ -534,7 +479,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.update.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.update('post123', { content: 'Post atualizado' }))
         .rejects.toThrow('Não foi possível atualizar o post.');
     });
@@ -545,10 +489,8 @@ describe('PostService', () => {
       // Arrange
       postRepository.delete.mockResolvedValue(undefined);
 
-      // Act
       await service.delete('post123');
 
-      // Assert
       expect(postRepository.delete).toHaveBeenCalledWith('post123');
     });
 
@@ -556,7 +498,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.delete.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.delete('post123')).rejects.toThrow('Não foi possível deletar o post.');
     });
   });
@@ -569,10 +510,8 @@ describe('PostService', () => {
       postRepository.getById.mockResolvedValue(post);
       postRepository.softDelete.mockResolvedValue(undefined);
 
-      // Act
       const result = await service.softDelete('post123', accountId.toString());
 
-      // Assert
       expect(postRepository.softDelete).toHaveBeenCalledWith('post123');
     });
 
@@ -580,7 +519,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.getById.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(service.softDelete('post123', 'user123'))
         .rejects.toThrow('A publicação não foi encontrada.');
     });
@@ -590,7 +528,6 @@ describe('PostService', () => {
       const post = createMockPost({ deletedAt: new Date() });
       postRepository.getById.mockResolvedValue(post);
 
-      // Act & Assert
       await expect(service.softDelete('post123', 'user123'))
         .rejects.toThrow('A publicação já foi deletada.');
     });
@@ -602,10 +539,8 @@ describe('PostService', () => {
       const post = createMockPost({ account: ownerId });
       postRepository.getById.mockResolvedValue(post);
 
-      // Act
       const result = await service.softDelete('post123', userId.toString());
 
-      // Assert
       expect(result).toBeNull();
       expect(postRepository.softDelete).not.toHaveBeenCalled();
     });
@@ -621,10 +556,8 @@ describe('PostService', () => {
       ];
       postRepository.search.mockResolvedValue(posts);
 
-      // Act
       const result = await service.search(filter);
 
-      // Assert
       expect(postRepository.search).toHaveBeenCalledWith(filter);
       expect(result).toEqual(posts);
     });
@@ -634,10 +567,8 @@ describe('PostService', () => {
       const filter = { content: 'inexistente' };
       postRepository.search.mockResolvedValue([]);
 
-      // Act
       const result = await service.search(filter);
 
-      // Assert
       expect(result).toEqual([]);
     });
 
@@ -645,7 +576,6 @@ describe('PostService', () => {
       // Arrange
       postRepository.search.mockRejectedValue(new Error('Database error'));
 
-      // Act & Assert
       await expect(service.search({ content: 'test' })).rejects.toThrow('Não foi possível buscar os posts.');
     });
   });

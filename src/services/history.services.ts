@@ -26,6 +26,9 @@ import {
     accountService
 } from "./index";
 
+import { v4 as uuidv4 } from "uuid";
+
+
 export default class HistoryService implements IService<CreateHistoryDTO, UpdateHistoryDTO, HistoryDTO> {
     async getByAccount(filter: Filter, accountId: string) {
         try {
@@ -128,7 +131,6 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
     async donate(amount: string, accountId: string) {
         try {
-            const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
 
             const account = await accountService.getById(accountId);
@@ -191,19 +193,15 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
 
     async sponsor(institutionId: string, amount: string | number, accountId: string) {
         try {
-            console.log("amount", amount, amount, accountId);
-            const { v4: uuidv4 } = await import('uuid');
             const idempotencyKey = uuidv4();
-
             const institution = await accountService.getById(institutionId);
             if (!institution) throw ThrowError.notFound("Instituição não encontrada.");
-
             const account = await accountService.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");
 
             if (institution.id === accountId) throw ThrowError.conflict("Usuário proprietário.");
 
-            const externalReference = `${institution.id}-${account.id}-${uuidv4()}`;
+            const externalReference = `${institution.id}-${account.id}-${idempotencyKey}`;
 
             const body = {
                 items: [
@@ -229,7 +227,6 @@ export default class HistoryService implements IService<CreateHistoryDTO, Update
             } as any;
 
             const response = await preference.create({ body, requestOptions: { idempotencyKey: idempotencyKey } });
-            console.log("response");
             if (!response) throw ThrowError.internal("Erro ao patrocinar a instituição.");
 
             const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
