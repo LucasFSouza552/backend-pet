@@ -24,7 +24,7 @@ router.patch("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), petCont
 router.delete("/:id", AuthMiddleware, authorizationMiddleware(["admin"]), petController.delete);
 
 // Rota para retornar todos os pets disponíveis
-router.get("/avaliable", AuthMiddleware, petController.getAvailable);
+router.get("/avaliable", petController.getAvailable);
 
 // Rota para retornar um pet pelo id
 router.get("/:id", AuthMiddleware, petController.getById);

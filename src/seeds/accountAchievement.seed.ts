@@ -9,7 +9,7 @@ export const seedAccountAchievements = async () => {
     const achievements = await Achievements.find();
 
     if (users.length === 0 || achievements.length === 0) {
-        console.log("⚠️ AccountAchievements seed skipped: Need users and achievements first");
+        console.log("AccountAchievements seed skipped: Need users and achievements first");
         return;
     }
 
@@ -58,6 +58,6 @@ export const seedAccountAchievements = async () => {
 
     await AccountAchievement.create(accountAchievements);
 
-    console.log("✅ AccountAchievements seed executed");
+    console.log("AccountAchievements seed executed");
 };
 

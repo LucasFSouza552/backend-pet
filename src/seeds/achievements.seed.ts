@@ -21,5 +21,5 @@ export const seedAchievements = async () => {
         },
     ]);
 
-    console.log("✅ Achievements seed executed");
+    console.log("Achievements seed executed");
 }

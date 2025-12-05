@@ -4,12 +4,12 @@ import { Post } from "@models/post";
 export const seedPosts = async () => {
     try {
         await Post.deleteMany({});
-        console.log("🗑️ Posts anteriores removidos");
+        console.log("Posts anteriores removidos");
 
         const account = await Account.findOne({ role: "admin" });
 
         if (!account) {
-            throw new Error("❌ Nenhuma conta de usuário encontrada para associar aos posts.");
+            throw new Error("Nenhuma conta de usuário encontrada para associar aos posts.");
         }
 
         const postsData = [
@@ -47,8 +47,8 @@ export const seedPosts = async () => {
 
         await Post.insertMany(postsData);
 
-        console.log("✅ Seed de posts executado com sucesso!");
+        console.log("Seed de posts executado com sucesso!");
     } catch (error) {
-        console.error("❌ Erro ao executar seed de posts:", error);
+        console.error("Erro ao executar seed de posts:", error);
     }
 };

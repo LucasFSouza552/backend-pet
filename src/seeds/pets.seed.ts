@@ -98,6 +98,6 @@ export const seedPets = async () => {
         ]
     );
 
-    console.log("✅ Pets seed executed");
+    console.log("Pets seed executed");
 }
 

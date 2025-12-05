@@ -10,7 +10,7 @@ export const seedHistories = async () => {
     const pets = await Pet.find().limit(5);
 
     if (users.length === 0) {
-        console.log("⚠️ Histories seed skipped: Need users first");
+        console.log("Histories seed skipped: Need users first");
         return;
     }
 
@@ -119,6 +119,6 @@ export const seedHistories = async () => {
 
     await History.create(histories);
 
-    console.log("✅ Histories seed executed");
+    console.log("Histories seed executed");
 };
 

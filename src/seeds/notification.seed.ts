@@ -9,7 +9,7 @@ export const seedNotifications = async () => {
     const institutions = await Account.find({ role: "institution" }).limit(2);
 
     if (users.length === 0 || institutions.length === 0) {
-        console.log("⚠️ Notifications seed skipped: Need users and institutions first");
+        console.log("Notifications seed skipped: Need users and institutions first");
         return;
     }
 
@@ -65,6 +65,6 @@ export const seedNotifications = async () => {
 
     await Notification.create(notifications);
 
-    console.log("✅ Notifications seed executed");
+    console.log("Notifications seed executed");
 };
 

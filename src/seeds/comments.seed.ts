@@ -6,23 +6,23 @@ import { Post } from "@models/post";
 export const seedComments = async () => {
     try {
         await Comment.deleteMany({});
-        console.log("🗑️ Comentários anteriores removidos");
+        console.log("Comentários anteriores removidos");
 
         const posts = await Post.find({});
         const accounts = await Account.find({}).lean();
 
-        if (posts.length === 0) throw new Error("❌ Nenhum post encontrado.");
-        if (accounts.length === 0) throw new Error("❌ Nenhum usuário encontrado.");
+        if (posts.length === 0) throw new Error("Nenhum post encontrado.");
+        if (accounts.length === 0) throw new Error("Nenhum usuário encontrado.");
 
         const exampleComments = [
-            "Amei esse post! ❤️",
+            "Amei esse post!",
             "Meu pet também adora isso!",
             "Que foto linda!",
             "Esses momentos são os melhores!",
-            "Muito inspirador 🐾",
+            "Muito inspirador",
             "Quanta fofura!",
             "Concordo totalmente!",
-            "Hahaha, adorei essa parte 😂",
+            "Hahaha, adorei essa parte",
             "Que texto incrível!",
             "Meu cachorro faria o mesmo!",
         ];
@@ -36,7 +36,7 @@ export const seedComments = async () => {
                 const randomUser = accounts[Math.floor(Math.random() * accounts.length)];
                 const randomContent =
                     exampleComments[Math.floor(Math.random() * exampleComments.length)];
-                if(!randomUser) throw new Error("❌ Nenhum usuário encontrado.");
+                if(!randomUser) throw new Error("Nenhum usuário encontrado.");
                 commentsToInsert.push({
                     post: post._id,
                     account: randomUser._id,
@@ -49,9 +49,9 @@ export const seedComments = async () => {
         await Comment.insertMany(commentsToInsert);
 
         console.log(
-            `✅ Seed de comentários executado com sucesso! (${commentsToInsert.length} criados)`
+            `Seed de comentários executado com sucesso! (${commentsToInsert.length} criados)`
         );
     } catch (error) {
-        console.error("❌ Erro ao executar seed de comentários:", error);
+        console.error("Erro ao executar seed de comentários:", error);
     }
 };
