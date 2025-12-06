@@ -3,7 +3,7 @@ import { ThrowError } from "@errors/ThrowError";
 
 export default class JWT {
 
-    static encodeToken(data: object, expiresIn: SignOptions["expiresIn"] = "5s"): string {
+    static encodeToken(data: object, expiresIn: SignOptions["expiresIn"] = "1d"): string {
         const JWT_SECRET: string = process.env.JWT_SECRET as string;
         return jwt.sign({ data }, JWT_SECRET, { expiresIn });
     }
