@@ -140,7 +140,7 @@ export default class AuthService {
             if (!token) throw ThrowError.notFound("Usuário não encontrado.");
 
             const decodedToken = JWT.isJwtTokenValid(token);
-            if (!decodedToken) throw ThrowError.notFound("Token inválido.");
+            if (!decodedToken) throw ThrowError.notFound("Sessão inválida.");
             const accountFound = await authRepository.getById(decodedToken?.data?.id);
             if (!accountFound) throw ThrowError.notFound("Usuário não encontrado.");
 
@@ -182,13 +182,13 @@ export default class AuthService {
     async resetPassword(token: string, password: string) {
         try {
             const verifyToken = authRepository.getTokenVerification(token);
-            if (!verifyToken) throw ThrowError.notFound("Token inválido.");
+            if (!verifyToken) throw ThrowError.notFound("Sessão inválida.");
 
             const decodedToken = JWT.isJwtTokenValid(token);
-            if (!decodedToken) throw ThrowError.notFound("Token inválido.");
+            if (!decodedToken) throw ThrowError.notFound("Sessão inválida.");
 
             const accountId = decodedToken?.data?.id;
-            if (!accountId) throw ThrowError.notFound("Token inválido.");
+            if (!accountId) throw ThrowError.notFound("Sessão inválida.");
 
             const account = await authRepository.getById(accountId);
             if (!account) throw ThrowError.notFound("Usuário não encontrado.");

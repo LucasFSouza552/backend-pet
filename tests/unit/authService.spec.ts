@@ -279,7 +279,7 @@ describe('AuthService', () => {
     it('deve falhar quando token é inválido', async () => {
       JWT.isJwtTokenValid.mockReturnValue(null);
 
-      await expect(service.verifyEmail('invalid_token')).rejects.toThrow('Token inválido.');
+      await expect(service.verifyEmail('invalid_token')).rejects.toThrow('Sessão inválida.');
     });
 
     it('deve falhar quando ID não está no token', async () => {
@@ -389,7 +389,7 @@ describe('AuthService', () => {
     it('deve falhar quando token de verificação não existe', async () => {
       authRepository.getTokenVerification.mockReturnValue(null);
 
-      await expect(service.resetPassword('invalid_token', 'nova_senha')).rejects.toThrow('Token inválido.');
+      await expect(service.resetPassword('invalid_token', 'nova_senha')).rejects.toThrow('Sessão inválida.');
       expect(JWT.isJwtTokenValid).not.toHaveBeenCalled();
     });
 
@@ -397,7 +397,7 @@ describe('AuthService', () => {
       authRepository.getTokenVerification.mockResolvedValue({ token: 'valid_token' });
       JWT.isJwtTokenValid.mockReturnValue(null);
 
-      await expect(service.resetPassword('invalid_token', 'nova_senha')).rejects.toThrow('Token inválido.');
+      await expect(service.resetPassword('invalid_token', 'nova_senha')).rejects.toThrow('Sessão inválida.');
     });
 
     it('deve falhar quando ID do usuário não está no token', async () => {
@@ -406,7 +406,7 @@ describe('AuthService', () => {
       authRepository.getTokenVerification.mockResolvedValue({ token });
       JWT.isJwtTokenValid.mockReturnValue(decodedToken);
 
-      await expect(service.resetPassword(token, 'nova_senha')).rejects.toThrow('Token inválido.');
+      await expect(service.resetPassword(token, 'nova_senha')).rejects.toThrow('Sessão inválida.');
     });
 
     it('deve falhar quando usuário não existe', async () => {

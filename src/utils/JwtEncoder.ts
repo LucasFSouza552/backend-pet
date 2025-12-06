@@ -3,7 +3,7 @@ import { ThrowError } from "@errors/ThrowError";
 
 export default class JWT {
 
-    static encodeToken(data: object, expiresIn: SignOptions["expiresIn"] = "1d"): string {
+    static encodeToken(data: object, expiresIn: SignOptions["expiresIn"] = "5s"): string {
         const JWT_SECRET: string = process.env.JWT_SECRET as string;
         return jwt.sign({ data }, JWT_SECRET, { expiresIn });
     }
@@ -11,17 +11,17 @@ export default class JWT {
 
     static validateAuth(authToken: string) {
         if (!authToken) {
-            throw ThrowError.badRequest('Token Ausente');
+            throw ThrowError.badRequest('Sessão inválida');
         }
 
         const [scheme, token] = authToken.split(" ");
         if (!token || scheme != 'Bearer') {
-            throw ThrowError.unauthorized('Token Inválido')
+            throw ThrowError.unauthorized('Sessão inválida')
         }
         try {
             const payload = this.isJwtTokenValid(token)
             if (!payload) {
-                throw ThrowError.unauthorized('Token Inválido')
+                throw ThrowError.unauthorized('Sessão expirada')
             }
 
             return payload;
@@ -38,7 +38,7 @@ export default class JWT {
             const JWT_SECRET: string = process.env.JWT_SECRET as string;
             return verify(token, JWT_SECRET) as JwtPayload;
         } catch (error) {
-            throw ThrowError.unauthorized('Token Inválido');
+            throw ThrowError.unauthorized('Sessão expirada');
         }
     }
 

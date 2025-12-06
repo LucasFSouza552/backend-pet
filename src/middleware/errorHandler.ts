@@ -17,7 +17,7 @@ export const errorHandler = (
     }
 
     if (err.name === "ValidationError") {
-        return res.status(400).json(
+        return res.status(401).json(
             errorResponse("Erro de validação", err.errors)
         );
     }

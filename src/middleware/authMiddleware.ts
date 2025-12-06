@@ -19,16 +19,16 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            throw ThrowError.badRequest("Token não encontrado. Use formato Bearer <token>");
+            throw ThrowError.badRequest("Sessão inválida. Use formato Bearer <token>");
         }
 
         const decodedToken = JWT.validateAuth(authHeader);
         if (!decodedToken) {
-            throw ThrowError.unauthorized("Token inválido. Use formato Bearer <token>");
+            throw ThrowError.unauthorized("Sessão inválida. Use formato Bearer <token>");
         }
         const accountId = decodedToken?.data?.id;
         if (!accountId) {
-            throw ThrowError.notFound("Token inválido. Use formato Bearer <token>");
+            throw ThrowError.notFound("Sessão inválida. Use formato Bearer <token>");
         }
 
         const account = await accountService.getById(accountId);
