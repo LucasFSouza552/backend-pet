@@ -214,7 +214,7 @@ describe('PetService', () => {
       accountService.getById.mockResolvedValue(accountData);
       petRepository.getById.mockResolvedValue(petData);
       historyRepository.create.mockResolvedValue(historyData);
-      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null); // Não existe interação
+      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null);
       accountPetInteractionService.create.mockResolvedValue({});
 
       const result = await service.likePet('pet123', 'user123');
@@ -282,7 +282,7 @@ describe('PetService', () => {
       const petData = createMockPet({ account: 'owner123' });
       accountService.getById.mockResolvedValue(accountData);
       petRepository.getById.mockResolvedValue(petData);
-      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null); // Não existe interação
+      accountPetInteractionService.getPetInteractionByAccount.mockResolvedValue(null);
       accountPetInteractionService.create.mockResolvedValue({});
 
       await service.dislikePet('pet123', 'user123');

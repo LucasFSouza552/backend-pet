@@ -91,7 +91,7 @@ describe('PostService', () => {
 
   describe('getPostsByAccount', () => {
     it('deve retornar posts de uma conta com sucesso', async () => {
-      // Arrange
+
       const posts = [
         createMockPost({ content: 'Post 1' }),
         createMockPost({ content: 'Post 2' })
@@ -105,7 +105,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar array vazio quando não há posts', async () => {
-      // Arrange
+
       postRepository.getPostsByAccount.mockResolvedValue([]);
 
       const result = await service.getPostsByAccount('user123');
@@ -114,7 +114,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getPostsByAccount.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getPostsByAccount('user123')).rejects.toThrow('Não foi possível buscar os posts.');
@@ -123,7 +123,7 @@ describe('PostService', () => {
 
   describe('getPostsWithAuthor', () => {
     it('deve retornar posts com autor com sucesso', async () => {
-      // Arrange
+
       const posts = [
         {
           _id: 'post1',
@@ -155,7 +155,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getPostsWithAuthor.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getPostsWithAuthor({})).rejects.toThrow('Não foi possível buscar os posts.');
@@ -164,7 +164,7 @@ describe('PostService', () => {
 
   describe('getPostWithAuthor', () => {
     it('deve retornar post com autor com sucesso', async () => {
-      // Arrange
+
       const post = {
         _id: 'post1',
         content: 'Post 1',
@@ -179,7 +179,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getPostWithAuthor.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getPostWithAuthor('post1')).rejects.toThrow('Não foi possível buscar o post');
@@ -188,7 +188,7 @@ describe('PostService', () => {
 
   describe('getTopPosts', () => {
     it('deve retornar top posts com sucesso', async () => {
-      // Arrange
+
       const posts = [createMockPost(), createMockPost()];
       postRepository.getTopPosts.mockResolvedValue(posts);
 
@@ -199,7 +199,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getTopPosts.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getTopPosts()).rejects.toThrow('Não foi possível buscar os posts.');
@@ -208,7 +208,7 @@ describe('PostService', () => {
 
   describe('toggleLike', () => {
     it('deve adicionar like quando usuário não curtiu', async () => {
-      // Arrange
+
       const accountId = new ObjectId();
       const post = createMockPost({
         likes: []
@@ -227,7 +227,7 @@ describe('PostService', () => {
     });
 
     it('deve remover like quando usuário já curtiu', async () => {
-      // Arrange
+
       const accountId = new ObjectId();
       const mockEquals = jest.fn().mockReturnValue(true);
       const post = createMockPost({
@@ -261,7 +261,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar null quando post não existe', async () => {
-      // Arrange
+
       postRepository.getById.mockResolvedValue(null);
 
       const result = await service.toggleLike('post123', 'user123');
@@ -270,7 +270,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       const post = createMockPost({ likes: [] });
       postRepository.getById.mockResolvedValue(post);
       postRepository.addLike.mockRejectedValue(new Error('Database error'));
@@ -281,7 +281,7 @@ describe('PostService', () => {
 
   describe('updateComment', () => {
     it('deve atualizar comentário com sucesso', async () => {
-      // Arrange
+
       const updateData = { content: 'Comentário atualizado' };
       const updatedPost = createMockPost(updateData);
       postRepository.update.mockResolvedValue(updatedPost);
@@ -293,7 +293,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', () => {
-      // Arrange
+
       postRepository.update.mockImplementation(() => {
         throw new Error('Database error');
       });
@@ -305,7 +305,7 @@ describe('PostService', () => {
 
   describe('getAll', () => {
     it('deve retornar todos os posts com sucesso', async () => {
-      // Arrange
+
       const posts = [createMockPost(), createMockPost()];
       postRepository.getAll.mockResolvedValue(posts);
 
@@ -316,7 +316,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar array vazio quando não há posts', async () => {
-      // Arrange
+
       postRepository.getAll.mockResolvedValue([]);
 
       const result = await service.getAll({});
@@ -325,7 +325,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getAll.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getAll({})).rejects.toThrow('Não foi possível buscar os posts.');
@@ -334,7 +334,7 @@ describe('PostService', () => {
 
   describe('getById', () => {
     it('deve retornar post quando existe', async () => {
-      // Arrange
+
       const post = createMockPost();
       postRepository.getById.mockResolvedValue(post);
 
@@ -345,7 +345,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar null quando post não existe', async () => {
-      // Arrange
+
       postRepository.getById.mockResolvedValue(null);
 
       const result = await service.getById('post123');
@@ -354,7 +354,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.getById.mockRejectedValue(new Error('Database error'));
 
       await expect(service.getById('post123')).rejects.toThrow('Não foi possível buscar o post.');
@@ -363,7 +363,7 @@ describe('PostService', () => {
 
   describe('create', () => {
     it('deve criar post sem imagens com sucesso', async () => {
-      // Arrange
+
       const postData = {
         content: 'Novo post',
         account: 'user123'
@@ -381,7 +381,7 @@ describe('PostService', () => {
     });
 
     it('deve criar post com imagens com sucesso', async () => {
-      // Arrange
+
       const postData = {
         content: 'Novo post',
         account: 'user123'
@@ -407,7 +407,7 @@ describe('PostService', () => {
     }, 10000);
 
     it('deve ignorar arquivos que falharam no upload', async () => {
-      // Arrange
+
       const postData = {
         content: 'Novo post',
         account: 'user123'
@@ -432,7 +432,7 @@ describe('PostService', () => {
     }, 10000);
 
     it('deve criar post sem arquivos quando array está vazio', async () => {
-      // Arrange
+
       const postData = {
         content: 'Novo post',
         account: 'user123'
@@ -451,7 +451,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       const postData = {
         content: 'Novo post',
         account: 'user123'
@@ -464,7 +464,7 @@ describe('PostService', () => {
 
   describe('update', () => {
     it('deve atualizar post com sucesso', async () => {
-      // Arrange
+
       const updateData = { content: 'Post atualizado' };
       const updatedPost = createMockPost(updateData);
       postRepository.update.mockResolvedValue(updatedPost);
@@ -476,7 +476,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.update.mockRejectedValue(new Error('Database error'));
 
       await expect(service.update('post123', { content: 'Post atualizado' }))
@@ -486,7 +486,7 @@ describe('PostService', () => {
 
   describe('delete', () => {
     it('deve deletar post com sucesso', async () => {
-      // Arrange
+
       postRepository.delete.mockResolvedValue(undefined);
 
       await service.delete('post123');
@@ -495,7 +495,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.delete.mockRejectedValue(new Error('Database error'));
 
       await expect(service.delete('post123')).rejects.toThrow('Não foi possível deletar o post.');
@@ -504,7 +504,7 @@ describe('PostService', () => {
 
   describe('softDelete', () => {
     it('deve fazer soft delete do post com sucesso', async () => {
-      // Arrange
+
       const accountId = new ObjectId();
       const post = createMockPost({ account: accountId });
       postRepository.getById.mockResolvedValue(post);
@@ -516,7 +516,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando post não existe', async () => {
-      // Arrange
+
       postRepository.getById.mockResolvedValue(null);
 
       await expect(service.softDelete('post123', 'user123'))
@@ -524,7 +524,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando post já foi deletado', async () => {
-      // Arrange
+
       const post = createMockPost({ deletedAt: new Date() });
       postRepository.getById.mockResolvedValue(post);
 
@@ -533,7 +533,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar null quando usuário não é proprietário', async () => {
-      // Arrange
+
       const ownerId = new ObjectId();
       const userId = new ObjectId();
       const post = createMockPost({ account: ownerId });
@@ -548,7 +548,7 @@ describe('PostService', () => {
 
   describe('search', () => {
     it('deve buscar posts com filtros com sucesso', async () => {
-      // Arrange
+
       const filter = { content: 'test' };
       const posts = [
         createMockPost({ content: 'Post de teste' }),
@@ -563,7 +563,7 @@ describe('PostService', () => {
     });
 
     it('deve retornar array vazio quando não encontra resultados', async () => {
-      // Arrange
+
       const filter = { content: 'inexistente' };
       postRepository.search.mockResolvedValue([]);
 
@@ -573,7 +573,7 @@ describe('PostService', () => {
     });
 
     it('deve falhar quando erro interno ocorre', async () => {
-      // Arrange
+
       postRepository.search.mockRejectedValue(new Error('Database error'));
 
       await expect(service.search({ content: 'test' })).rejects.toThrow('Não foi possível buscar os posts.');

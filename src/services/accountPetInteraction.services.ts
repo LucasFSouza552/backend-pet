@@ -39,12 +39,6 @@ export default class AccountPetInteractionService {
 
     async updateStatus(updateData: createPetInteractionDTO) {
         try {
-            const history = await historyRepository.getByAccountAndPet(updateData.account.toString(), updateData.pet.toString());
-            // if (history) {
-            //     await historyRepository.update(history?.id, {
-            //         status: "cancelled",
-            //     } as UpdateHistoryDTO);
-            // }
             const updated = await accountPetInteractionRepository.updateStatus(updateData);
             
             return updated;

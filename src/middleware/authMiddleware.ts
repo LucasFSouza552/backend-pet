@@ -40,6 +40,6 @@ export default async function AuthMiddleware(req: Request, res: Response, next: 
 
         next();
     } catch (error) {
-        next(error); // Testar depois se o Next vai para o próximo middleware de tratamento de erro
+        next(error);
     }
 }

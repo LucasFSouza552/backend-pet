@@ -94,7 +94,6 @@ describe('AuthService', () => {
       const userData = createMockAccount();
       authRepository.getByEmail.mockResolvedValue(userData);
 
-      // Act
       const result = await service.getByEmail('joao@test.com');
 
       expect(authRepository.getByEmail).toHaveBeenCalledWith('joao@test.com');
@@ -104,7 +103,6 @@ describe('AuthService', () => {
     it('deve retornar null quando email não existe', async () => {
       authRepository.getByEmail.mockResolvedValue(null);
 
-      // Act
       const result = await service.getByEmail('inexistente@test.com');
 
       expect(result).toBeNull();
@@ -130,7 +128,6 @@ describe('AuthService', () => {
       cryptPassword.mockResolvedValue('hashed_new_password');
       authRepository.changePassword.mockResolvedValue(undefined);
 
-      // Act
       await service.changePassword('user123', changePasswordData);
 
       expect(authRepository.getById).toHaveBeenCalledWith('user123');
@@ -175,7 +172,6 @@ describe('AuthService', () => {
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
 
-      // Act
       await service.create(validUserData);
 
       expect(authRepository.getByEmail).toHaveBeenCalledWith(validUserData.email);
@@ -195,7 +191,6 @@ describe('AuthService', () => {
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
 
-      // Act
       await service.create(institutionData);
 
       expect(authRepository.getByCnpj).toHaveBeenCalledWith(institutionData.cnpj);
@@ -262,7 +257,6 @@ describe('AuthService', () => {
       authRepository.getById.mockResolvedValue(userData);
       authRepository.updateVerificationToken.mockResolvedValue({ ...userData, verified: true });
 
-      // Act
       const result = await service.verifyEmail(token);
 
       expect(JWT.isJwtTokenValid).toHaveBeenCalledWith(token);
@@ -327,7 +321,6 @@ describe('AuthService', () => {
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
 
-      // Act
       await service.forgotPassword(email);
 
       expect(authRepository.getByEmail).toHaveBeenCalledWith(email);
@@ -376,7 +369,6 @@ describe('AuthService', () => {
       cryptPassword.mockResolvedValue('new_hashed_password');
       authRepository.changePassword.mockResolvedValue(undefined);
 
-      // Act
       await service.resetPassword(token, password);
 
       expect(authRepository.getTokenVerification).toHaveBeenCalledWith(token);
@@ -435,7 +427,6 @@ describe('AuthService', () => {
       JWT.encodeToken.mockReturnValue('jwt_token');
       sendEmail.mockResolvedValue(undefined);
 
-      // Act
       await service.resendVerification('user123');
 
       expect(authRepository.getById).toHaveBeenCalledWith('user123');
